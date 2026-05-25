@@ -1,0 +1,16 @@
+<x-layouts.public>
+@include('sections.hero',              ['slides' => $heroSlides])
+@include('sections.products',          ['products' => $featuredProducts])
+@include('sections.features',          ['features' => $features])
+@include('sections.video-showcase')
+@include('sections.production-stages', ['stages' => $productionStages])
+@include('sections.how-it-works')
+@include('sections.projects',          ['projects' => $projects])
+@include('sections.about')
+@include('sections.chairman',          ['quote' => $chairmanQuote])
+@include('sections.faq',               ['faqs' => $faqs])
+@include('sections.team',              ['members' => $teamMembers])
+@include('sections.calculator')
+@include('sections.testimonials',      ['testimonials' => $testimonials])
+@include('sections.contact')
+</x-layouts.public>
