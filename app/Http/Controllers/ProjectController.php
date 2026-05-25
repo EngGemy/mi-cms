@@ -31,15 +31,16 @@ class ProjectController extends Controller
     {
         abort_unless($project->is_active, 404);
 
-        $project->load(['media','phases']);
+        $project->load(['media','phases.media']);
 
         $seo->setTitle($project->title)
             ->setDescription($project->summary ?? $project->description)
             ->setImage($project->getCoverUrl('hero') ?? $project->getCoverUrl('card'))
             ->setType('article');
 
-        $galleryImages = $project->getGalleryUrls();
-        $related       = $project->related(3);
+        $galleryImages   = $project->getGalleryUrls();
+        $blueprintImages = $project->getBlueprintUrls();
+        $related         = $project->related(3);
 
         $jsonLd = json_encode([
             '@context'    => 'https://schema.org',
@@ -53,11 +54,12 @@ class ProjectController extends Controller
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         return view('projects.show', [
-            'project'       => $project,
-            'galleryImages' => $galleryImages,
-            'related'       => $related,
-            'jsonLd'        => $jsonLd,
-            'seo'           => $seo->toArray(),
+            'project'         => $project,
+            'galleryImages'   => $galleryImages,
+            'blueprintImages' => $blueprintImages,
+            'related'         => $related,
+            'jsonLd'          => $jsonLd,
+            'seo'             => $seo->toArray(),
         ]);
     }
 }

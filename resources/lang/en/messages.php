@@ -95,6 +95,7 @@ return [
     'project_img_alt'        => 'Project Image',
     'project_phases_title'   => 'Execution Phases',
     'project_phases_subtitle'=> 'From Construction to Handover — How We Deliver Your Project',
+    'project_blueprint'      => 'Project Design',
     'birds_unit'             => 'birds',
     'barns_unit'             => 'barns',
     'sqm_unit'               => 'm²',

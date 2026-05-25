@@ -8,6 +8,8 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Section;
 
 class PhasesRelationManager extends RelationManager
 {
@@ -61,6 +63,31 @@ class PhasesRelationManager extends RelationManager
                     ->default(0),
             ]),
 
+            Forms\Components\TextInput::make('video_url')
+                ->label('رابط فيديو (YouTube / Vimeo)')
+                ->url()
+                ->placeholder('https://youtu.be/...')
+                ->maxLength(500)
+                ->helperText('بديل عن رفع ملف الفيديو مباشرة')
+                ->columnSpanFull(),
+
+            Section::make('وسائط المرحلة')->schema([
+                SpatieMediaLibraryFileUpload::make('image')
+                    ->collection('image')
+                    ->label('صورة المرحلة')
+                    ->image()
+                    ->imageEditor()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->maxSize(5120),
+
+                SpatieMediaLibraryFileUpload::make('video')
+                    ->collection('video')
+                    ->label('ملف فيديو (MP4)')
+                    ->acceptedFileTypes(['video/mp4', 'video/webm'])
+                    ->maxSize(102400)
+                    ->helperText('الأولوية للرابط إذا أُدخل رابط فيديو أعلاه'),
+            ])->columns(2),
+
         ]);
     }
 
@@ -74,6 +101,13 @@ class PhasesRelationManager extends RelationManager
                     ->label('#')
                     ->sortable()
                     ->width(40),
+
+                Tables\Columns\SpatieMediaLibraryImageColumn::make('image')
+                    ->collection('image')
+                    ->label('صورة')
+                    ->square()
+                    ->size(48)
+                    ->defaultImageUrl(fn () => ''),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('البند')
@@ -89,10 +123,10 @@ class PhasesRelationManager extends RelationManager
                         'gray'    => 'planned',
                     ]),
 
-                Tables\Columns\TextColumn::make('icon')
-                    ->label('الأيقونة')
-                    ->formatStateUsing(fn ($s) => $s ? '<i data-lucide="' . $s . '" class="w-4 h-4"></i>' : '—')
-                    ->html(),
+                Tables\Columns\IconColumn::make('has_video')
+                    ->label('فيديو')
+                    ->boolean()
+                    ->getStateUsing(fn (ProjectPhase $record) => $record->hasVideo()),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()->label('إضافة بند'),

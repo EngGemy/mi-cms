@@ -105,6 +105,7 @@ class Project extends Model implements HasMedia
         $this->addMediaCollection('cover')->singleFile();
         $this->addMediaCollection('gallery');
         $this->addMediaCollection('video')->singleFile();
+        $this->addMediaCollection('blueprint');
     }
 
     public function registerMediaConversions(?Media $media = null): void
@@ -131,6 +132,18 @@ class Project extends Model implements HasMedia
                 'full'  => $m->getUrl($conv),
                 'thumb' => $m->getUrl('thumb'),
                 'alt'   => $this->title,
+            ])
+            ->values()
+            ->toArray();
+    }
+
+    public function getBlueprintUrls(string $conv = 'card'): array
+    {
+        return $this->getMedia('blueprint')
+            ->map(fn ($m) => [
+                'full'  => $m->getUrl($conv),
+                'thumb' => $m->getUrl('thumb'),
+                'alt'   => $this->title . ' — ' . __('messages.project_blueprint'),
             ])
             ->values()
             ->toArray();

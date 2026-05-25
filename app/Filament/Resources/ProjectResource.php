@@ -165,6 +165,19 @@ class ProjectResource extends Resource
                             ->maxSize(102400),
                     ]),
 
+                    Section::make('مخططات التصميم (Blueprints)')->schema([
+                        SpatieMediaLibraryFileUpload::make('blueprints')
+                            ->collection('blueprint')
+                            ->label('مخططات المشروع')
+                            ->multiple()
+                            ->reorderable()
+                            ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
+                            ->maxSize(10240)
+                            ->maxFiles(15)
+                            ->helperText('صور CAD / مخططات / رسومات هندسية للمشروع'),
+                    ]),
+
                 ]),
 
                 // ── Tab 4: الإعدادات ──────────────────────────────────────────
@@ -269,8 +282,8 @@ class ProjectResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PhasesRelationManager::class,
-            RelationManagers\StagesRelationManager::class,
+            \App\Filament\Resources\ProjectResource\RelationManagers\PhasesRelationManager::class,
+            \App\Filament\Resources\ProjectResource\RelationManagers\StagesRelationManager::class,
         ];
     }
 

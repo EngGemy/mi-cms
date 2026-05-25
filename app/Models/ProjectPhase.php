@@ -4,17 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Translatable\HasTranslations;
 
-class ProjectPhase extends Model
+class ProjectPhase extends Model implements HasMedia
 {
-    use HasTranslations;
+    use HasTranslations, InteractsWithMedia;
 
     public array $translatable = ['title', 'description'];
 
     protected $fillable = [
         'project_id', 'title', 'description',
-        'icon', 'status', 'position',
+        'icon', 'status', 'position', 'video_url',
     ];
 
     protected $casts = [
@@ -30,6 +33,66 @@ class ProjectPhase extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')->singleFile();
+        $this->addMediaCollection('video')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('card')->width(800)->quality(82);
+        $this->addMediaConversion('thumb')->width(300)->quality(80);
+    }
+
+    public function getImageUrl(string $conv = 'card'): ?string
+    {
+        $m = $this->getFirstMedia('image');
+        return $m ? $m->getUrl($conv) : null;
+    }
+
+    public function getVideoUrl(): ?string
+    {
+        // Prioritize uploaded video file, fallback to video_url
+        $m = $this->getFirstMedia('video');
+        if ($m) {
+            return $m->getUrl();
+        }
+        return $this->video_url ?: null;
+    }
+
+    public function hasVideo(): bool
+    {
+        return $this->getFirstMedia('video') !== null || !empty($this->video_url);
+    }
+
+    public function getVideoEmbed(): ?string
+    {
+        $url = $this->getVideoUrl();
+        if (!$url) return null;
+
+        $ytMatch = [];
+        $viMatch = [];
+        preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $ytMatch);
+        preg_match('/vimeo\.com\/(\d+)/', $url, $viMatch);
+
+        if ($ytMatch[1] ?? null) {
+            return 'https://www.youtube.com/embed/' . $ytMatch[1] . '?autoplay=1&rel=0';
+        }
+        if ($viMatch[1] ?? null) {
+            return 'https://player.vimeo.com/video/' . $viMatch[1] . '?autoplay=1';
+        }
+        return null;
+    }
+
+    public function getVideoType(): string
+    {
+        $url = $this->getVideoUrl();
+        if (!$url) return 'none';
+        if ($this->getVideoEmbed()) return 'embed';
+        return 'file';
     }
 
     public function getStatusLabel(): string

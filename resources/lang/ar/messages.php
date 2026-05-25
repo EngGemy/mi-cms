@@ -95,6 +95,7 @@ return [
     'project_img_alt'        => 'صورة المشروع',
     'project_phases_title'   => 'مراحل التنفيذ',
     'project_phases_subtitle'=> 'من الإنشاءات إلى التسليم — كيف نُنفّذ مشروعك',
+    'project_blueprint'      => 'تصميم المشروع',
     'birds_unit'             => 'طائر',
     'barns_unit'             => 'عنبر',
     'sqm_unit'               => 'م²',

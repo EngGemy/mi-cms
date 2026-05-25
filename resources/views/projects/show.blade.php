@@ -210,10 +210,7 @@
   </section>
 
   {{-- =====================================================================
-       VIDEO — LAZY, YOUTUBE / VIMEO / FILE
-       ===================================================================== --}}
-  {{-- =====================================================================
-       PROJECT PHASES / EXECUTION ITEMS
+       PROJECT PHASES / EXECUTION ITEMS (with media)
        ===================================================================== --}}
   @if($project->phases && $project->phases->count() > 0)
   <section class="proj-phases py-20 lg:py-28">
@@ -223,20 +220,74 @@
 
       <div class="proj-phases-grid" data-stagger>
         @foreach($project->phases as $phase)
-          <div class="proj-phase-card" data-reveal>
-            <div class="proj-phase-num">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
-            @if($phase->icon)
-              <div class="proj-phase-icon">
-                <i data-lucide="{{ $phase->icon }}" class="w-5 h-5" aria-hidden="true"></i>
+          @php
+            $phaseImg   = $phase->getImageUrl('card');
+            $phaseVideo = $phase->hasVideo();
+            $phaseEmbed = $phase->getVideoEmbed();
+            $phaseVtype = $phase->getVideoType();
+          @endphp
+          <div class="proj-phase-card" data-reveal
+               @if($phaseVideo) x-data="{ playing: false }" :class="playing ? 'is-playing' : ''" @endif>
+
+            {{-- Media area (image, video, or icon fallback) --}}
+            <div class="proj-phase-media">
+              @if($phaseImg)
+                <img src="{{ $phaseImg }}" alt="{{ $phase->title }}" loading="lazy" decoding="async"/>
+              @endif
+
+              @if($phaseVideo && $phaseEmbed)
+                {{-- Play button on image or standalone --}}
+                <div class="proj-phase-video-overlay" @click="playing = true" x-show="!playing">
+                  <button type="button" class="proj-phase-play-btn" aria-label="{{ __('messages.project_play_video') }}">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+                <iframe x-show="playing"
+                        :src="playing ? '{{ $phaseEmbed }}' : ''"
+                        class="proj-phase-video-iframe"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        title="{{ $phase->title }}"
+                        loading="lazy"></iframe>
+              @elseif($phaseVideo && $phaseVtype === 'file')
+                <div class="proj-phase-video-overlay" @click="playing = true" x-show="!playing">
+                  <button type="button" class="proj-phase-play-btn" aria-label="{{ __('messages.project_play_video') }}">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+                <video x-show="playing"
+                       x-ref="vid"
+                       class="proj-phase-video-iframe"
+                       :autoplay="playing"
+                       controls
+                       preload="none"
+                       x-init="$watch('playing', v => { if(v) $refs.vid.play(); })">
+                  <source src="{{ $phase->getVideoUrl() }}" type="video/mp4">
+                </video>
+              @endif
+
+              @if(!$phaseImg && !$phaseVideo)
+                {{-- Fallback: large icon on soft background --}}
+                <div class="proj-phase-fallback">
+                  @if($phase->icon)
+                    <i data-lucide="{{ $phase->icon }}" class="w-8 h-8" aria-hidden="true"></i>
+                  @else
+                    <span class="proj-phase-num-fallback">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                  @endif
+                </div>
+              @endif
+            </div>
+
+            <div class="proj-phase-body">
+              <div class="proj-phase-num">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+              <div class="proj-phase-title">{{ $phase->title }}</div>
+              @if($phase->description)
+                <div class="proj-phase-desc">{{ $phase->description }}</div>
+              @endif
+              <div class="proj-phase-status" style="background: {{ $phase->getStatusColor() }}15; color: {{ $phase->getStatusColor() }};">
+                <span class="proj-phase-status-dot" style="background: {{ $phase->getStatusColor() }};"></span>
+                {{ $phase->getStatusLabel() }}
               </div>
-            @endif
-            <div class="proj-phase-title">{{ $phase->title }}</div>
-            @if($phase->description)
-              <div class="proj-phase-desc">{{ $phase->description }}</div>
-            @endif
-            <div class="proj-phase-status" style="background: {{ $phase->getStatusColor() }}15; color: {{ $phase->getStatusColor() }};">
-              <span class="proj-phase-status-dot" style="background: {{ $phase->getStatusColor() }};"></span>
-              {{ $phase->getStatusLabel() }}
             </div>
           </div>
         @endforeach
@@ -245,18 +296,23 @@
   </section>
   @endif
 
-  @if($project->video_url)
+  {{-- =====================================================================
+       PROJECT VIDEO — LAZY (URL or uploaded file)
+       ===================================================================== --}}
+  @php
+    $projectVideoUrl   = $project->video_url;
+    $projectVideoMedia = $project->getFirstMedia('video');
+    $projectVideoSrc   = $projectVideoUrl ?: ($projectVideoMedia ? $projectVideoMedia->getUrl() : null);
+    $projectYtId       = $project->getYoutubeId();
+    $projectViId       = $project->getVimeoId();
+    $projectIsEmbed    = $projectYtId || $projectViId;
+  @endphp
+
+  @if($projectVideoSrc)
   <section class="py-16 lg:py-20">
     <div class="proj-content">
 
       <span class="proj-section-label" data-reveal>{{ __('messages.project_video') }}</span>
-
-      @php
-        $ytId    = $project->getYoutubeId();
-        $viId    = $project->getVimeoId();
-        $isEmbed = $ytId || $viId;
-        $poster  = $project->getCoverUrl('card');
-      @endphp
 
       <div class="proj-video-wrap" data-reveal
            x-data="{ playing: false }"
@@ -264,6 +320,7 @@
            @click="playing = true">
 
         {{-- Poster --}}
+        @php $poster = $project->getCoverUrl('card'); @endphp
         @if($poster)
           <img class="proj-video-poster" src="{{ $poster }}" alt="{{ $project->title }}" loading="lazy">
         @endif
@@ -278,25 +335,24 @@
           <span class="proj-video-label">{{ __('messages.project_play_video') }}</span>
         </div>
 
-        {{-- Lazy iframe —  inserted only when user clicks --}}
-        @if($ytId)
+        {{-- Lazy player — prioritize embed, then file URL --}}
+        @if($projectYtId)
           <iframe x-show="playing"
-                  :src="playing ? 'https://www.youtube.com/embed/{{ $ytId }}?autoplay=1&rel=0' : ''"
+                  :src="playing ? 'https://www.youtube.com/embed/{{ $projectYtId }}?autoplay=1&rel=0' : ''"
                   class="proj-video-iframe"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen
                   title="{{ $project->title }}"
                   loading="lazy"></iframe>
-        @elseif($viId)
+        @elseif($projectViId)
           <iframe x-show="playing"
-                  :src="playing ? 'https://player.vimeo.com/video/{{ $viId }}?autoplay=1' : ''"
+                  :src="playing ? 'https://player.vimeo.com/video/{{ $projectViId }}?autoplay=1' : ''"
                   class="proj-video-iframe"
                   allow="autoplay; fullscreen; picture-in-picture"
                   allowfullscreen
                   title="{{ $project->title }}"
                   loading="lazy"></iframe>
         @else
-          {{-- Local / direct file --}}
           <video x-show="playing"
                  x-ref="vid"
                  class="proj-video-iframe"
@@ -304,11 +360,89 @@
                  controls
                  preload="none"
                  x-init="$watch('playing', v => { if(v) $refs.vid.play(); })">
-            <source src="{{ $project->video_url }}" type="video/mp4">
+            <source src="{{ $projectVideoSrc }}" type="video/mp4">
           </video>
         @endif
 
       </div>
+    </div>
+  </section>
+  @endif
+
+  {{-- =====================================================================
+       BLUEPRINT / DESIGN GALLERY
+       ===================================================================== --}}
+  @if(count($blueprintImages) > 0)
+  <section class="py-16 lg:py-20" style="background:var(--paper)">
+    <div class="proj-content"
+         x-data="{
+           open: false,
+           idx: 0,
+           images: {{ Js::from($blueprintImages) }},
+           openAt(i) { this.idx = i; this.open = true; document.body.style.overflow = 'hidden'; },
+           close()   { this.open = false; document.body.style.overflow = ''; },
+           prev()    { this.idx = (this.idx - 1 + this.images.length) % this.images.length; },
+           next()    { this.idx = (this.idx + 1) % this.images.length; },
+         }"
+         @keydown.escape.window="close()"
+         @keydown.arrow-left.window="open && ({{ app()->getLocale() === 'ar' ? 'next()' : 'prev()' }})"
+         @keydown.arrow-right.window="open && ({{ app()->getLocale() === 'ar' ? 'prev()' : 'next()' }})">
+
+      <span class="proj-section-label" data-reveal>{{ __('messages.project_blueprint') }}</span>
+
+      <div class="proj-gallery-grid" data-stagger>
+        @foreach($blueprintImages as $i => $img)
+          <button type="button"
+                  class="proj-gallery-item"
+                  @click="openAt({{ $i }})"
+                  aria-label="{{ $img['alt'] }} {{ $i + 1 }}">
+            <img src="{{ $img['thumb'] }}"
+                 data-full="{{ $img['full'] }}"
+                 alt="{{ $img['alt'] }} {{ $i + 1 }}"
+                 loading="lazy" decoding="async"/>
+          </button>
+        @endforeach
+      </div>
+
+      {{-- Lightbox --}}
+      <div class="proj-lightbox"
+           x-show="open"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0"
+           x-transition:enter-end="opacity-100"
+           x-transition:leave="transition ease-in duration-150"
+           x-transition:leave-start="opacity-100"
+           x-transition:leave-end="opacity-0"
+           @click.self="close()"
+           role="dialog" aria-modal="true"
+           style="display:none">
+
+        <img :src="images[idx]?.full"
+             :alt="images[idx]?.alt"
+             class="proj-lightbox-img"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"/>
+
+        <button type="button" class="proj-lightbox-close" @click="close()" aria-label="Close">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <button type="button" class="proj-lightbox-nav proj-lightbox-prev"
+                @click="prev()" aria-label="Previous">
+          <i data-lucide="chevron-{{ app()->getLocale() === 'ar' ? 'right' : 'left' }}" class="w-5 h-5"></i>
+        </button>
+        <button type="button" class="proj-lightbox-nav proj-lightbox-next"
+                @click="next()" aria-label="Next">
+          <i data-lucide="chevron-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}" class="w-5 h-5"></i>
+        </button>
+
+        <div class="proj-lightbox-counter" aria-live="polite">
+          <span x-text="idx + 1"></span> / <span x-text="images.length"></span>
+        </div>
+
+      </div>
+
     </div>
   </section>
   @endif

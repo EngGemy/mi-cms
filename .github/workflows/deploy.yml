@@ -1,0 +1,109 @@
+name: Deploy CMS to Enhance
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cms-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ---------------------------------------------------------------
+      # 1) Checkout
+      # ---------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------
+      # 2) PHP 8.3 (MUST match the site's PHP version in Enhance panel)
+      # ---------------------------------------------------------------
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, intl, gd, zip, pdo, pdo_mysql, exif, fileinfo
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies (production)
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
+
+      # ---------------------------------------------------------------
+      # 3) Node build (Vite)
+      # ---------------------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build front-end assets
+        run: npm run build
+
+      # ---------------------------------------------------------------
+      # 4) SSH key setup
+      # ---------------------------------------------------------------
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      # ---------------------------------------------------------------
+      # 5) rsync to server (separate deploy path; does NOT touch other app)
+      #    Excludes: .git .github node_modules .env storage tests *.bak
+      # ---------------------------------------------------------------
+      - name: Deploy via rsync
+        run: |
+          rsync -azc --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }}" \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='.env' \
+            --exclude='storage' \
+            --exclude='tests' \
+            --exclude='*.bak' \
+            ./ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
+
+      # ---------------------------------------------------------------
+      # 6) Post-deploy artisan (no root/sudo — Enhance managed container)
+      # ---------------------------------------------------------------
+      - name: Post-deploy commands
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "set -e; \
+             cd ${{ secrets.DEPLOY_PATH }}; \
+             mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs storage/app/public bootstrap/cache; \
+             chmod -R 775 storage bootstrap/cache || true; \
+             [ -f .env ] || cp .env.example .env; \
+             php artisan storage:link || true; \
+             php artisan migrate --force || echo 'migrate skipped (DB not ready yet)'; \
+             php artisan optimize:clear; \
+             php artisan view:clear; \
+             php artisan config:cache; \
+             php artisan route:cache; \
+             php artisan view:cache; \
+             echo 'Deploy complete.'"
