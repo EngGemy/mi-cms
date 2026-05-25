@@ -21,3 +21,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Build & temp artifacts
+/mi-poultry-source.zip
+/storage/framework/views/*
+/storage/logs/*
+/bootstrap/cache/*
