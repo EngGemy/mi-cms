@@ -7,10 +7,11 @@
     <div class="grid lg:grid-cols-12 gap-8 mb-12">
       <div class="lg:col-span-5 footer-col">
         <a href="{{ route('home', $locale) }}" class="header-brand mb-5 inline-flex footer-brand">
-          <div class="header-brand-logo"><img src="{{ asset('images/logo.jpg') }}" alt="MI"/></div>
+          @php($logoSrc = !empty($generalSettings?->logo_path) ? asset('storage/' . $generalSettings->logo_path) : asset('images/logo.jpg'))
+          <div class="header-brand-logo"><img src="{{ $logoSrc }}" alt="{{ $generalSettings?->site_name ?? 'MI' }}"/></div>
           <div>
-            <div style="font-weight:800;font-size:18px">{{ $locale === 'ar' ? 'إم آي' : 'MI' }}</div>
-            <div class="label-mono" style="color:var(--ink-500);font-size:10px">MI · Automatic Poultry Cages</div>
+            <div style="font-weight:800;font-size:18px">{{ $locale === 'ar' ? 'إم آي' : ($generalSettings?->site_name ?? 'MI') }}</div>
+            <div class="label-mono" style="color:var(--ink-500);font-size:10px">{{ $generalSettings?->site_name ?? 'MI' }} · Automatic Poultry Cages</div>
           </div>
         </a>
         <p style="font-size:15px;line-height:1.85;color:var(--ink-600);margin-top:18px;max-width:420px">
@@ -49,17 +50,22 @@
       <div class="lg:col-span-3 footer-col">
         <div class="label-mono mb-4" style="color:var(--ink-500)">{{ __('messages.contact_us') }}</div>
         <ul class="space-y-3" style="font-size:14px;color:var(--ink-700)">
-          <li><a href="tel:{{ config('mi.phone_primary') }}" class="flex items-center gap-3 footer-link">
+          @php
+            $phone   = $contactSettings?->phone_primary ?? config('mi.phone_primary');
+            $address = $locale === 'ar' ? ($contactSettings?->address_ar ?? config('mi.address.ar')) : ($contactSettings?->address_en ?? config('mi.address.en'));
+            $email   = $contactSettings?->email ?? config('mi.email');
+          @endphp
+          <li><a href="tel:{{ $phone }}" class="flex items-center gap-3 footer-link">
             <i data-lucide="phone" class="w-4 h-4" style="color:var(--mi-red)"></i>
-            <span dir="ltr" class="font-mono" style="font-weight:600">{{ config('mi.phone_primary') }}</span>
+            <span dir="ltr" class="font-mono" style="font-weight:600">{{ $phone }}</span>
           </a></li>
           <li class="flex items-center gap-3">
             <i data-lucide="map-pin" class="w-4 h-4" style="color:var(--mi-red)"></i>
-            <span>{{ config('mi.address.' . $locale) }}</span>
+            <span>{{ $address }}</span>
           </li>
           <li class="flex items-center gap-3">
             <i data-lucide="mail" class="w-4 h-4" style="color:var(--mi-red)"></i>
-            <span>{{ config('mi.email') }}</span>
+            <span>{{ $email }}</span>
           </li>
         </ul>
       </div>

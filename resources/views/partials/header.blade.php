@@ -2,8 +2,9 @@
 <header>
   <div class="header-inner">
     <a href="{{ route('home', $locale) }}" class="header-brand">
-      <div class="header-brand-logo"><img src="{{ asset('images/logo.jpg') }}" alt="MI"/></div>
-      <span class="header-brand-text">{{ $locale === 'ar' ? 'إم آي' : 'MI' }}</span>
+      @php($logoSrc = !empty($generalSettings?->logo_path) ? asset('storage/' . $generalSettings->logo_path) : asset('images/logo.jpg'))
+      <div class="header-brand-logo"><img src="{{ $logoSrc }}" alt="{{ $generalSettings?->site_name ?? 'MI' }}"/></div>
+      <span class="header-brand-text">{{ $locale === 'ar' ? 'إم آي' : ($generalSettings?->site_name ?? 'MI') }}</span>
     </a>
 
     <nav class="header-nav">

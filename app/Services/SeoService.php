@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Services\Contracts\SeoServiceInterface;
+use App\Settings\GeneralSettings;
+use App\Settings\SeoSettings;
 
 class SeoService implements SeoServiceInterface
 {
@@ -46,18 +48,41 @@ class SeoService implements SeoServiceInterface
 
     public function toArray(): array
     {
-        $appName = config('app.name');
+        try {
+            $seoSettings     = app(SeoSettings::class);
+            $generalSettings = app(GeneralSettings::class);
+
+            $locale   = app()->getLocale();
+            $siteName = $generalSettings->site_name ?? config('app.name');
+
+            $defaultTitle = $locale === 'ar'
+                ? ($seoSettings->meta_title_ar ?? $siteName)
+                : ($seoSettings->meta_title_en ?? $siteName);
+
+            $defaultDesc = $locale === 'ar'
+                ? ($seoSettings->meta_description_ar ?? trans('messages.default_seo_description'))
+                : ($seoSettings->meta_description_en ?? trans('messages.default_seo_description'));
+
+            $defaultImage = $seoSettings->og_image_path
+                ? asset('storage/' . $seoSettings->og_image_path)
+                : asset('images/og-default.jpg');
+        } catch (\Throwable) {
+            $siteName     = config('app.name');
+            $defaultTitle = $siteName;
+            $defaultDesc  = trans('messages.default_seo_description');
+            $defaultImage = asset('images/og-default.jpg');
+        }
+
         return [
             'title'       => $this->meta['title']
-                ? $this->meta['title'].' — '.$appName
-                : $appName,
-            'description' => $this->meta['description']
-                ?? trans('messages.default_seo_description'),
-            'image'       => $this->meta['image'] ?? asset('images/og-default.jpg'),
+                ? $this->meta['title'].' — '.$siteName
+                : $defaultTitle,
+            'description' => $this->meta['description'] ?? $defaultDesc,
+            'image'       => $this->meta['image'] ?? $defaultImage,
             'canonical'   => $this->meta['canonical'] ?? request()->fullUrl(),
             'type'        => $this->meta['type'],
             'locale'      => app()->getLocale() === 'ar' ? 'ar_EG' : 'en_US',
-            'site_name'   => $appName,
+            'site_name'   => $siteName,
         ];
     }
 }
