@@ -57,6 +57,12 @@ class BlogCommentResource extends Resource
                 ->action(fn ($r) => $r->update(['status' => 'approved'])),
             Action::make('spam')->label('سپام')->icon('heroicon-o-no-symbol')->color('danger')
                 ->action(fn ($r) => $r->update(['status' => 'spam'])),
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
+        ])->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ])->defaultSort('created_at', 'desc');
     }
 

@@ -38,6 +38,13 @@ class NewsletterSubscriberResource extends Resource
             Tables\Columns\TextColumn::make('source'),
             Tables\Columns\TextColumn::make('confirmed_at')->dateTime('Y-m-d'),
             Tables\Columns\TextColumn::make('unsubscribed_at')->dateTime('Y-m-d'),
+        ])->actions([
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
+        ])->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ])->defaultSort('created_at', 'desc');
     }
 

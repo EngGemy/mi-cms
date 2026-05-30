@@ -54,6 +54,13 @@ class ContactSubmissionResource extends Resource
             Tables\Filters\SelectFilter::make('status')->options([
                 'new'=>'جديد','contacted'=>'تم التواصل','closed'=>'مغلق'
             ]),
+        ])->actions([
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
+        ])->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ])->defaultSort('created_at', 'desc');
     }
 

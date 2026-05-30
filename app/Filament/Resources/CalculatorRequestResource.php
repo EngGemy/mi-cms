@@ -43,6 +43,13 @@ class CalculatorRequestResource extends Resource
             Tables\Columns\TextColumn::make('bird_count')->numeric(),
             Tables\Columns\TextColumn::make('grand_total')->money('EGP'),
             Tables\Columns\TextColumn::make('created_at')->dateTime('Y-m-d H:i'),
+        ])->actions([
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
+        ])->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ])->defaultSort('created_at', 'desc');
     }
 
