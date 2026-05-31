@@ -1,12 +1,13 @@
 <?php
 namespace App\Filament\Resources\ChairmanQuoteResource\Pages;
-
 use App\Filament\Resources\ChairmanQuoteResource;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Actions\DeleteAction;
-
+use Filament\Actions\LocaleSwitcher;
+use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Pages\EditRecord\Concerns\Translatable;
 class EditChairmanQuote extends EditRecord
 {
+    use Translatable;
     protected static string $resource = ChairmanQuoteResource::class;
-    protected function getHeaderActions(): array { return [DeleteAction::make()]; }
+    protected function getHeaderActions(): array { return [LocaleSwitcher::make(), DeleteAction::make()]; }
 }

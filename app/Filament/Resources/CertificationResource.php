@@ -6,6 +6,7 @@ use App\Filament\Resources\CertificationResource\Pages;
 use App\Models\Certification;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,12 +15,19 @@ use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class CertificationResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Certification::class;
     protected static ?string $navigationIcon = 'heroicon-o-shield-check';
     protected static ?string $navigationGroup = 'من نحن';
     protected static ?int $navigationSort = 1;
     protected static ?string $label = 'شهادة اعتماد';
     protected static ?string $pluralLabel = 'الشهادات والاعتمادات';
+
+    public static function getTranslatableLocales(): array
+    {
+        return ['ar', 'en'];
+    }
 
     public static function form(Form $form): Form
     {
@@ -29,26 +37,49 @@ class CertificationResource extends Resource
                     ->collection('logo')
                     ->image()
                     ->imageEditor()
-                    ->label('شعار/صورة الشهادة')
+                    ->label('شعار / صورة الشهادة')
                     ->columnSpanFull(),
 
-                Forms\Components\TextInput::make('name.ar')->label('الاسم (عربي)')->required(),
-                Forms\Components\TextInput::make('name.en')->label('الاسم (إنجليزي)')->required(),
-                Forms\Components\TextInput::make('issuer.ar')->label('جهة الإصدار (عربي)')->required(),
-                Forms\Components\TextInput::make('issuer.en')->label('جهة الإصدار (إنجليزي)')->required(),
+                Forms\Components\TextInput::make('name')
+                    ->label('اسم الشهادة')
+                    ->required()
+                    ->extraInputAttributes(fn ($livewire) => [
+                        'dir' => isset($livewire->activeLocale) && $livewire->activeLocale === 'en' ? 'ltr' : 'rtl',
+                    ]),
+
+                Forms\Components\TextInput::make('issuer')
+                    ->label('جهة الإصدار')
+                    ->required()
+                    ->extraInputAttributes(fn ($livewire) => [
+                        'dir' => isset($livewire->activeLocale) && $livewire->activeLocale === 'en' ? 'ltr' : 'rtl',
+                    ]),
+
                 Forms\Components\TextInput::make('year')
-                    ->numeric()->minValue(1990)->maxValue(2030)
-                    ->label('سنة الحصول'),
+                    ->label('سنة الحصول')
+                    ->numeric()
+                    ->minValue(1990)
+                    ->maxValue(2030),
             ])->columns(2),
 
             Forms\Components\Section::make('الوصف')->schema([
-                Forms\Components\Textarea::make('description.ar')->label('الوصف (عربي)')->rows(3),
-                Forms\Components\Textarea::make('description.en')->label('الوصف (إنجليزي)')->rows(3),
-            ])->columns(2),
+                Forms\Components\Textarea::make('description')
+                    ->label('الوصف')
+                    ->rows(3)
+                    ->extraInputAttributes(fn ($livewire) => [
+                        'dir' => isset($livewire->activeLocale) && $livewire->activeLocale === 'en' ? 'ltr' : 'rtl',
+                    ])
+                    ->helperText('مطلوب بالعربية — الإنجليزية اختيارية')
+                    ->columnSpanFull(),
+            ]),
 
-            Forms\Components\Section::make('الإعدادات')->schema([
-                Forms\Components\TextInput::make('position')->numeric()->default(0)->label('الترتيب'),
-                Forms\Components\Toggle::make('is_active')->default(true)->label('نشط'),
+            Forms\Components\Section::make('الترتيب والحالة')->schema([
+                Forms\Components\TextInput::make('position')
+                    ->label('الترتيب')
+                    ->numeric()
+                    ->default(0),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('نشط')
+                    ->default(true),
             ])->columns(2),
         ]);
     }
@@ -63,14 +94,19 @@ class CertificationResource extends Resource
                     ->label('الشعار')
                     ->width(60)->height(40),
                 Tables\Columns\TextColumn::make('name')
-                    ->getStateUsing(fn ($record) => $record->getTranslation('name', 'ar', false) ?: $record->getTranslation('name', 'en', false))
-                    ->label('الاسم')->searchable(),
+                    ->label('الاسم')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('issuer')
-                    ->getStateUsing(fn ($record) => $record->getTranslation('issuer', 'ar', false))
                     ->label('جهة الإصدار'),
-                Tables\Columns\TextColumn::make('year')->label('السنة')->sortable(),
-                Tables\Columns\TextColumn::make('position')->label('الترتيب')->sortable(),
-                Tables\Columns\IconColumn::make('is_active')->boolean()->label('نشط'),
+                Tables\Columns\TextColumn::make('year')
+                    ->label('السنة')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('position')
+                    ->label('الترتيب')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('نشط')
+                    ->boolean(),
             ])
             ->defaultSort('position')
             ->reorderable('position');

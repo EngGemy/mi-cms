@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductionStageResource\Pages;
 use App\Models\ProductionStage;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -13,6 +14,8 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class ProductionStageResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = ProductionStage::class;
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?string $navigationGroup = 'محتوى الصفحة الرئيسية';
@@ -20,18 +23,74 @@ class ProductionStageResource extends Resource
     protected static ?string $label = 'مرحلة إنتاج';
     protected static ?string $pluralLabel = 'مراحل الإنتاج';
 
+    public static function getTranslatableLocales(): array
+    {
+        return ['ar', 'en'];
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('stage_number')->label('رقم المرحلة')->required()->maxLength(4)->default('01'),
-            Forms\Components\TextInput::make('eyebrow')->label('عنوان فرعي (EN/AR)'),
-            Forms\Components\TextInput::make('title')->label('العنوان')->required(),
-            Forms\Components\Textarea::make('description')->rows(4),
-            SpatieMediaLibraryFileUpload::make('image')->collection('image')->image()->imageEditor(),
-            SpatieMediaLibraryFileUpload::make('video')->collection('video')->acceptedFileTypes(['video/mp4','video/webm']),
-            Forms\Components\TextInput::make('video_url')->url()->label('أو رابط فيديو خارجي (YouTube/Vimeo)'),
-            Forms\Components\TextInput::make('position')->numeric()->default(0),
-            Forms\Components\Toggle::make('is_active')->default(true),
+            Forms\Components\Section::make('المحتوى')->schema([
+                Forms\Components\TextInput::make('stage_number')
+                    ->label('رقم المرحلة')
+                    ->required()
+                    ->maxLength(4)
+                    ->default('01'),
+
+                Forms\Components\TextInput::make('eyebrow')
+                    ->label('عنوان فرعي (Eyebrow)')
+                    ->extraInputAttributes(fn ($livewire) => [
+                        'dir' => isset($livewire->activeLocale) && $livewire->activeLocale === 'en' ? 'ltr' : 'rtl',
+                    ])
+                    ->helperText('نص صغير فوق العنوان الرئيسي'),
+
+                Forms\Components\TextInput::make('title')
+                    ->label('العنوان الرئيسي')
+                    ->required()
+                    ->extraInputAttributes(fn ($livewire) => [
+                        'dir' => isset($livewire->activeLocale) && $livewire->activeLocale === 'en' ? 'ltr' : 'rtl',
+                    ])
+                    ->columnSpanFull(),
+
+                Forms\Components\Textarea::make('description')
+                    ->label('الوصف')
+                    ->rows(4)
+                    ->extraInputAttributes(fn ($livewire) => [
+                        'dir' => isset($livewire->activeLocale) && $livewire->activeLocale === 'en' ? 'ltr' : 'rtl',
+                    ])
+                    ->helperText('مطلوب بالعربية — الإنجليزية اختيارية')
+                    ->columnSpanFull(),
+            ])->columns(2),
+
+            Forms\Components\Section::make('الوسائط')->schema([
+                SpatieMediaLibraryFileUpload::make('image')
+                    ->label('الصورة')
+                    ->collection('image')
+                    ->image()
+                    ->imageEditor(),
+
+                Forms\Components\Grid::make(1)->schema([
+                    SpatieMediaLibraryFileUpload::make('video')
+                        ->label('ملف فيديو (MP4/WebM)')
+                        ->collection('video')
+                        ->acceptedFileTypes(['video/mp4', 'video/webm']),
+                    Forms\Components\TextInput::make('video_url')
+                        ->label('أو رابط فيديو خارجي (YouTube/Vimeo)')
+                        ->url()
+                        ->helperText('يُستخدم إذا لم يُرفع ملف فيديو'),
+                ]),
+            ])->columns(2),
+
+            Forms\Components\Section::make('الترتيب والحالة')->schema([
+                Forms\Components\TextInput::make('position')
+                    ->label('الترتيب')
+                    ->numeric()
+                    ->default(0),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('نشط')
+                    ->default(true),
+            ])->columns(2),
         ]);
     }
 
@@ -39,10 +98,17 @@ class ProductionStageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('stage_number'),
-                Tables\Columns\TextColumn::make('title')->searchable(),
-                Tables\Columns\TextColumn::make('position')->sortable(),
-                Tables\Columns\IconColumn::make('is_active')->boolean(),
+                Tables\Columns\TextColumn::make('stage_number')
+                    ->label('#'),
+                Tables\Columns\TextColumn::make('title')
+                    ->label('العنوان')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('position')
+                    ->label('الترتيب')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('نشط')
+                    ->boolean(),
             ])->defaultSort('position')->reorderable('position');
     }
 

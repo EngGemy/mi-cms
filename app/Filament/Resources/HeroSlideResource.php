@@ -6,6 +6,7 @@ use App\Filament\Resources\HeroSlideResource\Pages;
 use App\Models\HeroSlide;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -13,6 +14,8 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class HeroSlideResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = HeroSlide::class;
     protected static ?string $navigationIcon = 'heroicon-o-photo';
     protected static ?string $navigationGroup = 'محتوى الصفحة الرئيسية';
@@ -20,24 +23,47 @@ class HeroSlideResource extends Resource
     protected static ?string $label = 'شريحة Hero';
     protected static ?string $pluralLabel = 'شرائح الـ Hero';
 
+    public static function getTranslatableLocales(): array
+    {
+        return ['ar', 'en'];
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('label')
-                ->label('النص الظاهر (متعدد اللغات)')
-                ->required()
-                ->maxLength(120),
-            SpatieMediaLibraryFileUpload::make('image')
-                ->label('الصورة')
-                ->collection('image')
-                ->image()
-                ->imageEditor(),
-            Forms\Components\TextInput::make('image_url')
-                ->label('أو رابط صورة خارجي (Unsplash إلخ)')
-                ->url()
-                ->maxLength(500),
-            Forms\Components\TextInput::make('position')->numeric()->default(0),
-            Forms\Components\Toggle::make('is_active')->default(true),
+            Forms\Components\Section::make('النص والصورة')->schema([
+                Forms\Components\TextInput::make('label')
+                    ->label('النص الظاهر')
+                    ->required()
+                    ->maxLength(120)
+                    ->extraInputAttributes(fn ($livewire) => [
+                        'dir' => isset($livewire->activeLocale) && $livewire->activeLocale === 'en' ? 'ltr' : 'rtl',
+                    ])
+                    ->helperText('مطلوب بالعربية — الإنجليزية اختيارية')
+                    ->columnSpanFull(),
+
+                SpatieMediaLibraryFileUpload::make('image')
+                    ->label('الصورة')
+                    ->collection('image')
+                    ->image()
+                    ->imageEditor(),
+
+                Forms\Components\TextInput::make('image_url')
+                    ->label('أو رابط صورة خارجي')
+                    ->url()
+                    ->maxLength(500)
+                    ->helperText('Unsplash أو CDN — يُستخدم إذا لم تُرفع صورة'),
+            ])->columns(2),
+
+            Forms\Components\Section::make('الترتيب والحالة')->schema([
+                Forms\Components\TextInput::make('position')
+                    ->label('الترتيب')
+                    ->numeric()
+                    ->default(0),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('نشط')
+                    ->default(true),
+            ])->columns(2),
         ]);
     }
 
@@ -45,10 +71,19 @@ class HeroSlideResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\SpatieMediaLibraryImageColumn::make('image')->collection('image')->square(),
-                Tables\Columns\TextColumn::make('label')->searchable(),
-                Tables\Columns\TextColumn::make('position')->sortable(),
-                Tables\Columns\IconColumn::make('is_active')->boolean(),
+                Tables\Columns\SpatieMediaLibraryImageColumn::make('image')
+                    ->collection('image')
+                    ->square(),
+                Tables\Columns\TextColumn::make('label')
+                    ->label('النص')
+                    ->searchable()
+                    ->limit(60),
+                Tables\Columns\TextColumn::make('position')
+                    ->label('الترتيب')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('نشط')
+                    ->boolean(),
             ])
             ->defaultSort('position')
             ->reorderable('position');
