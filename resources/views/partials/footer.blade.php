@@ -1,4 +1,6 @@
-@php($locale = app()->getLocale())
+@php
+  $locale = app()->getLocale();
+@endphp
 <footer class="py-16" style="background:var(--cream)">
   <div class="footer-watermark" aria-hidden="true">MI</div>
   <div class="footer-line"></div>
@@ -7,7 +9,11 @@
     <div class="grid lg:grid-cols-12 gap-8 mb-12">
       <div class="lg:col-span-5 footer-col">
         <a href="{{ route('home', $locale) }}" class="header-brand mb-5 inline-flex footer-brand">
-          @php($logoSrc = !empty($generalSettings?->logo_path) ? asset('storage/' . $generalSettings->logo_path) : asset('images/logo.jpg'))
+          @php
+            $logoSrc = !empty($generalSettings?->logo_path)
+                ? \Illuminate\Support\Facades\Storage::disk('public')->url($generalSettings->logo_path)
+                : asset('images/logo.jpg');
+          @endphp
           <div class="header-brand-logo"><img src="{{ $logoSrc }}" alt="{{ $generalSettings?->site_name ?? 'MI' }}"/></div>
           <div>
             <div style="font-weight:800;font-size:18px">{{ $locale === 'ar' ? 'إم آي' : ($generalSettings?->site_name ?? 'MI') }}</div>
