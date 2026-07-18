@@ -33,7 +33,8 @@ class ProductionStage extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('card')->width(900)->quality(82)
-            ->performOnCollections('image');
+            ->performOnCollections('image')
+            ->nonQueued();
     }
 
     public function getImageUrl(): ?string

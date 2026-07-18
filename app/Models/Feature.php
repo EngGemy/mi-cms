@@ -26,7 +26,7 @@ class Feature extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('card')->width(800)->quality(82);
+        $this->addMediaConversion('card')->width(800)->quality(82)->nonQueued();
     }
 
     public function scopeActive($q) { return $q->where('is_active', true)->orderBy('position'); }

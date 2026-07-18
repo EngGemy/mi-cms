@@ -33,7 +33,7 @@ class Certification extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('thumb')->width(200)->quality(85)->performOnCollections('logo');
+        $this->addMediaConversion('thumb')->width(200)->quality(85)->performOnCollections('logo')->nonQueued();
     }
 
     public function getLogoUrl(string $conv = 'thumb'): ?string

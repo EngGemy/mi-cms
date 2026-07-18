@@ -31,8 +31,8 @@ class HeroSlide extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('large')->width(1400)->quality(85);
-        $this->addMediaConversion('thumb')->width(400)->quality(80);
+        $this->addMediaConversion('large')->width(1400)->quality(85)->nonQueued();
+        $this->addMediaConversion('thumb')->width(400)->quality(80)->nonQueued();
     }
 
     public function getImageUrl(string $conversion = 'large'): ?string

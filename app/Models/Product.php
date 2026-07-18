@@ -62,9 +62,9 @@ class Product extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('large')->width(1400)->quality(85);
-        $this->addMediaConversion('card')->width(800)->quality(82);
-        $this->addMediaConversion('thumb')->width(300)->quality(80);
+        $this->addMediaConversion('large')->width(1400)->quality(85)->nonQueued();
+        $this->addMediaConversion('card')->width(800)->quality(82)->nonQueued();
+        $this->addMediaConversion('thumb')->width(300)->quality(80)->nonQueued();
     }
 
     public function getMainImageUrl(string $conv = 'card'): ?string

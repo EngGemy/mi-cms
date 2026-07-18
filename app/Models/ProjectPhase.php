@@ -43,8 +43,8 @@ class ProjectPhase extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('card')->width(800)->quality(82);
-        $this->addMediaConversion('thumb')->width(300)->quality(80);
+        $this->addMediaConversion('card')->width(800)->quality(82)->nonQueued();
+        $this->addMediaConversion('thumb')->width(300)->quality(80)->nonQueued();
     }
 
     public function getImageUrl(string $conv = 'card'): ?string

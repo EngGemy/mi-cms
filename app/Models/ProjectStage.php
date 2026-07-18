@@ -39,8 +39,8 @@ class ProjectStage extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('card')->width(900)->quality(82);
-        $this->addMediaConversion('thumb')->width(400)->quality(80);
+        $this->addMediaConversion('card')->width(900)->quality(82)->nonQueued();
+        $this->addMediaConversion('thumb')->width(400)->quality(80)->nonQueued();
     }
 
     public function getPhotos(): array
