@@ -5,12 +5,16 @@ namespace App\Filament\Pages;
 use App\Settings\CalculatorSettings;
 use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
-class CalculatorSettingsPage extends Page
+class CalculatorSettingsPage extends Page implements HasForms
 {
+    use InteractsWithForms;
+
     protected static ?string $navigationIcon  = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?int    $navigationSort  = 40;
@@ -22,7 +26,8 @@ class CalculatorSettingsPage extends Page
     public function mount(): void
     {
         $s = app(CalculatorSettings::class);
-        $this->data = [
+
+        $this->form->fill([
             'concrete_m2'    => $s->concrete_m2,
             'steel_m2'       => $s->steel_m2,
             'walls_m2'       => $s->walls_m2,
@@ -35,7 +40,7 @@ class CalculatorSettingsPage extends Page
             'heater'         => $s->heater,
             'control_fixed'  => $s->control_fixed,
             'bird_weight_kg' => $s->bird_weight_kg,
-        ];
+        ]);
     }
 
     public function form(Form $form): Form
@@ -100,28 +105,30 @@ class CalculatorSettingsPage extends Page
     {
         return [
             Action::make('save')
-                ->label('حفظ الأسعار')
+                ->label('حفظ الإعدادات')
                 ->submit('save'),
         ];
     }
 
     public function save(): void
     {
+        $data = $this->form->getState();
+
         $s = app(CalculatorSettings::class);
-        $s->concrete_m2    = (float) ($this->data['concrete_m2']    ?? 0);
-        $s->steel_m2       = (float) ($this->data['steel_m2']       ?? 0);
-        $s->walls_m2       = (float) ($this->data['walls_m2']       ?? 0);
-        $s->tanks_fixed    = (float) ($this->data['tanks_fixed']    ?? 0);
-        $s->bird_cost      = (float) ($this->data['bird_cost']      ?? 0);
-        $s->rear_fan       = (float) ($this->data['rear_fan']       ?? 0);
-        $s->cooling_factor = (float) ($this->data['cooling_factor'] ?? 0);
-        $s->window         = (float) ($this->data['window']         ?? 0);
-        $s->side_fan       = (float) ($this->data['side_fan']       ?? 0);
-        $s->heater         = (float) ($this->data['heater']         ?? 0);
-        $s->control_fixed  = (float) ($this->data['control_fixed']  ?? 0);
-        $s->bird_weight_kg = (float) ($this->data['bird_weight_kg'] ?? 2.1);
+        $s->concrete_m2    = (float) ($data['concrete_m2'] ?? 0);
+        $s->steel_m2       = (float) ($data['steel_m2'] ?? 0);
+        $s->walls_m2       = (float) ($data['walls_m2'] ?? 0);
+        $s->tanks_fixed    = (float) ($data['tanks_fixed'] ?? 0);
+        $s->bird_cost      = (float) ($data['bird_cost'] ?? 0);
+        $s->rear_fan       = (float) ($data['rear_fan'] ?? 0);
+        $s->cooling_factor = (float) ($data['cooling_factor'] ?? 0);
+        $s->window         = (float) ($data['window'] ?? 0);
+        $s->side_fan       = (float) ($data['side_fan'] ?? 0);
+        $s->heater         = (float) ($data['heater'] ?? 0);
+        $s->control_fixed  = (float) ($data['control_fixed'] ?? 0);
+        $s->bird_weight_kg = (float) ($data['bird_weight_kg'] ?? 2.1);
         $s->save();
 
-        Notification::make()->title('تم حفظ أسعار الحاسبة')->success()->send();
+        Notification::make()->title('تم الحفظ')->success()->send();
     }
 }

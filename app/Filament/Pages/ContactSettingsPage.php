@@ -5,12 +5,16 @@ namespace App\Filament\Pages;
 use App\Settings\ContactSettings;
 use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
-class ContactSettingsPage extends Page
+class ContactSettingsPage extends Page implements HasForms
 {
+    use InteractsWithForms;
+
     protected static ?string $navigationIcon  = 'heroicon-o-phone';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?int    $navigationSort  = 20;
@@ -22,7 +26,8 @@ class ContactSettingsPage extends Page
     public function mount(): void
     {
         $s = app(ContactSettings::class);
-        $this->data = [
+
+        $this->form->fill([
             'phone_primary' => $s->phone_primary,
             'phone_support' => $s->phone_support,
             'whatsapp'      => $s->whatsapp,
@@ -30,7 +35,7 @@ class ContactSettingsPage extends Page
             'inbox'         => $s->inbox,
             'address_ar'    => $s->address_ar,
             'address_en'    => $s->address_en,
-        ];
+        ]);
     }
 
     public function form(Form $form): Form
@@ -91,16 +96,18 @@ class ContactSettingsPage extends Page
 
     public function save(): void
     {
+        $data = $this->form->getState();
+
         $s = app(ContactSettings::class);
-        $s->phone_primary = $this->data['phone_primary'] ?? null;
-        $s->phone_support = $this->data['phone_support'] ?? null;
-        $s->whatsapp      = $this->data['whatsapp']      ?? null;
-        $s->email         = $this->data['email']         ?? null;
-        $s->inbox         = $this->data['inbox']         ?? null;
-        $s->address_ar    = $this->data['address_ar']    ?? null;
-        $s->address_en    = $this->data['address_en']    ?? null;
+        $s->phone_primary = $data['phone_primary'] ?? null;
+        $s->phone_support = $data['phone_support'] ?? null;
+        $s->whatsapp      = $data['whatsapp'] ?? null;
+        $s->email         = $data['email'] ?? null;
+        $s->inbox         = $data['inbox'] ?? null;
+        $s->address_ar    = $data['address_ar'] ?? null;
+        $s->address_en    = $data['address_en'] ?? null;
         $s->save();
 
-        Notification::make()->title('تم حفظ بيانات التواصل')->success()->send();
+        Notification::make()->title('تم الحفظ')->success()->send();
     }
 }

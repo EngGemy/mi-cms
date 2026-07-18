@@ -1,9 +1,9 @@
 <x-filament-panels::page>
-    <x-filament-panels::form wire:submit="save">
+    <form wire:submit="save">
         {{ $this->form }}
-
-        <x-filament-panels::form.actions
-            :actions="$this->getFormActions()"
-        />
-    </x-filament-panels::form>
+        <div class="mt-6 flex justify-end">
+            <x-filament::button type="submit">حفظ الإعدادات</x-filament::button>
+        </div>
+    </form>
+    <x-filament-actions::modals />
 </x-filament-panels::page>

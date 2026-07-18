@@ -5,12 +5,16 @@ namespace App\Filament\Pages;
 use App\Settings\SeoSettings;
 use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
-class SeoSettingsPage extends Page
+class SeoSettingsPage extends Page implements HasForms
 {
+    use InteractsWithForms;
+
     protected static ?string $navigationIcon  = 'heroicon-o-magnifying-glass-circle';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?int    $navigationSort  = 30;
@@ -22,15 +26,16 @@ class SeoSettingsPage extends Page
     public function mount(): void
     {
         $s = app(SeoSettings::class);
-        $this->data = [
-            'meta_title_ar'        => $s->meta_title_ar,
-            'meta_title_en'        => $s->meta_title_en,
-            'meta_description_ar'  => $s->meta_description_ar,
-            'meta_description_en'  => $s->meta_description_en,
-            'og_image_path'        => $s->og_image_path ? [$s->og_image_path] : [],
-            'google_analytics_id'  => $s->google_analytics_id,
-            'google_tag_manager_id'=> $s->google_tag_manager_id,
-        ];
+
+        $this->form->fill([
+            'meta_title_ar'         => $s->meta_title_ar,
+            'meta_title_en'         => $s->meta_title_en,
+            'meta_description_ar'   => $s->meta_description_ar,
+            'meta_description_en'   => $s->meta_description_en,
+            'og_image_path'         => $s->og_image_path ? [$s->og_image_path] : [],
+            'google_analytics_id'   => $s->google_analytics_id,
+            'google_tag_manager_id' => $s->google_tag_manager_id,
+        ]);
     }
 
     public function form(Form $form): Form
@@ -69,11 +74,12 @@ class SeoSettingsPage extends Page
                     ->schema([
                         Forms\Components\FileUpload::make('og_image_path')
                             ->label('صورة OG (1200×630 px مفضل)')
-                            ->image()
                             ->disk('public')
                             ->directory('settings')
+                            ->visibility('public')
+                            ->image()
+                            ->maxSize(2048)
                             ->imagePreviewHeight('120')
-                            ->maxSize(4096)
                             ->columnSpanFull(),
                     ]),
 
@@ -102,16 +108,20 @@ class SeoSettingsPage extends Page
 
     public function save(): void
     {
+        $data = $this->form->getState();
+
         $s = app(SeoSettings::class);
-        $s->meta_title_ar         = $this->data['meta_title_ar']         ?? null;
-        $s->meta_title_en         = $this->data['meta_title_en']         ?? null;
-        $s->meta_description_ar   = $this->data['meta_description_ar']   ?? null;
-        $s->meta_description_en   = $this->data['meta_description_en']   ?? null;
-        $s->og_image_path         = is_array($this->data['og_image_path']) ? ($this->data['og_image_path'][0] ?? null) : ($this->data['og_image_path'] ?? null);
-        $s->google_analytics_id   = $this->data['google_analytics_id']   ?? null;
-        $s->google_tag_manager_id = $this->data['google_tag_manager_id'] ?? null;
+        $s->meta_title_ar         = $data['meta_title_ar'] ?? null;
+        $s->meta_title_en         = $data['meta_title_en'] ?? null;
+        $s->meta_description_ar   = $data['meta_description_ar'] ?? null;
+        $s->meta_description_en   = $data['meta_description_en'] ?? null;
+        $s->og_image_path         = is_array($data['og_image_path'] ?? null) ? ($data['og_image_path'][0] ?? null) : ($data['og_image_path'] ?? null);
+        $s->google_analytics_id   = $data['google_analytics_id'] ?? null;
+        $s->google_tag_manager_id = $data['google_tag_manager_id'] ?? null;
         $s->save();
 
-        Notification::make()->title('تم حفظ إعدادات SEO')->success()->send();
+        $this->data['og_image_path'] = $s->og_image_path ? [$s->og_image_path] : [];
+
+        Notification::make()->title('تم الحفظ')->success()->send();
     }
 }
