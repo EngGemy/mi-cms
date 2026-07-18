@@ -60,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('generalSettings',  app(GeneralSettings::class));
                 $view->with('contactSettings',  app(ContactSettings::class));
                 $view->with('seoSettings',      app(SeoSettings::class));
+                $view->with('aboutSettings',    app(\App\Settings\AboutSettings::class));
             } catch (\Throwable) {
                 // Settings table may not exist yet (first migration run).
             }
