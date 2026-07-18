@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initProjectPage();
   initCertModal();
   initCertHoverPreview();
+  initChairmanTypewriter();
   ScrollTrigger.refresh();
 });
 
@@ -1026,4 +1027,84 @@ function initCertHoverPreview() {
     card.addEventListener('focus', enter);
     card.addEventListener('blur', leave);
   });
+}
+
+/* ------------------------------------------------------------------
+   CHAIRMAN QUOTE — ink typewriter (RTL-safe)
+   ------------------------------------------------------------------ */
+function initChairmanTypewriter() {
+  const el = document.querySelector('[data-chairman-typewriter]');
+  if (!el) return;
+
+  const typed = el.querySelector('.chairman-quote-typed');
+  const signature = document.querySelector('[data-chairman-signature]');
+  const full = el.getAttribute('data-quote') || '';
+  if (!typed || !full) {
+    el.classList.add('is-static');
+    signature?.classList.add('is-visible');
+    return;
+  }
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    el.classList.add('is-static', 'is-ready', 'is-done');
+    typed.textContent = full;
+    signature?.classList.add('is-visible');
+    return;
+  }
+
+  const fallback = el.querySelector('.chairman-quote-fallback');
+  if (fallback) fallback.setAttribute('aria-hidden', 'true');
+
+  let started = false;
+
+  const finish = () => {
+    el.classList.remove('is-typing');
+    el.classList.add('is-done');
+    signature?.classList.add('is-visible');
+  };
+
+  const start = () => {
+    if (started) return;
+    started = true;
+    el.classList.add('is-ready', 'is-typing');
+
+    const chars = Array.from(full);
+    let i = 0;
+
+    const tick = () => {
+      if (i >= chars.length) {
+        finish();
+        return;
+      }
+
+      const ch = chars[i++];
+      const span = document.createElement('span');
+      span.className = 'tw-char';
+      span.textContent = ch;
+      typed.appendChild(span);
+
+      let delay = 20 + Math.random() * 26;
+      if ('،.!?…—-:؛'.includes(ch)) delay += 160 + Math.random() * 140;
+      else if (ch === ' ') delay += 35 + Math.random() * 25;
+
+      setTimeout(tick, delay);
+    };
+
+    setTimeout(tick, 380);
+  };
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          start();
+          io.disconnect();
+        }
+      });
+    },
+    { threshold: 0.32, rootMargin: '0px 0px -8% 0px' }
+  );
+
+  io.observe(el);
 }

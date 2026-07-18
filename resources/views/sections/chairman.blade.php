@@ -4,12 +4,21 @@
   <div class="chairman-content">
     <div data-reveal><span class="eyebrow">{{ __('messages.chairman_eyebrow') }}</span></div>
     <div data-reveal="scale" data-reveal-delay="0.1"><div class="chairman-avatar">mi</div></div>
-    <blockquote class="chairman-quote" data-reveal="clip" data-reveal-delay="0.2">
-      <span class="chairman-quotemark">"</span>
-      {{ $quote->quote }}
-      <span class="chairman-quotemark" style="transform:translateY(40px);margin-right:0">"</span>
+
+    <blockquote
+      class="chairman-quote"
+      data-chairman-typewriter
+      data-quote="{{ $quote->quote }}"
+    >
+      <span class="chairman-quotemark chairman-quotemark--open" aria-hidden="true">"</span>
+      <span class="chairman-quote-typed" aria-live="polite"></span>
+      <span class="chairman-type-caret" aria-hidden="true"></span>
+      <span class="chairman-quotemark chairman-quotemark--close" aria-hidden="true">"</span>
+      {{-- Full text for accessibility / no-JS fallback --}}
+      <span class="chairman-quote-fallback">{{ $quote->quote }}</span>
     </blockquote>
-    <div class="chairman-signature" data-reveal data-reveal-delay="0.5">
+
+    <div class="chairman-signature" data-chairman-signature>
       <div class="chairman-sig-mark">{{ $quote->signature_name }}</div>
       <div class="chairman-sig-name">{{ $quote->signature_role }}</div>
       @if($quote->signature_role_en)

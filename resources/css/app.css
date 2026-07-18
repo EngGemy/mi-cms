@@ -765,6 +765,7 @@
     line-height: 1.75;
     color: var(--ink-800);
     letter-spacing: -.005em;
+    position: relative;
   }
   .chairman-quote .accent{
     font-family:'Fraunces',Georgia,serif;
@@ -781,6 +782,84 @@
     display: inline-block;
     transform: translateY(20px);
     margin: 0 8px;
+    opacity: 0;
+    transition: opacity .5s ease, transform .6s cubic-bezier(.22,1,.36,1);
+  }
+  .chairman-quote.is-ready .chairman-quotemark--open{
+    opacity: 1;
+    transform: translateY(20px) scale(1);
+  }
+  .chairman-quote.is-done .chairman-quotemark--close{
+    opacity: 1;
+    transform: translateY(40px);
+  }
+  .chairman-quotemark--close{
+    transform: translateY(40px);
+    margin-right: 0;
+  }
+  .chairman-quote-typed{
+    display: inline;
+  }
+  .chairman-quote-typed .tw-char{
+    display: inline;
+    opacity: 0;
+    filter: blur(4px);
+    animation: chairman-ink-in .28s ease forwards;
+  }
+  @keyframes chairman-ink-in{
+    to{ opacity: 1; filter: blur(0); }
+  }
+  .chairman-type-caret{
+    display: inline-block;
+    width: 2px;
+    height: 0.95em;
+    margin-inline: 2px 1px;
+    vertical-align: -0.12em;
+    background: var(--mi-red);
+    border-radius: 1px;
+    opacity: 0;
+    box-shadow: 0 0 10px rgba(200,16,46,.35);
+  }
+  .chairman-quote.is-typing .chairman-type-caret{
+    opacity: 1;
+    animation: chairman-caret-blink .7s steps(1) infinite;
+  }
+  .chairman-quote.is-done .chairman-type-caret{
+    opacity: 0;
+    animation: none;
+    transition: opacity .4s ease;
+  }
+  @keyframes chairman-caret-blink{
+    0%, 45%{ opacity: 1; }
+    50%, 100%{ opacity: 0; }
+  }
+  .chairman-quote-fallback{
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .chairman-quote.no-js .chairman-quote-fallback,
+  .chairman-quote.is-static .chairman-quote-fallback{
+    position: static;
+    width: auto; height: auto;
+    margin: 0;
+    clip: auto;
+    white-space: normal;
+    overflow: visible;
+  }
+  .chairman-quote.no-js .chairman-quote-typed,
+  .chairman-quote.no-js .chairman-type-caret,
+  .chairman-quote.is-static .chairman-quote-typed,
+  .chairman-quote.is-static .chairman-type-caret{
+    display: none;
+  }
+  .chairman-quote.no-js .chairman-quotemark,
+  .chairman-quote.is-static .chairman-quotemark{
+    opacity: 1;
   }
   .chairman-signature{
     margin-top: 36px;
@@ -788,7 +867,29 @@
     border-top: 1px solid rgba(26,22,17,.1);
     max-width: 280px;
     margin-inline: auto;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity .7s ease, transform .7s cubic-bezier(.22,1,.36,1);
   }
+  .chairman-signature.is-visible{
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .chairman-quote-typed .tw-char{
+      animation: none;
+      opacity: 1;
+      filter: none;
+    }
+    .chairman-type-caret{ display: none !important; }
+    .chairman-quotemark{ opacity: 1 !important; }
+    .chairman-signature{
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* keep old name styles */
   .chairman-sig-name{
     font-family:'Cairo',sans-serif;
     font-weight: 700;
