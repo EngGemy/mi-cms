@@ -116,7 +116,7 @@ class PhasesRelationManager extends RelationManager
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('الحالة')
-                    ->formatStateUsing(fn ($s) => ProjectPhase::STATUSES[$s][app()->getLocale()] ?? $s)
+                    ->formatStateUsing(fn ($state) => ProjectPhase::STATUSES[$state][app()->getLocale()] ?? $state)
                     ->colors([
                         'success' => 'completed',
                         'warning' => 'in_progress',

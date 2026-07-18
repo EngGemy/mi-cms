@@ -1,4 +1,6 @@
-@php($seo = $seo ?? app(\App\Services\Contracts\SeoServiceInterface::class)->toArray())
+@php
+  $seo = $seo ?? app(\App\Services\Contracts\SeoServiceInterface::class)->toArray();
+@endphp
 <title>{{ $seo['title'] }}</title>
 <meta name="description" content="{{ $seo['description'] }}">
 <link rel="canonical" href="{{ $seo['canonical'] }}">

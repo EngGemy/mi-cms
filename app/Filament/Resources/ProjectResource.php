@@ -22,8 +22,9 @@ class ProjectResource extends Resource
 
     protected static ?string $model = Project::class;
     protected static ?string $navigationIcon  = 'heroicon-o-building-office-2';
-    protected static ?string $navigationGroup = 'المشاريع والمعرض';
-    protected static ?int    $navigationSort  = 1;
+    protected static ?string $navigationGroup = 'المنتجات والمشاريع';
+    protected static ?int    $navigationSort  = 20;
+    protected static ?string $navigationLabel = 'المشاريع';
     protected static ?string $label           = 'مشروع';
     protected static ?string $pluralLabel     = 'المشاريع';
 
@@ -143,6 +144,31 @@ class ProjectResource extends Resource
                         ->maxLength(500)
                         ->columnSpanFull(),
 
+                    Forms\Components\Repeater::make('videos')
+                        ->label('Project video catalogue')
+                        ->schema([
+                            Grid::make(2)->schema([
+                                Forms\Components\TextInput::make('title_ar')
+                                    ->label('Arabic title')
+                                    ->maxLength(150),
+                                Forms\Components\TextInput::make('title_en')
+                                    ->label('English title')
+                                    ->maxLength(150),
+                            ]),
+                            Forms\Components\TextInput::make('url')
+                                ->label('Video URL')
+                                ->url()
+                                ->required()
+                                ->placeholder('https://youtube.com/watch?v=...')
+                                ->maxLength(500)
+                                ->columnSpanFull(),
+                        ])
+                        ->addActionLabel('Add catalogue video')
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['title_ar'] ?? $state['title_en'] ?? $state['url'] ?? null)
+                        ->columnSpanFull(),
+
                 ]),
 
                 // ── Tab 3: الصور والوسائط ────────────────────────────────────
@@ -246,7 +272,7 @@ class ProjectResource extends Resource
 
                 Tables\Columns\BadgeColumn::make('category')
                     ->label('الفئة')
-                    ->formatStateUsing(fn ($s) => Project::CATEGORIES[$s][app()->getLocale()] ?? $s)
+                    ->formatStateUsing(fn ($state) => Project::CATEGORIES[$state][app()->getLocale()] ?? $state)
                     ->colors([
                         'success' => 'layer',
                         'warning' => 'broiler',
@@ -256,7 +282,7 @@ class ProjectResource extends Resource
 
                 Tables\Columns\TextColumn::make('capacity_birds')
                     ->label('الطيور')
-                    ->formatStateUsing(fn ($v) => $v ? number_format($v / 1000, 0) . 'K' : '—')
+                    ->formatStateUsing(fn ($state) => $state ? number_format($state / 1000, 0) . 'K' : '—')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('year')

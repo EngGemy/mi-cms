@@ -18,8 +18,9 @@ class ContactSettingsPage extends Page implements HasForms
     protected static ?string $navigationIcon  = 'heroicon-o-phone';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?int    $navigationSort  = 20;
+    protected static ?string $navigationLabel = 'التواصل والعنوان';
     protected static string  $view            = 'filament.pages.contact-settings';
-    protected static ?string $title           = 'بيانات التواصل والعنوان';
+    protected static ?string $title           = 'التواصل والعنوان';
 
     public ?array $data = [];
 

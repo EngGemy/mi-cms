@@ -18,7 +18,9 @@ class ChairmanQuoteResource extends Resource
 
     protected static ?string $model = ChairmanQuote::class;
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
-    protected static ?string $navigationGroup = 'الفريق';
+    protected static ?string $navigationGroup = 'الثقة والسمعة';
+    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationLabel = 'كلمة الرئيس';
     protected static ?string $label = 'كلمة رئيس مجلس الإدارة';
     protected static ?string $pluralLabel = 'كلمات رئيس مجلس الإدارة';
 

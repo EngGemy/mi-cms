@@ -17,9 +17,11 @@ class BlogCategoryResource extends Resource
 
     protected static ?string $model = BlogCategory::class;
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'المدوّنة';
+    protected static ?string $navigationGroup = 'المدونة والصفحات';
+    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationLabel = 'التصنيفات';
     protected static ?string $label = 'تصنيف';
-    protected static ?string $pluralLabel = 'تصنيفات المدوّنة';
+    protected static ?string $pluralLabel = 'التصنيفات';
 
     public static function getTranslatableLocales(): array
     {

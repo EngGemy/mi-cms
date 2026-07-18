@@ -1,4 +1,6 @@
-@php($locale = app()->getLocale())
+@php
+  $locale = app()->getLocale();
+@endphp
 <div class="mobile-drawer" id="mobDrawer">
   <div class="mobile-drawer-inner">
     <a href="#products" data-mob-link><span class="num">01</span>{{ __('messages.nav_products') }}</a>

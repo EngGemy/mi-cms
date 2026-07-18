@@ -19,8 +19,9 @@ class ProductResource extends Resource
 
     protected static ?string $model          = Product::class;
     protected static ?string $navigationIcon = 'heroicon-o-cube';
-    protected static ?string $navigationGroup = 'الكتالوج';
-    protected static ?int    $navigationSort  = 1;
+    protected static ?string $navigationGroup = 'المنتجات والمشاريع';
+    protected static ?int    $navigationSort  = 10;
+    protected static ?string $navigationLabel = 'المنتجات';
     protected static ?string $label           = 'منتج';
     protected static ?string $pluralLabel     = 'المنتجات';
 

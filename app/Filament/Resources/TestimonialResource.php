@@ -17,9 +17,11 @@ class TestimonialResource extends Resource
 
     protected static ?string $model = Testimonial::class;
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
-    protected static ?string $navigationGroup = 'الثقة والمصداقية';
-    protected static ?string $label = 'شهادة عميل';
-    protected static ?string $pluralLabel = 'شهادات العملاء';
+    protected static ?string $navigationGroup = 'الثقة والسمعة';
+    protected static ?int $navigationSort = 30;
+    protected static ?string $navigationLabel = 'آراء العملاء';
+    protected static ?string $label = 'رأي عميل';
+    protected static ?string $pluralLabel = 'آراء العملاء';
 
     public static function getTranslatableLocales(): array
     {

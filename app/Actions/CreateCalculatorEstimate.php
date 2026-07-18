@@ -14,7 +14,7 @@ class CreateCalculatorEstimate
 
     public function handle(array $input, Request $request): array
     {
-        $breakdown = $this->calculator->compute($input);
+        $breakdown = $this->calculator->computeCapacity($input);
 
         $stored = CalculatorRequest::create([
             'length'      => $input['length'],
@@ -23,8 +23,8 @@ class CreateCalculatorEstimate
             'floors'      => $input['floors'],
             'lines'       => $input['lines'],
             'bird_count'  => $breakdown['birds'],
-            'grand_total' => $breakdown['grand_total'],
-            'breakdown'   => $breakdown,
+            'grand_total' => null,          // financial values removed
+            'breakdown'   => $breakdown,    // capacity-only snapshot
             'locale'      => app()->getLocale(),
             'ip_address'  => $request->ip(),
         ]);

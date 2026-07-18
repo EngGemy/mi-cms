@@ -18,8 +18,9 @@ class FeatureResource extends Resource
 
     protected static ?string $model = Feature::class;
     protected static ?string $navigationIcon = 'heroicon-o-sparkles';
-    protected static ?string $navigationGroup = 'محتوى الصفحة الرئيسية';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'واجهة الموقع';
+    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationLabel = 'المزايا';
     protected static ?string $label = 'ميزة';
     protected static ?string $pluralLabel = 'المزايا';
 

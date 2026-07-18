@@ -210,6 +210,112 @@
   </section>
 
   {{-- =====================================================================
+       PROJECT CATALOGUE - IMAGE + VIDEO SLIDER
+       ===================================================================== --}}
+  <section class="proj-catalogue py-20 lg:py-28">
+    @if(count($projectCatalogue) > 0)
+    <div class="proj-content"
+         x-data="{
+           idx: 0,
+           items: {{ Js::from($projectCatalogue) }},
+           current() { return this.items[this.idx] || {}; },
+           prev() { this.idx = (this.idx - 1 + this.items.length) % this.items.length; },
+           next() { this.idx = (this.idx + 1) % this.items.length; },
+           go(i) { this.idx = i; },
+         }"
+         @keydown.arrow-left.window="{{ app()->getLocale() === 'ar' ? 'next()' : 'prev()' }}"
+         @keydown.arrow-right.window="{{ app()->getLocale() === 'ar' ? 'prev()' : 'next()' }}">
+
+      <div class="proj-catalogue-head">
+        <div data-reveal="left">
+          <span class="proj-section-label">{{ __('messages.project_catalogue') }}</span>
+          <h2 class="display-3 mt-1">{{ __('messages.project_catalogue_title') }}</h2>
+        </div>
+        <div class="proj-catalogue-count label-mono" data-reveal="right">
+          <span x-text="idx + 1"></span> / <span x-text="items.length"></span>
+        </div>
+      </div>
+
+      <div class="proj-catalogue-stage" data-reveal>
+        <div class="proj-catalogue-media">
+          <template x-if="current().type === 'image'">
+            <img :src="current().full" :alt="current().title" loading="lazy" decoding="async">
+          </template>
+
+          <template x-if="current().type === 'embed_video'">
+            <iframe :src="current().embed"
+                    :title="current().title"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy"></iframe>
+          </template>
+
+          <template x-if="current().type === 'file_video'">
+            <video :src="current().src"
+                   :poster="current().poster"
+                   controls
+                   preload="metadata"></video>
+          </template>
+        </div>
+
+        <div class="proj-catalogue-panel">
+          <span class="proj-catalogue-badge" x-text="current().badge"></span>
+          <h3 x-text="current().title"></h3>
+          <p>{{ __('messages.project_catalogue_blurb') }}</p>
+
+          <div class="proj-catalogue-actions">
+            <button type="button" class="proj-catalogue-nav" @click="prev()" aria-label="Previous">
+              <i data-lucide="chevron-{{ app()->getLocale() === 'ar' ? 'right' : 'left' }}" class="w-5 h-5"></i>
+            </button>
+            <button type="button" class="proj-catalogue-nav" @click="next()" aria-label="Next">
+              <i data-lucide="chevron-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-catalogue-thumbs" data-stagger>
+        <template x-for="(item, i) in items" :key="i">
+          <button type="button"
+                  class="proj-catalogue-thumb"
+                  :class="{ 'is-active': idx === i }"
+                  @click="go(i)"
+                  :aria-label="item.title">
+            <img x-show="item.thumb" :src="item.thumb" :alt="item.title" loading="lazy" decoding="async">
+            <span class="proj-catalogue-thumb-fallback" x-show="!item.thumb">
+              <i data-lucide="play" class="w-4 h-4"></i>
+            </span>
+            <span class="proj-catalogue-thumb-type" x-show="item.type !== 'image'">
+              <i data-lucide="play" class="w-3 h-3"></i>
+            </span>
+          </button>
+        </template>
+      </div>
+    </div>
+    @else
+    <div class="proj-content">
+      <div class="proj-catalogue-head">
+        <div data-reveal="left">
+          <span class="proj-section-label">{{ __('messages.project_catalogue') }}</span>
+          <h2 class="display-3 mt-1">{{ __('messages.project_catalogue_title') }}</h2>
+        </div>
+      </div>
+
+      <div class="proj-catalogue-empty" data-reveal>
+        <div class="proj-catalogue-empty-icon">
+          <i data-lucide="images" class="w-7 h-7"></i>
+        </div>
+        <div>
+          <span class="proj-catalogue-badge">{{ __('messages.project_catalogue') }}</span>
+          <h3>{{ __('messages.project_catalogue_empty_title') }}</h3>
+          <p>{{ __('messages.project_catalogue_empty_blurb') }}</p>
+        </div>
+      </div>
+    </div>
+    @endif
+  </section>
+
+  {{-- =====================================================================
        PROJECT PHASES / EXECUTION ITEMS (with media)
        ===================================================================== --}}
   @if($project->phases && $project->phases->count() > 0)

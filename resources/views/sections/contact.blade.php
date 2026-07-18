@@ -1,4 +1,6 @@
-@php($locale = app()->getLocale())
+@php
+  $locale = app()->getLocale();
+@endphp
 <section id="contact" class="py-24 lg:py-32" style="background:var(--ink-900);color:#fff">
   <div class="section-inner">
     <div class="grid lg:grid-cols-2 gap-12 items-center">

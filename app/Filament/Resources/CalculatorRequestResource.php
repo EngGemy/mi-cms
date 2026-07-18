@@ -14,9 +14,11 @@ class CalculatorRequestResource extends Resource
 {
     protected static ?string $model = CalculatorRequest::class;
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
-    protected static ?string $navigationGroup = 'الطلبات الواردة';
-    protected static ?string $label = 'تقدير محفوظ';
-    protected static ?string $pluralLabel = 'تقديرات الحاسبة';
+    protected static ?string $navigationGroup = 'الواردات';
+    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationLabel = 'طلبات الحاسبة';
+    protected static ?string $label = 'طلب حاسبة';
+    protected static ?string $pluralLabel = 'طلبات الحاسبة';
 
     public static function form(Form $form): Form
     {

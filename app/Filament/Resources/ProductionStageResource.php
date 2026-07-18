@@ -17,9 +17,10 @@ class ProductionStageResource extends Resource
     use Translatable;
 
     protected static ?string $model = ProductionStage::class;
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static ?string $navigationGroup = 'محتوى الصفحة الرئيسية';
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationIcon = 'heroicon-o-queue-list';
+    protected static ?string $navigationGroup = 'واجهة الموقع';
+    protected static ?int $navigationSort = 30;
+    protected static ?string $navigationLabel = 'مراحل الإنتاج';
     protected static ?string $label = 'مرحلة إنتاج';
     protected static ?string $pluralLabel = 'مراحل الإنتاج';
 

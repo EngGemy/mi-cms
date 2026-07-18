@@ -18,8 +18,9 @@ class CalculatorSettingsPage extends Page implements HasForms
     protected static ?string $navigationIcon  = 'heroicon-o-calculator';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?int    $navigationSort  = 40;
+    protected static ?string $navigationLabel = 'أسعار الحاسبة';
     protected static string  $view            = 'filament.pages.calculator-settings';
-    protected static ?string $title           = 'أسعار الحاسبة التقديرية';
+    protected static ?string $title           = 'أسعار الحاسبة';
 
     public ?array $data = [];
 

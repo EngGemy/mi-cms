@@ -19,10 +19,11 @@ class BlogPostResource extends Resource
 
     protected static ?string $model = BlogPost::class;
     protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
-    protected static ?string $navigationGroup = 'المدوّنة';
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'المدونة والصفحات';
+    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationLabel = 'المقالات';
     protected static ?string $label = 'مقال';
-    protected static ?string $pluralLabel = 'مقالات المدوّنة';
+    protected static ?string $pluralLabel = 'المقالات';
 
     public static function getTranslatableLocales(): array
     {

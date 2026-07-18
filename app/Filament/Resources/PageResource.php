@@ -17,7 +17,9 @@ class PageResource extends Resource
 
     protected static ?string $model = Page::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'الإعدادات والصفحات';
+    protected static ?string $navigationGroup = 'المدونة والصفحات';
+    protected static ?int $navigationSort = 40;
+    protected static ?string $navigationLabel = 'الصفحات الثابتة';
     protected static ?string $label = 'صفحة';
     protected static ?string $pluralLabel = 'الصفحات الثابتة';
 

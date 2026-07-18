@@ -39,28 +39,63 @@ function initLoader() {
   const el = document.getElementById('loader');
   if (!el) return;
   const pct = document.getElementById('loaderPct');
-  const startTime = performance.now();
+  const barFill = document.getElementById('loaderBarFill');
+  const logo = el.querySelector('.loader-logo');
+  const rings = el.querySelectorAll('.loader-logo-ring');
+  const words = el.querySelectorAll('.loader-brand-word, .loader-brand-dot');
+  const metaLabel = el.querySelector('.loader-meta-label');
   const MIN_DURATION = 2200;
 
-  function tick() {
-    const elapsed = performance.now() - startTime;
-    const t = Math.min(1, elapsed / MIN_DURATION);
-    if (pct) pct.textContent = Math.round(Math.pow(t, 0.7) * 100) + '%';
-    if (t < 1) requestAnimationFrame(tick);
-  }
-  tick();
+  // ---- Entry timeline ----
+  const entryTl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
+  entryTl
+    .set([logo, ...words, pct, metaLabel, barFill], { opacity: 0 })
+    .set(logo, { scale: 0.7, y: 20 })
+    .set(words, { y: 18 })
+    .set(pct, { y: 10 })
+    .set(metaLabel, { y: 10 })
+    .set(barFill, { width: '0%' })
+    .to(logo, { opacity: 1, scale: 1, y: 0, duration: 1, ease: 'expo.out' }, 0.1)
+    .to(rings, { opacity: 1, duration: 0.4, stagger: 0.15 }, 0.3)
+    .to(words, { opacity: 1, y: 0, duration: 0.7, stagger: 0.06 }, 0.35)
+    .to(barFill, { opacity: 1, duration: 0.3 }, 0.5)
+    .to([metaLabel, pct], { opacity: 1, y: 0, duration: 0.5, stagger: 0.05 }, 0.55);
+
+  // ---- Progress counter (GSAP) ----
+  const progressObj = { value: 0 };
+  gsap.to(progressObj, {
+    value: 100,
+    duration: MIN_DURATION / 1000,
+    ease: 'power2.inOut',
+    onUpdate: () => {
+      if (pct) pct.textContent = Math.round(progressObj.value) + '%';
+      if (barFill) barFill.style.width = progressObj.value + '%';
+    },
+  });
+
+  // ---- Wait for load + minimum duration ----
   Promise.all([
     new Promise(r => window.addEventListener('load', r, { once: true })),
     new Promise(r => setTimeout(r, MIN_DURATION)),
     document.fonts?.ready ?? Promise.resolve(),
   ]).then(() => {
-    if (pct) pct.textContent = '100%';
-    document.body.classList.add('is-loaded');
-    el.classList.add('is-done');
-    setTimeout(() => el.remove(), 800);
-    runHeroEntrance();
-    ScrollTrigger.refresh();
+    // ---- Exit timeline ----
+    const exitTl = gsap.timeline({
+      defaults: { ease: 'expo.inOut' },
+      onComplete: () => {
+        el.remove();
+        runHeroEntrance();
+        ScrollTrigger.refresh();
+      },
+    });
+
+    exitTl
+      .to(logo, { scale: 1.15, opacity: 0, duration: 0.5 }, 0)
+      .to([...words, metaLabel, pct], { y: -12, opacity: 0, duration: 0.4, stagger: 0.03 }, 0.05)
+      .to(barFill.parentElement, { opacity: 0, duration: 0.3 }, 0.1)
+      .to(el, { opacity: 0, duration: 0.6 }, 0.35)
+      .add(() => document.body.classList.add('is-loaded'), 0.35);
   });
 }
 

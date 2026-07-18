@@ -15,13 +15,22 @@ class BlogCommentResource extends Resource
 {
     protected static ?string $model = BlogComment::class;
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-bottom-center-text';
-    protected static ?string $navigationGroup = 'المدوّنة';
+    protected static ?string $navigationGroup = 'المدونة والصفحات';
+    protected static ?int $navigationSort = 30;
+    protected static ?string $navigationLabel = 'التعليقات';
     protected static ?string $label = 'تعليق';
     protected static ?string $pluralLabel = 'التعليقات';
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) BlogComment::pending()->count();
+        $count = BlogComment::pending()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger';
     }
 
     public static function form(Form $form): Form

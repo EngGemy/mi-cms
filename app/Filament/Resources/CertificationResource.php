@@ -18,9 +18,10 @@ class CertificationResource extends Resource
     use Translatable;
 
     protected static ?string $model = Certification::class;
-    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
-    protected static ?string $navigationGroup = 'من نحن';
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationIcon = 'heroicon-o-check-badge';
+    protected static ?string $navigationGroup = 'الثقة والسمعة';
+    protected static ?int $navigationSort = 40;
+    protected static ?string $navigationLabel = 'الاعتمادات';
     protected static ?string $label = 'شهادة اعتماد';
     protected static ?string $pluralLabel = 'الشهادات والاعتمادات';
 

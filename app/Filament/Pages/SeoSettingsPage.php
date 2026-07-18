@@ -18,8 +18,9 @@ class SeoSettingsPage extends Page implements HasForms
     protected static ?string $navigationIcon  = 'heroicon-o-magnifying-glass-circle';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static ?int    $navigationSort  = 30;
+    protected static ?string $navigationLabel = 'SEO والتحليلات';
     protected static string  $view            = 'filament.pages.seo-settings';
-    protected static ?string $title           = 'الميتا وتحسين محركات البحث';
+    protected static ?string $title           = 'SEO والتحليلات';
 
     public ?array $data = [];
 

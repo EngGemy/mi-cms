@@ -18,10 +18,11 @@ class HeroSlideResource extends Resource
 
     protected static ?string $model = HeroSlide::class;
     protected static ?string $navigationIcon = 'heroicon-o-photo';
-    protected static ?string $navigationGroup = 'محتوى الصفحة الرئيسية';
-    protected static ?int $navigationSort = 1;
-    protected static ?string $label = 'شريحة Hero';
-    protected static ?string $pluralLabel = 'شرائح الـ Hero';
+    protected static ?string $navigationGroup = 'واجهة الموقع';
+    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationLabel = 'الشرائح الرئيسية';
+    protected static ?string $label = 'شريحة رئيسية';
+    protected static ?string $pluralLabel = 'الشرائح الرئيسية';
 
     public static function getTranslatableLocales(): array
     {

@@ -14,13 +14,22 @@ class ContactSubmissionResource extends Resource
 {
     protected static ?string $model = ContactSubmission::class;
     protected static ?string $navigationIcon = 'heroicon-o-inbox';
-    protected static ?string $navigationGroup = 'الطلبات الواردة';
+    protected static ?string $navigationGroup = 'الواردات';
+    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationLabel = 'طلبات التواصل';
     protected static ?string $label = 'طلب تواصل';
     protected static ?string $pluralLabel = 'طلبات التواصل';
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) ContactSubmission::new()->count();
+        $count = ContactSubmission::new()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
     }
 
     public static function form(Form $form): Form

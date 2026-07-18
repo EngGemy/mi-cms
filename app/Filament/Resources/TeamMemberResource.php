@@ -18,9 +18,11 @@ class TeamMemberResource extends Resource
 
     protected static ?string $model = TeamMember::class;
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'الفريق';
+    protected static ?string $navigationGroup = 'الثقة والسمعة';
+    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationLabel = 'أعضاء الفريق';
     protected static ?string $label = 'عضو الفريق';
-    protected static ?string $pluralLabel = 'الفريق';
+    protected static ?string $pluralLabel = 'أعضاء الفريق';
 
     public static function getTranslatableLocales(): array
     {
