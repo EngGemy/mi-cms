@@ -4,6 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Idempotent stub: Spatie settings publish may recreate this filename.
+ * The real settings table is created by 2026_01_01_000060_create_settings_table.
+ * This migration must never fail deploy when the table already exists.
+ */
 return new class extends Migration {
     public function up(): void
     {
@@ -22,6 +27,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('settings');
+        // Intentionally empty — table is owned by the canonical 2026 migration.
     }
 };

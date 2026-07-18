@@ -96,6 +96,8 @@ jobs:
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "set -e; \
              cd ${{ secrets.DEPLOY_PATH }}; \
+             cp public_shim/index.php index.php; \
+             cp public_shim/.htaccess .htaccess; \
              mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs storage/app/public bootstrap/cache; \
              chmod -R 775 storage bootstrap/cache || true; \
              [ -f .env ] || cp .env.example .env; \
