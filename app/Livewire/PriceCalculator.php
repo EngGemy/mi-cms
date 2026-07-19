@@ -34,15 +34,20 @@ class PriceCalculator extends Component
     }
 
     /**
-     * Sync client-side Alpine values then persist — one request only (avoids CSRF spam on sliders).
+     * Sync client-side Alpine values then persist — returns payload for the estimate sheet.
+     *
+     * @return array{requestId:int, message:string, birds:int}
      */
-    public function syncAndPersist(array $data, CreateCalculatorEstimate $action): void
+    public function syncAndPersist(array $data, CreateCalculatorEstimate $action): array
     {
         $this->length = (float) ($data['length'] ?? $this->length);
         $this->width  = (float) ($data['width'] ?? $this->width);
         $this->height = (float) ($data['height'] ?? $this->height);
         $this->floors = (int) ($data['floors'] ?? $this->floors);
         $this->lines  = (int) ($data['lines'] ?? $this->lines);
+
+        $name  = trim((string) ($data['name'] ?? ''));
+        $phone = trim((string) ($data['phone'] ?? ''));
 
         $this->validate([
             'length' => 'numeric|min:81|max:300',
@@ -52,6 +57,19 @@ class PriceCalculator extends Component
             'lines'  => 'integer|in:3,4,5,6',
         ]);
 
+        validator(
+            ['name' => $name, 'phone' => $phone],
+            [
+                'name'  => 'required|string|min:2|max:100',
+                'phone' => 'required|string|min:8|max:30',
+            ],
+            [],
+            [
+                'name'  => __('messages.field_name'),
+                'phone' => __('messages.field_phone'),
+            ]
+        )->validate();
+
         $this->recompute();
 
         $result = $action->handle([
@@ -60,10 +78,15 @@ class PriceCalculator extends Component
             'height' => $this->height,
             'floors' => $this->floors,
             'lines'  => $this->lines,
+            'name'   => $name,
+            'phone'  => $phone,
         ], request());
 
-        $this->dispatch('calculator-persisted', requestId: $result['request_id']);
-        session()->flash('calc_ok', __('messages.calc_saved'));
+        return [
+            'requestId' => (int) $result['request_id'],
+            'message'   => __('messages.calc_saved'),
+            'birds'     => (int) ($result['breakdown']['birds'] ?? $this->breakdown['birds'] ?? 0),
+        ];
     }
 
     public function getAlpineConfigProperty(): array

@@ -1,7 +1,7 @@
 <div>
   @if($submitted)
     {{-- Success state --}}
-    <div class="rq-success" data-reveal>
+    <div class="rq-success">
       <div class="rq-success-icon">
         <i data-lucide="check-circle" class="w-8 h-8"></i>
       </div>

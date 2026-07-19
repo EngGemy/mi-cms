@@ -3,11 +3,19 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { createIcons, icons } from 'lucide';
+import Swiper from 'swiper';
+import { Navigation, Pagination, A11y } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 gsap.registerPlugin(ScrollTrigger);
 window.Lenis = Lenis;
 window.gsap = gsap;
 window.ScrollTrigger = ScrollTrigger;
+
+/** @type {import('swiper').Swiper | null} */
+let projectsSwiper = null;
 
 // Initialize Lucide icons
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaq();
   initMobileMenu();
   initStagesSlider();
-  initProjectsFilter();
+  initProjectsSection();
   initSmoothAnchors();
   initAboutPage();
   initProjectPage();
@@ -150,8 +158,8 @@ function runHeroEntrance() {
     0.95
   );
 
-  // Stats counter elements
-  tl.fromTo('.hero-stat',
+  /* Stats counter elements */
+  tl.fromTo('.hero-stats > div',
     { opacity: 0, y: 20 },
     { opacity: 1, y: 0, duration: .7, stagger: 0.08, ease: 'power3.out' },
     1.1
@@ -598,19 +606,19 @@ function initStagesSlider() {
   }
 }
 
-function initProjectsFilter() {
-  const pills    = document.querySelectorAll('#projectFilters .filter-pill');
+function initProjectsSection() {
+  const pills    = [...document.querySelectorAll('#projectFilters .filter-pill')];
   const tiles    = [...document.querySelectorAll('#projectsGrid .project-tile-clean')];
   const featured = document.querySelector('#projectsFeatured');
+  const mobile   = document.getElementById('projectsMobile');
+  const swiperEl = document.getElementById('projectsSwiper');
   const reduced  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mqMobile = window.matchMedia('(max-width: 767px)');
 
-  if (!pills.length || !tiles.length) return;
+  if (!pills.length && !swiperEl) return;
 
-  pills.forEach(p => p.addEventListener('click', () => {
-    pills.forEach(b => b.classList.remove('is-active'));
-    p.classList.add('is-active');
-    const cat = p.getAttribute('data-filter');
-
+  const filterDesktop = (cat) => {
+    if (!tiles.length) return;
     const showTiles = tiles.filter(t => cat === 'all' || t.getAttribute('data-cat') === cat);
     const hideTiles = tiles.filter(t => !showTiles.includes(t));
     const showFeatured = !featured || cat === 'all' || featured.getAttribute('data-cat') === cat;
@@ -624,7 +632,6 @@ function initProjectsFilter() {
 
     const tl = gsap.timeline({ defaults: { ease: 'power2.in' } });
 
-    // Featured card
     if (featured) {
       if (showFeatured) {
         if (featured.style.display === 'none') {
@@ -636,13 +643,11 @@ function initProjectsFilter() {
       }
     }
 
-    // Hide non-matching tiles
     tl.to(hideTiles, {
       opacity: 0, scale: 0.94, y: 12, duration: 0.28, stagger: 0.03,
       onComplete() { hideTiles.forEach(t => { t.style.display = 'none'; }); }
     }, 0);
 
-    // Show matching tiles
     tl.call(() => {
       showTiles.forEach(t => { t.style.display = ''; });
       gsap.fromTo(showTiles,
@@ -650,6 +655,96 @@ function initProjectsFilter() {
         { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)', duration: 0.45, ease: 'power3.out', stagger: 0.06 }
       );
     }, null, 0.22);
+  };
+
+  const filterMobile = (cat) => {
+    if (!projectsSwiper || !swiperEl) return;
+    const slides = [...swiperEl.querySelectorAll('.swiper-slide')];
+    slides.forEach((slide) => {
+      const match = cat === 'all' || slide.getAttribute('data-cat') === cat;
+      slide.style.display = match ? '' : 'none';
+    });
+    projectsSwiper.update();
+    projectsSwiper.slideTo(0, reduced ? 0 : 420);
+  };
+
+  const applyFilter = (cat) => {
+    if (mqMobile.matches) filterMobile(cat);
+    else filterDesktop(cat);
+  };
+
+  const mountSwiper = () => {
+    if (!swiperEl || !mobile || projectsSwiper) return;
+    if (!swiperEl.querySelector('.swiper-slide')) return;
+
+    projectsSwiper = new Swiper(swiperEl, {
+      modules: [Navigation, Pagination, A11y],
+      direction: 'horizontal',
+      slidesPerView: 1.12,
+      spaceBetween: 14,
+      centeredSlides: true,
+      speed: reduced ? 0 : 480,
+      grabCursor: true,
+      watchOverflow: true,
+      resistanceRatio: 0.65,
+      nested: true,
+      a11y: { enabled: true },
+      pagination: {
+        el: swiperEl.querySelector('.projects-swiper-pagination'),
+        clickable: true,
+        dynamicBullets: true,
+      },
+      navigation: {
+        prevEl: document.getElementById('projectsSwiperPrev'),
+        nextEl: document.getElementById('projectsSwiperNext'),
+      },
+      on: {
+        init(sw) {
+          swiperEl.classList.add('is-ready');
+          if (!reduced) {
+            gsap.fromTo(sw.slides, {
+              opacity: 0.55,
+              y: 18,
+              scale: 0.97,
+            }, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.55,
+              stagger: 0.05,
+              ease: 'power3.out',
+              clearProps: 'opacity,transform',
+            });
+          }
+        },
+      },
+    });
+
+    // Re-apply active filter after mount
+    const active = document.querySelector('#projectFilters .filter-pill.is-active');
+    if (active) filterMobile(active.getAttribute('data-filter') || 'all');
+  };
+
+  const unmountSwiper = () => {
+    if (projectsSwiper) {
+      projectsSwiper.destroy(true, true);
+      projectsSwiper = null;
+    }
+    if (swiperEl) swiperEl.classList.remove('is-ready');
+  };
+
+  const syncLayout = () => {
+    if (mqMobile.matches) mountSwiper();
+    else unmountSwiper();
+  };
+
+  syncLayout();
+  mqMobile.addEventListener('change', syncLayout);
+
+  pills.forEach((p) => p.addEventListener('click', () => {
+    pills.forEach((b) => b.classList.remove('is-active'));
+    p.classList.add('is-active');
+    applyFilter(p.getAttribute('data-filter') || 'all');
   }));
 }
 

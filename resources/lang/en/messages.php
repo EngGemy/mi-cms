@@ -175,12 +175,19 @@ return [
     'calc_step_dims_hint'   => 'Use +/− or drag — capacity updates instantly',
     'calc_step_battery_hint'=> 'Tap floors and rows to configure',
     'calc_more_details'     => 'More details',
-    'calc_persist_short'    => 'Save',
+    'calc_persist_short'    => 'View estimate',
     'calc_grand_total'      => 'Total Estimated Cost',
     'calc_grand_note'       => '* This estimate is non-binding. Contact sales for an accurate quote.',
-    'calc_persist'          => 'Save Calculation & Request Consultation',
+    'calc_persist'          => 'Save estimate & request consultation',
     'calc_disclaimer_title' => 'Note',
     'calc_disclaimer_body'  => 'This calculator estimates bird capacity only (birds and nests) from effective length and configuration. It never shows prices or costs — contact sales for pricing.',
+    'calc_contact_title'    => 'Your contact details',
+    'calc_contact_hint'     => 'Enter your name and phone to save the estimate and request a consultation',
+    'calc_estimate_title'   => 'House capacity estimate',
+    'calc_estimate_note'    => 'Non-binding estimate. Our sales team will contact you to confirm details and provide a final quote.',
+    'calc_estimate_whatsapp'=> 'Send estimate on WhatsApp',
+    'calc_estimate_again'   => 'Edit calculation',
+    'calc_saved'            => 'Estimate saved. Our sales team will reach out shortly.',
 
     // Blog
     'blog_eyebrow'           => 'Blog',
@@ -207,7 +214,6 @@ return [
     'contact_ok'        => 'Thank you. Our team will contact you within 24 hours.',
     'contact_ok_title'  => 'Request Received!',
     'newsletter_ok'     => 'You have been subscribed to our newsletter.',
-    'calc_saved'        => 'Calculation saved. Our sales team will reach out shortly.',
 
     // Product detail page
     'no_image'               => 'No image available',
@@ -220,6 +226,8 @@ return [
     'whatsapp_product_msg'   => 'Hello, I am interested in :product. Please provide more information.',
     'whatsapp_float_aria'    => 'Chat with us on WhatsApp',
     'whatsapp_float_msg'     => 'Hello, I would like to ask about MI poultry cage systems.',
+    'prev'                   => 'Previous',
+    'next'                   => 'Next',
     'trust_warranty'         => '10-Year Warranty',
     'trust_install'          => 'Turnkey Installation',
     'trust_support'          => 'Technical Support',
