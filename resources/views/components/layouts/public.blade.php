@@ -19,6 +19,8 @@
     <main>{{ $slot }}</main>
     @include('partials.footer')
     @include('partials.whatsapp')
+    {{-- Classic script BEFORE Livewire so alpine:init can register miPoultryCalc in time --}}
+    <script src="{{ asset('js/mi-poultry-calc.js') }}?v={{ @filemtime(public_path('js/mi-poultry-calc.js')) ?: '1' }}"></script>
     @livewireScripts
     @stack('scripts')
 </body>
