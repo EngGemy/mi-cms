@@ -218,6 +218,8 @@ return [
     'no_products'            => 'No products available yet.',
     'whatsapp_cta'           => 'WhatsApp',
     'whatsapp_product_msg'   => 'Hello, I am interested in :product. Please provide more information.',
+    'whatsapp_float_aria'    => 'Chat with us on WhatsApp',
+    'whatsapp_float_msg'     => 'Hello, I would like to ask about MI poultry cage systems.',
     'trust_warranty'         => '10-Year Warranty',
     'trust_install'          => 'Turnkey Installation',
     'trust_support'          => 'Technical Support',

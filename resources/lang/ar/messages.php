@@ -218,6 +218,8 @@ return [
     'no_products'            => 'لا توجد منتجات حتى الآن.',
     'whatsapp_cta'           => 'واتساب',
     'whatsapp_product_msg'   => 'السلام عليكم، أنا مهتم بـ :product وأود الحصول على مزيد من المعلومات.',
+    'whatsapp_float_aria'    => 'تواصل معنا عبر واتساب',
+    'whatsapp_float_msg'     => 'السلام عليكم، أود الاستفسار عن بطاريات الدواجن من إم آي.',
     'trust_warranty'         => 'ضمان 10 سنوات',
     'trust_install'          => 'تركيب متكامل',
     'trust_support'          => 'دعم فني',
