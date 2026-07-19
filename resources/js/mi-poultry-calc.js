@@ -1,12 +1,9 @@
-// Price calculator Alpine component.
-// Loaded as a classic script BEFORE @livewireScripts so alpine:init registers in time.
-// Also safe if loaded late (Vite): remounts calculator roots after Alpine.data is registered.
-
-function registerMiPoultryCalc(Alpine) {
-  if (!Alpine || Alpine.__miPoultryCalcRegistered) return;
-  Alpine.__miPoultryCalcRegistered = true;
-
-  Alpine.data('miPoultryCalc', (cfg = {}) => ({
+/**
+ * Capacity calculator Alpine factory (single source of truth).
+ * Registration happens in Livewire @script — do NOT call Alpine.data here.
+ */
+export function miPoultryCalcFactory(cfg = {}) {
+  return {
     length: Number(cfg.length) || 81,
     width: Number(cfg.width) || 12,
     height: Number(cfg.height) || 3.5,
@@ -226,40 +223,7 @@ function registerMiPoultryCalc(Alpine) {
         this.saving = false;
       }
     },
-  }));
+  };
 }
 
-function remountMiPoultryCalc() {
-  const Alpine = window.Alpine;
-  if (!Alpine) return;
-
-  registerMiPoultryCalc(Alpine);
-
-  document.querySelectorAll('.calc-card--ux').forEach((el) => {
-    let ok = false;
-    try {
-      const data = Alpine.$data(el);
-      ok = !!(data && typeof data.saveEstimate === 'function');
-    } catch (_) {
-      ok = false;
-    }
-    if (ok) return;
-    if (typeof Alpine.destroyTree === 'function') {
-      Alpine.destroyTree(el);
-    }
-    Alpine.initTree(el);
-  });
-}
-
-document.addEventListener('alpine:init', () => registerMiPoultryCalc(window.Alpine));
-
-// Late load (Vite race): register + remount broken roots
-if (window.Alpine) {
-  remountMiPoultryCalc();
-}
-
-document.addEventListener('livewire:init', remountMiPoultryCalc);
-document.addEventListener('livewire:navigated', remountMiPoultryCalc);
-
-window.registerMiPoultryCalc = registerMiPoultryCalc;
-window.remountMiPoultryCalc = remountMiPoultryCalc;
+window.miPoultryCalcFactory = miPoultryCalcFactory;
