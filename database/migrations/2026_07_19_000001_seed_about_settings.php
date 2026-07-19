@@ -8,7 +8,7 @@ return new class extends Migration {
     {
         $rows = [
             'hero_image_path'   => null,
-            'video_url'         => 'https://videos.pexels.com/video-files/3045163/3045163-uhd_2560_1440_25fps.mp4',
+            'video_url'         => null,
             'video_poster_path' => null,
             'teaser_image_path' => null,
             'seo' => [

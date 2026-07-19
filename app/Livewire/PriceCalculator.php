@@ -127,6 +127,7 @@ class PriceCalculator extends Component
             'maxHeight' => (float) ($tech['max_height'] ?? 6),
             'floorsOptions' => $tech['floors_options'] ?? [1, 2, 3, 4, 5],
             'linesOptions' => $tech['lines_options'] ?? [3, 4, 5, 6],
+            'waNumber' => preg_replace('/\D+/', '', (string) (config('mi.whatsapp', '201030003186'))),
             'locale' => app()->getLocale(),
         ];
     }

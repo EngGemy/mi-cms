@@ -1163,8 +1163,14 @@
     overflow:hidden;
     background: var(--ink-900);
   }
-  .video-showcase video{
+  .video-showcase video,
+  .video-showcase iframe,
+  .video-showcase-fallback{
     width:100%; height:100%; object-fit:cover; display:block;
+    border:0;
+  }
+  .video-showcase iframe{
+    position:absolute; inset:0;
   }
   .video-showcase::after{
     content:""; position:absolute; inset:0;
