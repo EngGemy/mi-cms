@@ -5,9 +5,14 @@
       <h2 class="display-2 mt-2" data-reveal="title">{{ __('messages.features_title') }}</h2>
       <p class="lead mt-5" data-reveal data-reveal-delay="0.1">{{ __('messages.features_blurb') }}</p>
     </div>
-    <div class="grid lg:grid-cols-3 gap-5" data-stagger>
+    <div
+      class="features-grid mi-carousel"
+      data-mi-carousel
+      data-mi-per="1.15"
+      data-stagger
+    >
       @foreach($features as $feature)
-        <div class="feature-card">
+        <div class="feature-card mi-carousel-item">
           <div class="feature-image" data-parallax="0.06">
             <img src="{{ $feature->getFirstMediaUrl('image', 'card') ?: 'https://images.unsplash.com/photo-1531155179084-3e1f15110922?w=1200&q=85&auto=format&fit=crop' }}"
                  alt="{{ $feature->title }}" loading="lazy"/>

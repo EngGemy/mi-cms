@@ -9,75 +9,23 @@
     wire:ignore
     x-data="miPoultryCalc(@js($cfg))"
     x-cloak
+    @keydown.escape.window="if (saved) closeEstimate()"
   >
-    {{-- Success / estimate sheet --}}
-    <div class="calc-estimate" x-show="saved" x-cloak x-transition.opacity.duration.300ms>
-      <div class="calc-estimate-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12.5l2 2 4-4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
-        <span x-text="savedMsg"></span>
+    {{-- Form always stays — estimate opens as modal overlay --}}
+    <div class="calc-hero-result">
+      <div class="calc-hero-kicker">{{ __('messages.calc_capacity_title') }}</div>
+      <div class="calc-hero-main">
+        <span class="calc-hero-num" x-text="fmt(birds)"></span>
+        <span class="calc-hero-unit">{{ __('messages.birds_unit') }}</span>
       </div>
-      <div class="calc-estimate-kicker">{{ __('messages.calc_estimate_title') }}</div>
-      <div class="calc-estimate-main">
-        <span class="calc-estimate-num" x-text="fmt(birds)"></span>
-        <span class="calc-estimate-unit">{{ __('messages.birds_unit') }}</span>
-      </div>
-      <div class="calc-estimate-grid">
-        <div class="calc-estimate-item">
-          <span>{{ __('messages.calc_length') }}</span>
-          <strong x-text="length + ' م'"></strong>
-        </div>
-        <div class="calc-estimate-item">
-          <span>{{ __('messages.calc_width') }}</span>
-          <strong x-text="width + ' م'"></strong>
-        </div>
-        <div class="calc-estimate-item">
-          <span>{{ __('messages.calc_height') }}</span>
-          <strong x-text="height + ' م'"></strong>
-        </div>
-        <div class="calc-estimate-item">
-          <span>{{ __('messages.calc_floors') }}</span>
-          <strong x-text="floors"></strong>
-        </div>
-        <div class="calc-estimate-item">
-          <span>{{ __('messages.calc_lines') }}</span>
-          <strong x-text="lines"></strong>
-        </div>
-        <div class="calc-estimate-item">
-          <span>{{ __('messages.calc_total_nests') }}</span>
-          <strong x-text="fmt(totalNests)"></strong>
-        </div>
-      </div>
-      <p class="calc-estimate-note">{{ __('messages.calc_estimate_note') }}</p>
-      <div class="calc-estimate-actions">
-        <a class="btn btn-primary calc-estimate-wa"
-           :href="waLink"
-           target="_blank"
-           rel="noopener noreferrer">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          {{ __('messages.calc_estimate_whatsapp') }}
-        </a>
-        <button type="button" class="btn calc-estimate-again" @click="saved = false">
-          {{ __('messages.calc_estimate_again') }}
-        </button>
+      <div class="calc-hero-meta">
+        <span>{{ __('messages.calc_effective_length') }}: <strong x-text="effectiveLength + ' م'"></strong></span>
+        <span class="calc-hero-dot" aria-hidden="true"></span>
+        <span>{{ __('messages.calc_total_nests') }}: <strong x-text="fmt(totalNests)"></strong></span>
       </div>
     </div>
 
-    <div x-show="!saved">
-      {{-- Primary result --}}
-      <div class="calc-hero-result">
-        <div class="calc-hero-kicker">{{ __('messages.calc_capacity_title') }}</div>
-        <div class="calc-hero-main">
-          <span class="calc-hero-num" x-text="fmt(birds)"></span>
-          <span class="calc-hero-unit">{{ __('messages.birds_unit') }}</span>
-        </div>
-        <div class="calc-hero-meta">
-          <span>{{ __('messages.calc_effective_length') }}: <strong x-text="effectiveLength + ' م'"></strong></span>
-          <span class="calc-hero-dot" aria-hidden="true"></span>
-          <span>{{ __('messages.calc_total_nests') }}: <strong x-text="fmt(totalNests)"></strong></span>
-        </div>
-      </div>
-
-      <div class="calc-form">
+    <div class="calc-form">
 
         <div class="calc-step">
           <div class="calc-step-head">
@@ -254,6 +202,8 @@
         </div>
       </div>
 
+    </div>{{-- /.calc-form --}}
+
       <div class="calc-sticky-bar" aria-live="polite">
         <div>
           <div class="calc-sticky-label">{{ __('messages.calc_capacity_title') }}</div>
@@ -262,6 +212,85 @@
         <button type="button" class="btn btn-primary calc-sticky-btn" @click="saveEstimate()" :disabled="saving">
           {{ __('messages.calc_persist_short') }}
         </button>
+      </div>
+
+    {{-- Estimate modal --}}
+    <div
+      class="calc-modal"
+      x-show="saved"
+      x-cloak
+      x-transition.opacity.duration.250ms
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="calcEstimateTitle"
+      @click.self="closeEstimate()"
+    >
+      <div
+        class="calc-modal-panel"
+        x-show="saved"
+        x-transition:enter="calc-modal-enter"
+        x-transition:enter-start="calc-modal-enter-start"
+        x-transition:enter-end="calc-modal-enter-end"
+        @click.stop
+      >
+        <button type="button" class="calc-modal-close" @click="closeEstimate()" aria-label="{{ __('messages.close_menu') }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <div class="calc-estimate-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12.5l2 2 4-4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+          <span x-text="savedMsg"></span>
+        </div>
+
+        <div class="calc-estimate-kicker" id="calcEstimateTitle">{{ __('messages.calc_estimate_title') }}</div>
+        <div class="calc-estimate-main">
+          <span class="calc-estimate-num" x-text="fmt(birds)"></span>
+          <span class="calc-estimate-unit">{{ __('messages.birds_unit') }}</span>
+        </div>
+
+        <div class="calc-estimate-grid">
+          <div class="calc-estimate-item">
+            <span>{{ __('messages.calc_length') }}</span>
+            <strong x-text="length + ' م'"></strong>
+          </div>
+          <div class="calc-estimate-item">
+            <span>{{ __('messages.calc_width') }}</span>
+            <strong x-text="width + ' م'"></strong>
+          </div>
+          <div class="calc-estimate-item">
+            <span>{{ __('messages.calc_height') }}</span>
+            <strong x-text="height + ' م'"></strong>
+          </div>
+          <div class="calc-estimate-item">
+            <span>{{ __('messages.calc_floors') }}</span>
+            <strong x-text="floors"></strong>
+          </div>
+          <div class="calc-estimate-item">
+            <span>{{ __('messages.calc_lines') }}</span>
+            <strong x-text="lines"></strong>
+          </div>
+          <div class="calc-estimate-item">
+            <span>{{ __('messages.calc_total_nests') }}</span>
+            <strong x-text="fmt(totalNests)"></strong>
+          </div>
+        </div>
+
+        <p class="calc-estimate-note">{{ __('messages.calc_estimate_note') }}</p>
+
+        <div class="calc-estimate-actions">
+          <a class="btn btn-primary calc-estimate-wa"
+             :href="waLink"
+             target="_blank"
+             rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            {{ __('messages.calc_estimate_whatsapp') }}
+          </a>
+          <button type="button" class="btn calc-estimate-again" @click="closeEstimate()">
+            {{ __('messages.calc_estimate_again') }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -304,6 +333,18 @@ Alpine.data('miPoultryCalc', (cfg) => ({
 
   init() {
     this.recompute();
+  },
+
+  closeEstimate() {
+    this.saved = false;
+    document.body.classList.remove('calc-modal-open');
+    window.lenis?.start();
+  },
+
+  openEstimate() {
+    this.saved = true;
+    document.body.classList.add('calc-modal-open');
+    window.lenis?.stop();
   },
 
   clamp(key, min, max) {
@@ -434,10 +475,7 @@ Alpine.data('miPoultryCalc', (cfg) => ({
       this.savedMsg = result?.message || (this.locale === 'ar'
         ? 'تم حفظ التقدير بنجاح'
         : 'Estimate saved successfully');
-      this.saved = true;
-      this.$nextTick(() => {
-        this.$el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
+      this.openEstimate();
     } catch (e) {
       const msg = String(e?.message || e || '');
       if (msg.toLowerCase().includes('expired')) {

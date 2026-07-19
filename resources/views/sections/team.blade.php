@@ -7,9 +7,14 @@
       </div>
       <p class="lead" data-reveal="right">{{ __('messages.team_blurb') }}</p>
     </div>
-    <div class="team-grid" data-stagger>
+    <div
+      class="team-grid mi-carousel"
+      data-mi-carousel
+      data-mi-per="1.12"
+      data-stagger
+    >
       @foreach($members as $m)
-        <div class="team-card @if($m->is_featured)is-featured @endif">
+        <div class="team-card mi-carousel-item @if($m->is_featured)is-featured @endif">
           <span class="team-badge">{{ $m->role }}</span>
           <div class="team-avatar" @if($m->badge_color) style="background:{{ $m->badge_color }}" @endif>{{ $m->initials }}</div>
           <div class="team-role">{{ $m->role }}</div>

@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   initStagesSlider();
   initProjectsSection();
+  initMiCarousels();
   initSmoothAnchors();
   initAboutPage();
   initProjectPage();
@@ -428,14 +429,30 @@ function initFaq() {
 
 function initMobileMenu() {
   const btn = document.getElementById('mobBtn');
+  const closeBtn = document.getElementById('mobClose');
   const drawer = document.getElementById('mobDrawer');
   if (!btn || !drawer) return;
-  const set = open => {
+
+  const set = (open) => {
     drawer.classList.toggle('is-open', open);
-    open ? lenis?.stop() : lenis?.start();
+    document.body.classList.toggle('menu-open', open);
+    btn.classList.toggle('is-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (open) lenis?.stop();
+    else lenis?.start();
   };
+
   btn.addEventListener('click', () => set(!drawer.classList.contains('is-open')));
-  document.querySelectorAll('[data-mob-link]').forEach(l => l.addEventListener('click', () => set(false)));
+  closeBtn?.addEventListener('click', () => set(false));
+
+  document.querySelectorAll('[data-mob-link]').forEach((l) => {
+    l.addEventListener('click', () => set(false));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer.classList.contains('is-open')) set(false);
+  });
 }
 
 function initStagesSlider() {
@@ -604,6 +621,104 @@ function initStagesSlider() {
       lenis?.scrollTo(st.start + (st.end - st.start) * target, { duration: 0.8 });
     });
   }
+}
+
+function initMiCarousels() {
+  const mq = window.matchMedia('(max-width: 767px)');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /** @type {Map<HTMLElement, import('swiper').Swiper>} */
+  const instances = new Map();
+
+  const mount = (root) => {
+    if (instances.has(root) || root.classList.contains('swiper-initialized')) return;
+
+    const items = [...root.querySelectorAll(':scope > .mi-carousel-item')];
+    if (items.length < 2) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'swiper-wrapper';
+    items.forEach((item) => {
+      const slide = document.createElement('div');
+      slide.className = 'swiper-slide';
+      slide.appendChild(item);
+      wrapper.appendChild(slide);
+    });
+
+    const pagination = document.createElement('div');
+    pagination.className = 'swiper-pagination mi-carousel-pagination';
+
+    root.classList.add('swiper', 'mi-carousel-swiper', 'is-carousel');
+    root.appendChild(wrapper);
+    root.appendChild(pagination);
+
+    const per = parseFloat(root.getAttribute('data-mi-per') || '1.12') || 1.12;
+
+    const swiper = new Swiper(root, {
+      modules: [Pagination, A11y],
+      slidesPerView: per,
+      spaceBetween: 14,
+      centeredSlides: true,
+      speed: reduced ? 0 : 520,
+      grabCursor: true,
+      watchOverflow: true,
+      resistanceRatio: 0.65,
+      nested: true,
+      a11y: { enabled: true },
+      pagination: {
+        el: pagination,
+        clickable: true,
+        dynamicBullets: true,
+      },
+      on: {
+        init(sw) {
+          root.classList.add('is-ready');
+          if (!reduced) {
+            gsap.fromTo(sw.slides, {
+              opacity: 0.5,
+              y: 24,
+              scale: 0.96,
+            }, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.55,
+              stagger: 0.06,
+              ease: 'power3.out',
+              clearProps: 'opacity,transform',
+            });
+          }
+        },
+      },
+    });
+
+    instances.set(root, swiper);
+  };
+
+  const unmount = (root) => {
+    const swiper = instances.get(root);
+    if (!swiper) return;
+
+    const items = [...root.querySelectorAll('.swiper-slide > .mi-carousel-item')];
+    swiper.destroy(true, true);
+    instances.delete(root);
+
+    root.classList.remove('swiper', 'mi-carousel-swiper', 'is-carousel', 'is-ready', 'swiper-initialized', 'swiper-horizontal', 'swiper-backface-hidden');
+    root.querySelectorAll('.swiper-wrapper, .mi-carousel-pagination, .swiper-pagination').forEach((n) => n.remove());
+    // restore items as direct children
+    items.forEach((item) => root.appendChild(item));
+    // clean leftover empty slides if any
+    root.querySelectorAll('.swiper-slide').forEach((n) => n.remove());
+  };
+
+  const sync = () => {
+    document.querySelectorAll('[data-mi-carousel]').forEach((root) => {
+      if (mq.matches) mount(root);
+      else unmount(root);
+    });
+  };
+
+  sync();
+  mq.addEventListener('change', sync);
 }
 
 function initProjectsSection() {

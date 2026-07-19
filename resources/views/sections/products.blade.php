@@ -12,10 +12,15 @@
       <p class="lead lg:text-right" data-reveal="right">{{ __('messages.products_blurb') }}</p>
     </div>
 
-    <div class="products-grid" data-stagger>
+    <div
+      class="products-grid mi-carousel"
+      data-mi-carousel
+      data-mi-per="1.12"
+      data-stagger
+    >
       @foreach($products as $product)
         <a href="{{ route('products.show', [app()->getLocale(), $product->slug]) }}"
-           class="product-card">
+           class="product-card mi-carousel-item">
           <div class="product-card-image">
             @if($product->badge)
               <span class="product-card-badge">{{ $product->badge }}</span>

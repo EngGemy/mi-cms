@@ -16,6 +16,8 @@ return [
     'nav_calculator' => 'Price Calculator',
     'nav_contact'    => 'Contact',
     'contact_us'     => 'Contact Us',
+    'nav_menu'       => 'Menu',
+    'close_menu'     => 'Close',
     'request_quote'  => 'Request Quote',
     'all_products'   => 'All Products',
     'products'       => 'Products',

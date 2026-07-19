@@ -23,17 +23,25 @@
       <a href="{{ route('about', $locale) }}">{{ __('messages.nav_about') }}</a>
     </nav>
 
-    <div class="flex items-center gap-3">
+    <div class="header-actions">
       <a href="{{ route('locale.switch', $locale === 'ar' ? 'en' : 'ar') }}"
-         class="lang-btn hidden md:inline-flex">
+         class="lang-btn header-desktop-only">
         <i data-lucide="globe" class="w-4 h-4"></i>
         {{ $locale === 'ar' ? 'EN' : 'ع' }}
       </a>
-      <a href="#contact" class="btn btn-dark btn-sm hidden md:inline-flex">
+      <a href="#contact" class="btn btn-dark btn-sm header-desktop-only">
         {{ __('messages.cta_consultation') }}
       </a>
-      <button class="header-mobile-btn" id="mobBtn" aria-label="القائمة">
-        <i data-lucide="menu" class="w-5 h-5" id="mobIcon"></i>
+      <button type="button" class="header-mobile-btn" id="mobBtn"
+              aria-label="{{ __('messages.nav_menu') }}"
+              aria-controls="mobDrawer"
+              aria-expanded="false">
+        <span class="header-mobile-icon header-mobile-icon--menu" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="header-mobile-icon header-mobile-icon--close" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
       </button>
     </div>
   </div>

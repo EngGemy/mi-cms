@@ -16,6 +16,8 @@ return [
     'nav_calculator' => 'حاسبة الأسعار',
     'nav_contact'    => 'تواصل معنا',
     'contact_us'     => 'تواصل معنا',
+    'nav_menu'       => 'القائمة',
+    'close_menu'     => 'إغلاق',
     'request_quote'  => 'اطلب عرض سعر',
     'all_products'   => 'جميع المنتجات',
     'products'       => 'المنتجات',
