@@ -103,45 +103,37 @@ class CalculatorService implements CalculatorServiceInterface
         $floors = (int) $input['floors'];
         $lines  = (int) $input['lines'];
 
-        $tech = config('poultry_pricing');
-        $birdWeightKg = (float) ($this->prices['bird_weight_kg'] ?? 2.1);
+        $p = $this->prices;
+        $cfgFallback = config('poultry_pricing', []);
 
-        // 1. Effective length (always even)
-        $serviceLength = (float) ($tech['default_service_length'] ?? 10);
+        $birdWeightKg = (float) ($p['bird_weight_kg'] ?? 2.1);
+        $serviceLength = (float) ($p['service_length'] ?? $cfgFallback['default_service_length'] ?? 10);
         $rawEffective = max(0, $L - $serviceLength);
         $effectiveLength = (int) ((floor($rawEffective / 2) * 2));
 
-        // 2. Lines — user-supplied (width_lines_map is advisory)
-        $mappedLines = $tech['width_lines_map'][(string) $W] ?? null;
+        $widthMap = $p['width_lines_map'] ?? $cfgFallback['width_lines_map'] ?? [];
+        $mappedLines = $widthMap[(string) $W]
+            ?? $widthMap[(string) (float) $W]
+            ?? null;
 
-        // 3. Birds per nest from weight map
-        $weightMap = $tech['broiler_weight_birds_map'] ?? [];
+        $weightMap = $p['broiler_weight_birds_map'] ?? $cfgFallback['broiler_weight_birds_map'] ?? [];
         $birdsPerNest = $this->resolveBirdsPerNest($birdWeightKg, $weightMap);
 
-        // 4. Nests per line = effective_length × 2 faces × floors
         $nestsPerLine = (int) ($effectiveLength * 2 * $floors);
-
-        // 5. Total nests
         $totalNests = $nestsPerLine * $lines;
-
-        // 6. Total birds (capacity)
         $totalBirds = $totalNests * $birdsPerNest;
 
-        // 7. Rear fans
-        $fanCapacity = (float) ($tech['fan_capacity_kg'] ?? 5000);
-        $rearFans = (int) ceil($totalBirds * $birdWeightKg / $fanCapacity);
+        $fanCapacity = (float) ($p['fan_capacity_kg'] ?? $cfgFallback['fan_capacity_kg'] ?? 5000);
+        $rearFans = (int) ceil($totalBirds * $birdWeightKg / max(1, $fanCapacity));
 
-        // 8. Cooling pad meters
-        $coolingPadMetersPerFan = (float) ($tech['cooling_pad_meters_per_fan'] ?? 5.5);
+        $coolingPadMetersPerFan = (float) ($p['cooling_pad_meters_per_fan'] ?? $cfgFallback['cooling_pad_meters_per_fan'] ?? 5.5);
         $coolingPadMeters = (int) ceil($rearFans * $coolingPadMetersPerFan);
 
-        // 9. Inlets (air windows)
         $inlets = (int) (($L % 2 === 1) ? (($L - 3) / 2) : (($L - 4) / 2));
         $inlets = max(0, $inlets);
 
-        // 10. Layer nests (one face)
-        $layerNestModule = (float) ($tech['layer_nest_module_m'] ?? 0.60);
-        $layerNestsPerFace = (int) round($effectiveLength / $layerNestModule);
+        $layerNestModule = (float) ($p['layer_nest_module_m'] ?? $cfgFallback['layer_nest_module_m'] ?? 0.60);
+        $layerNestsPerFace = (int) round($effectiveLength / max(0.01, $layerNestModule));
         $layerNestsTotal = $layerNestsPerFace * 2 * $floors;
 
         return [
@@ -154,7 +146,7 @@ class CalculatorService implements CalculatorServiceInterface
             ],
             'service_length'      => $serviceLength,
             'effective_length'    => $effectiveLength,
-            'mapped_lines'        => $mappedLines,
+            'mapped_lines'        => $mappedLines !== null ? (int) $mappedLines : null,
             'birds_per_nest'      => $birdsPerNest,
             'bird_weight_kg'      => $birdWeightKg,
             'nests_per_line'      => $nestsPerLine,

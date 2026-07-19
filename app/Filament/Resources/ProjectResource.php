@@ -137,38 +137,6 @@ class ProjectResource extends Resource
                             ->maxValue(120),
                     ]),
 
-                    Forms\Components\TextInput::make('video_url')
-                        ->label('رابط الفيديو (YouTube / Vimeo)')
-                        ->url()
-                        ->placeholder('https://youtu.be/...')
-                        ->maxLength(500)
-                        ->columnSpanFull(),
-
-                    Forms\Components\Repeater::make('videos')
-                        ->label('Project video catalogue')
-                        ->schema([
-                            Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('title_ar')
-                                    ->label('Arabic title')
-                                    ->maxLength(150),
-                                Forms\Components\TextInput::make('title_en')
-                                    ->label('English title')
-                                    ->maxLength(150),
-                            ]),
-                            Forms\Components\TextInput::make('url')
-                                ->label('Video URL')
-                                ->url()
-                                ->required()
-                                ->placeholder('https://youtube.com/watch?v=...')
-                                ->maxLength(500)
-                                ->columnSpanFull(),
-                        ])
-                        ->addActionLabel('Add catalogue video')
-                        ->reorderable()
-                        ->collapsible()
-                        ->itemLabel(fn (array $state): ?string => $state['title_ar'] ?? $state['title_en'] ?? $state['url'] ?? null)
-                        ->columnSpanFull(),
-
                 ]),
 
                 // ── Tab 3: الصور والوسائط ────────────────────────────────────
@@ -197,13 +165,50 @@ class ProjectResource extends Resource
                             ->maxFiles(20),
                     ]),
 
-                    Section::make('فيديو مرفوع (اختياري)')->schema([
-                        SpatieMediaLibraryFileUpload::make('video_file')
-                            ->collection('video')
-                            ->label('ملف الفيديو (MP4)')
-                            ->acceptedFileTypes(['video/mp4', 'video/webm'])
-                            ->maxSize(102400),
-                    ]),
+                    Section::make('فيديو المشروع')
+                        ->description('يمكنك لصق رابط من منصة خارجية (يوتيوب / فيميو / رابط ملف مباشر) أو رفع ملف MP4 من جهازك.')
+                        ->schema([
+                            Forms\Components\TextInput::make('video_url')
+                                ->label('رابط فيديو خارجي')
+                                ->url()
+                                ->placeholder('https://youtu.be/... أو https://vimeo.com/... أو رابط MP4')
+                                ->helperText('مُفضّل للملفات الكبيرة: ارفع على YouTube أو Vimeo أو CDN والصق الرابط هنا.')
+                                ->maxLength(500)
+                                ->columnSpanFull(),
+
+                            SpatieMediaLibraryFileUpload::make('video_file')
+                                ->collection('video')
+                                ->label('أو ارفع ملف فيديو (MP4 / WebM)')
+                                ->acceptedFileTypes(['video/mp4', 'video/webm'])
+                                ->maxSize(102400)
+                                ->helperText('اختياري. إذا وُجد ملف مرفوع يُستخدم مع الرابط الخارجي في معرض المشروع.'),
+
+                            Forms\Components\Repeater::make('videos')
+                                ->label('كتالوج فيديوهات إضافية (روابط خارجية)')
+                                ->schema([
+                                    Grid::make(2)->schema([
+                                        Forms\Components\TextInput::make('title_ar')
+                                            ->label('العنوان بالعربي')
+                                            ->maxLength(150),
+                                        Forms\Components\TextInput::make('title_en')
+                                            ->label('العنوان بالإنجليزي')
+                                            ->maxLength(150),
+                                    ]),
+                                    Forms\Components\TextInput::make('url')
+                                        ->label('رابط الفيديو')
+                                        ->url()
+                                        ->required()
+                                        ->placeholder('https://youtube.com/watch?v=...')
+                                        ->maxLength(500)
+                                        ->columnSpanFull(),
+                                ])
+                                ->addActionLabel('إضافة فيديو بالرابط')
+                                ->reorderable()
+                                ->collapsible()
+                                ->collapsed()
+                                ->itemLabel(fn (array $state): ?string => $state['title_ar'] ?? $state['title_en'] ?? $state['url'] ?? null)
+                                ->columnSpanFull(),
+                        ]),
 
                     Section::make('مخططات التصميم (Blueprints)')->schema([
                         SpatieMediaLibraryFileUpload::make('blueprints')

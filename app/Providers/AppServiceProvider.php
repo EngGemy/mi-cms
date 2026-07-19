@@ -24,7 +24,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(CalculatorServiceInterface::class, function ($app) {
             $s = $app->make(CalculatorSettings::class);
-            return new CalculatorService([
+            $tech = $s->techConfig();
+
+            return new CalculatorService(array_merge([
                 'concrete_m2'    => $s->concrete_m2,
                 'steel_m2'       => $s->steel_m2,
                 'walls_m2'       => $s->walls_m2,
@@ -36,8 +38,7 @@ class AppServiceProvider extends ServiceProvider
                 'side_fan'       => $s->side_fan,
                 'heater'         => $s->heater,
                 'control_fixed'  => $s->control_fixed,
-                'bird_weight_kg' => $s->bird_weight_kg,
-            ]);
+            ], $tech));
         });
 
         $this->app->singleton(SeoServiceInterface::class, SeoService::class);

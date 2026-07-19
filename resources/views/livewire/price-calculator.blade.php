@@ -42,13 +42,13 @@
               <div class="calc-stepper">
                 <button type="button" class="calc-stepper-btn" @click="nudge('length', -1)" aria-label="-">−</button>
                 <input id="calc-length" type="number" class="calc-num-input" inputmode="numeric"
-                       x-model.number="length" @change="clamp('length', 81, 300); onLengthInput()"
-                       min="81" max="300" step="1"/>
+                       x-model.number="length" @change="clamp('length', minLength, maxLength); onLengthInput()"
+                       :min="minLength" :max="maxLength" step="1"/>
                 <button type="button" class="calc-stepper-btn" @click="nudge('length', 1)" aria-label="+">+</button>
               </div>
             </div>
             <input type="range" class="calc-slider" x-model.number="length" @input="onLengthInput()"
-                   min="81" max="300" step="1" aria-hidden="true" tabindex="-1"/>
+                   :min="minLength" :max="maxLength" step="1" aria-hidden="true" tabindex="-1"/>
             <div class="calc-hint">{{ __('messages.calc_length_hint') }}</div>
           </div>
 
@@ -58,13 +58,13 @@
               <div class="calc-stepper">
                 <button type="button" class="calc-stepper-btn" @click="nudge('width', -0.5)" aria-label="-">−</button>
                 <input id="calc-width" type="number" class="calc-num-input" inputmode="decimal"
-                       x-model.number="width" @change="clamp('width', 8, 30); onWidthInput()"
-                       min="8" max="30" step="0.5"/>
+                       x-model.number="width" @change="clamp('width', minWidth, maxWidth); onWidthInput()"
+                       :min="minWidth" :max="maxWidth" step="0.5"/>
                 <button type="button" class="calc-stepper-btn" @click="nudge('width', 0.5)" aria-label="+">+</button>
               </div>
             </div>
             <input type="range" class="calc-slider" x-model.number="width" @input="onWidthInput()"
-                   min="8" max="30" step="0.5" aria-hidden="true" tabindex="-1"/>
+                   :min="minWidth" :max="maxWidth" step="0.5" aria-hidden="true" tabindex="-1"/>
           </div>
 
           <div class="calc-control">
@@ -73,13 +73,13 @@
               <div class="calc-stepper">
                 <button type="button" class="calc-stepper-btn" @click="nudge('height', -0.5)" aria-label="-">−</button>
                 <input id="calc-height" type="number" class="calc-num-input" inputmode="decimal"
-                       x-model.number="height" @change="clamp('height', 3, 6); recompute()"
-                       min="3" max="6" step="0.5"/>
+                       x-model.number="height" @change="clamp('height', minHeight, maxHeight); recompute()"
+                       :min="minHeight" :max="maxHeight" step="0.5"/>
                 <button type="button" class="calc-stepper-btn" @click="nudge('height', 0.5)" aria-label="+">+</button>
               </div>
             </div>
             <input type="range" class="calc-slider" x-model.number="height" @input="recompute()"
-                   min="3" max="6" step="0.5" aria-hidden="true" tabindex="-1"/>
+                   :min="minHeight" :max="maxHeight" step="0.5" aria-hidden="true" tabindex="-1"/>
           </div>
         </div>
 
@@ -95,7 +95,7 @@
           <div class="calc-control">
             <div class="calc-control-label-only">{{ __('messages.calc_floors') }}</div>
             <div class="calc-chip-group" role="group" aria-label="{{ __('messages.calc_floors') }}">
-              <template x-for="v in [1,2,3,4,5]" :key="'f'+v">
+              <template x-for="v in floorsOptions" :key="'f'+v">
                 <button type="button" class="calc-chip" :class="floors === v && 'is-active'"
                         :aria-pressed="floors === v"
                         @click="floors = v; recompute()" x-text="v"></button>
@@ -106,7 +106,7 @@
           <div class="calc-control">
             <div class="calc-control-label-only">{{ __('messages.calc_lines') }}</div>
             <div class="calc-chip-group" role="group" aria-label="{{ __('messages.calc_lines') }}">
-              <template x-for="v in [3,4,5,6]" :key="'l'+v">
+              <template x-for="v in linesOptions" :key="'l'+v">
                 <button type="button" class="calc-chip" :class="lines === v && 'is-active'"
                         :aria-pressed="lines === v"
                         @click="lines = v; recompute()" x-text="v"></button>
@@ -311,6 +311,14 @@ Alpine.data('miPoultryCalc', (cfg) => ({
   layerNestModuleM: Number(cfg.layerNestModuleM) || 0.6,
   widthLinesMap: cfg.widthLinesMap || {},
   weightMap: cfg.weightMap || {},
+  minLength: Number(cfg.minLength) || 81,
+  maxLength: Number(cfg.maxLength) || 300,
+  minWidth: Number(cfg.minWidth) || 8,
+  maxWidth: Number(cfg.maxWidth) || 30,
+  minHeight: Number(cfg.minHeight) || 3,
+  maxHeight: Number(cfg.maxHeight) || 6,
+  floorsOptions: (cfg.floorsOptions || [1,2,3,4,5]).map(Number),
+  linesOptions: (cfg.linesOptions || [3,4,5,6]).map(Number),
   locale: cfg.locale || 'ar',
   waNumber: @js($waNumber),
   name: '',
@@ -355,9 +363,9 @@ Alpine.data('miPoultryCalc', (cfg) => ({
 
   nudge(key, delta) {
     const bounds = {
-      length: [81, 300],
-      width: [8, 30],
-      height: [3, 6],
+      length: [this.minLength, this.maxLength],
+      width: [this.minWidth, this.maxWidth],
+      height: [this.minHeight, this.maxHeight],
     };
     const [min, max] = bounds[key];
     const next = Math.round((Number(this[key]) + delta) * 10) / 10;
@@ -368,12 +376,12 @@ Alpine.data('miPoultryCalc', (cfg) => ({
   },
 
   onLengthInput() {
-    this.clamp('length', 81, 300);
+    this.clamp('length', this.minLength, this.maxLength);
     this.recompute();
   },
 
   onWidthInput() {
-    this.clamp('width', 8, 30);
+    this.clamp('width', this.minWidth, this.maxWidth);
     const key = String(this.width);
     const keyInt = String(parseFloat(this.width));
     if (this.widthLinesMap[key] != null) {
