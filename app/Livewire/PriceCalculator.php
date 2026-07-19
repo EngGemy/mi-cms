@@ -4,24 +4,15 @@ namespace App\Livewire;
 
 use App\Actions\CreateCalculatorEstimate;
 use App\Services\Contracts\CalculatorServiceInterface;
-use Livewire\Attributes\Validate;
+use App\Settings\CalculatorSettings;
 use Livewire\Component;
 
 class PriceCalculator extends Component
 {
-    #[Validate('numeric|min:81|max:300')]
     public float $length = 81;
-
-    #[Validate('numeric|min:8|max:30')]
     public float $width = 12;
-
-    #[Validate('numeric|min:3|max:6')]
     public float $height = 3.5;
-
-    #[Validate('integer|in:1,2,3,4,5')]
     public int $floors = 3;
-
-    #[Validate('integer|in:3,4,5,6')]
     public int $lines = 4;
 
     public array $breakdown = [];
@@ -31,18 +22,9 @@ class PriceCalculator extends Component
         $this->recompute();
     }
 
-    public function updatedWidth(): void
-    {
-        $map = config('poultry_pricing.width_lines_map', []);
-        if (isset($map[(string) $this->width])) {
-            $this->lines = $map[(string) $this->width];
-        }
-    }
-
     public function recompute(): void
     {
-        $calculator = app(CalculatorServiceInterface::class);
-        $this->breakdown = $calculator->computeCapacity([
+        $this->breakdown = app(CalculatorServiceInterface::class)->computeCapacity([
             'length' => $this->length,
             'width'  => $this->width,
             'height' => $this->height,
@@ -51,9 +33,26 @@ class PriceCalculator extends Component
         ]);
     }
 
-    public function persist(CreateCalculatorEstimate $action): void
+    /**
+     * Sync client-side Alpine values then persist — one request only (avoids CSRF spam on sliders).
+     */
+    public function syncAndPersist(array $data, CreateCalculatorEstimate $action): void
     {
-        $this->validate();
+        $this->length = (float) ($data['length'] ?? $this->length);
+        $this->width  = (float) ($data['width'] ?? $this->width);
+        $this->height = (float) ($data['height'] ?? $this->height);
+        $this->floors = (int) ($data['floors'] ?? $this->floors);
+        $this->lines  = (int) ($data['lines'] ?? $this->lines);
+
+        $this->validate([
+            'length' => 'numeric|min:81|max:300',
+            'width'  => 'numeric|min:8|max:30',
+            'height' => 'numeric|min:3|max:6',
+            'floors' => 'integer|in:1,2,3,4,5',
+            'lines'  => 'integer|in:3,4,5,6',
+        ]);
+
+        $this->recompute();
 
         $result = $action->handle([
             'length' => $this->length,
@@ -67,9 +66,32 @@ class PriceCalculator extends Component
         session()->flash('calc_ok', __('messages.calc_saved'));
     }
 
+    public function getAlpineConfigProperty(): array
+    {
+        $settings = app(CalculatorSettings::class);
+        $tech = config('poultry_pricing', []);
+
+        return [
+            'length' => $this->length,
+            'width' => $this->width,
+            'height' => $this->height,
+            'floors' => $this->floors,
+            'lines' => $this->lines,
+            'serviceLength' => (float) ($tech['default_service_length'] ?? 10),
+            'birdWeightKg' => (float) ($settings->bird_weight_kg ?? 2.1),
+            'fanCapacityKg' => (float) ($tech['fan_capacity_kg'] ?? 5000),
+            'coolingPadMetersPerFan' => (float) ($tech['cooling_pad_meters_per_fan'] ?? 5.5),
+            'layerNestModuleM' => (float) ($tech['layer_nest_module_m'] ?? 0.60),
+            'widthLinesMap' => $tech['width_lines_map'] ?? [],
+            'weightMap' => $tech['broiler_weight_birds_map'] ?? [],
+            'locale' => app()->getLocale(),
+        ];
+    }
+
     public function render()
     {
-        $this->recompute();
-        return view('livewire.price-calculator');
+        return view('livewire.price-calculator', [
+            'alpineConfig' => $this->alpineConfig,
+        ]);
     }
 }

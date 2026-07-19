@@ -149,11 +149,11 @@ return [
     'field_message'    => 'Your Message',
     'send_request'     => 'Send Request',
 
-    // Calculator
-    'calc_eyebrow'          => 'Price Estimator',
-    'calc_title'            => 'Estimate Your Project Cost',
-    'calc_blurb'            => 'A quick, non-binding estimate based on house dimensions and capacity.',
-    'calc_battery'          => 'Battery Type',
+    // Calculator (capacity only — no prices)
+    'calc_eyebrow'          => 'Capacity Calculator',
+    'calc_title'            => 'Calculate House Bird Capacity',
+    'calc_blurb'            => 'Adjust dimensions, floors, and rows to see total birds instantly — with no prices shown.',
+    'calc_battery'          => 'Battery Configuration',
     'calc_dimensions'       => 'House Dimensions',
     'calc_length'           => 'Length (m)',
     'calc_width'            => 'Width (m)',
@@ -161,11 +161,22 @@ return [
     'calc_floors'           => 'Number of Floors',
     'calc_lines'            => 'Number of Rows',
     'calc_capacity'         => 'Capacity (birds)',
+    'calc_capacity_title'   => 'Estimated Capacity',
+    'calc_effective_length' => 'Effective Length',
+    'calc_total_nests'      => 'Total Nests',
+    'calc_nests_per_line'   => 'Nests / Line',
+    'calc_birds_per_nest'   => 'Birds / Nest',
+    'calc_tech_outputs'     => 'Technical Outputs',
+    'calc_rear_fans'        => 'Rear Fans',
+    'calc_cooling'          => 'Cooling Pads',
+    'calc_inlets'           => 'Air Inlets',
+    'calc_layer_nests'      => 'Layer Nests (all floors)',
+    'calc_length_hint'      => 'Min 81 m · Max 300 m',
     'calc_grand_total'      => 'Total Estimated Cost',
     'calc_grand_note'       => '* This estimate is non-binding. Contact sales for an accurate quote.',
-    'calc_persist'          => 'Save Estimate & Request Quote',
+    'calc_persist'          => 'Save Calculation & Request Consultation',
     'calc_disclaimer_title' => 'Note',
-    'calc_disclaimer_body'  => 'This calculator provides a preliminary estimate only. Actual prices depend on detailed specifications and project location.',
+    'calc_disclaimer_body'  => 'This calculator estimates bird capacity only (birds and nests) from effective length and configuration. It never shows prices or costs — contact sales for pricing.',
 
     // Blog
     'blog_eyebrow'           => 'Blog',
@@ -192,7 +203,7 @@ return [
     'contact_ok'        => 'Thank you. Our team will contact you within 24 hours.',
     'contact_ok_title'  => 'Request Received!',
     'newsletter_ok'     => 'You have been subscribed to our newsletter.',
-    'calc_saved'        => 'Estimate saved. Sales will reach out shortly.',
+    'calc_saved'        => 'Calculation saved. Our sales team will reach out shortly.',
 
     // Product detail page
     'no_image'               => 'No image available',
@@ -216,8 +227,8 @@ return [
     'sending'                 => 'Sending…',
 
     // Calculator CTA on product page
-    'calc_cta_title' => 'Want to Estimate Total House Cost?',
-    'calc_cta_blurb' => 'Use our free calculator to get an instant non-binding estimate for a complete poultry house.',
+    'calc_cta_title' => 'Want to Estimate House Capacity?',
+    'calc_cta_blurb' => 'Use the calculator to see total bird count instantly for your project dimensions.',
 
     // Related products
     'related_products_eyebrow' => 'Complete Your System',
