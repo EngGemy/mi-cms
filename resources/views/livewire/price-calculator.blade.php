@@ -6,7 +6,7 @@
   <div
     class="calc-card calc-card--ux"
     wire:ignore
-    x-data="miPoultryCalcFactory(@js($cfg))"
+    x-data="miPoultryCalc(@js($cfg))"
     x-cloak
     @keydown.escape.window="if (saved) closeEstimate()"
   >

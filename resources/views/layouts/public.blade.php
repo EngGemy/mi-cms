@@ -13,8 +13,16 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
-    {{-- Sync factory before Alpine (Vite modules are deferred) --}}
+    {{-- Classic (non-module) factory + Alpine.data registration BEFORE Livewire boots Alpine --}}
     <script src="{{ asset('js/mi-poultry-calc.js') }}?v={{ @filemtime(public_path('js/mi-poultry-calc.js')) ?: '1' }}"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            if (!window.Alpine || Alpine.__miPoultryCalcRegistered) return;
+            if (typeof window.miPoultryCalcFactory !== 'function') return;
+            Alpine.__miPoultryCalcRegistered = true;
+            Alpine.data('miPoultryCalc', (cfg = {}) => window.miPoultryCalcFactory(cfg));
+        });
+    </script>
     {{ $head ?? '' }}
 </head>
 <body>

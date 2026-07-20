@@ -235,6 +235,37 @@
   }
 
   global.miPoultryCalcFactory = miPoultryCalcFactory;
-  // Alias for any leftover Alpine.data('miPoultryCalc') / x-data="miPoultryCalc(...)" references
   global.miPoultryCalc = miPoultryCalcFactory;
+
+  // If Alpine already started (rare), register + remount calculator roots
+  function bootMiPoultryCalcAlpine() {
+    var Alpine = global.Alpine;
+    if (!Alpine || typeof miPoultryCalcFactory !== 'function') return;
+    if (!Alpine.__miPoultryCalcRegistered) {
+      Alpine.__miPoultryCalcRegistered = true;
+      Alpine.data('miPoultryCalc', function (cfg) {
+        return miPoultryCalcFactory(cfg || {});
+      });
+    }
+    var nodes = document.querySelectorAll('.calc-card--ux');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      var ok = false;
+      try {
+        var data = Alpine.$data(el);
+        ok = !!(data && typeof data.saveEstimate === 'function');
+      } catch (e) {
+        ok = false;
+      }
+      if (ok) continue;
+      if (typeof Alpine.destroyTree === 'function') Alpine.destroyTree(el);
+      Alpine.initTree(el);
+    }
+  }
+
+  if (global.Alpine) {
+    bootMiPoultryCalcAlpine();
+  }
+  document.addEventListener('livewire:init', bootMiPoultryCalcAlpine);
+  document.addEventListener('livewire:navigated', bootMiPoultryCalcAlpine);
 })(window);
