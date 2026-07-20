@@ -1,6 +1,7 @@
 /**
- * Capacity calculator Alpine factory (single source of truth).
- * Registration happens in Livewire @script — do NOT call Alpine.data here.
+ * Capacity calculator Alpine factory — REFERENCE ONLY.
+ * Live registration is inlined in resources/views/livewire/price-calculator.blade.php (@script).
+ * Do NOT import this file from app.js (avoids double-registration / Vite race).
  */
 export function miPoultryCalcFactory(cfg = {}) {
   return {
@@ -33,7 +34,6 @@ export function miPoultryCalcFactory(cfg = {}) {
     savedMsg: '',
     requestId: null,
     errors: {},
-
     birds: 0,
     birdsPerNest: 16,
     effectiveLength: 0,
@@ -43,29 +43,22 @@ export function miPoultryCalcFactory(cfg = {}) {
     coolingPadMeters: 0,
     inlets: 0,
     layerNestsTotal: 0,
-
-    init() {
-      this.recompute();
-    },
-
+    init() { this.recompute(); },
     closeEstimate() {
       this.saved = false;
       document.body.classList.remove('calc-modal-open');
       window.lenis?.start();
     },
-
     openEstimate() {
       this.saved = true;
       document.body.classList.add('calc-modal-open');
       window.lenis?.stop();
     },
-
     clamp(key, min, max) {
       let v = Number(this[key]);
       if (Number.isNaN(v)) v = min;
       this[key] = Math.min(max, Math.max(min, v));
     },
-
     nudge(key, delta) {
       const bounds = {
         length: [this.minLength, this.maxLength],
@@ -79,24 +72,18 @@ export function miPoultryCalcFactory(cfg = {}) {
       else if (key === 'width') this.onWidthInput();
       else this.recompute();
     },
-
     onLengthInput() {
       this.clamp('length', this.minLength, this.maxLength);
       this.recompute();
     },
-
     onWidthInput() {
       this.clamp('width', this.minWidth, this.maxWidth);
       const key = String(this.width);
       const keyInt = String(parseFloat(this.width));
-      if (this.widthLinesMap[key] != null) {
-        this.lines = Number(this.widthLinesMap[key]);
-      } else if (this.widthLinesMap[keyInt] != null) {
-        this.lines = Number(this.widthLinesMap[keyInt]);
-      }
+      if (this.widthLinesMap[key] != null) this.lines = Number(this.widthLinesMap[key]);
+      else if (this.widthLinesMap[keyInt] != null) this.lines = Number(this.widthLinesMap[keyInt]);
       this.recompute();
     },
-
     resolveBirdsPerNest() {
       const map = this.weightMap;
       const key = String(this.birdWeightKg);
@@ -112,19 +99,16 @@ export function miPoultryCalcFactory(cfg = {}) {
       });
       return closest;
     },
-
     recompute() {
       const L = Number(this.length) || 0;
       const floors = Number(this.floors) || 1;
       const lines = Number(this.lines) || 1;
-
       const rawEffective = Math.max(0, L - this.serviceLength);
       this.effectiveLength = Math.floor(rawEffective / 2) * 2;
       this.birdsPerNest = this.resolveBirdsPerNest();
       this.nestsPerLine = this.effectiveLength * 2 * floors;
       this.totalNests = this.nestsPerLine * lines;
       this.birds = this.totalNests * this.birdsPerNest;
-
       this.rearFans = Math.ceil((this.birds * this.birdWeightKg) / this.fanCapacityKg) || 0;
       this.coolingPadMeters = Math.ceil(this.rearFans * this.coolingPadMetersPerFan) || 0;
       this.inlets = Math.max(0, (L % 2 === 1) ? ((L - 3) / 2) : ((L - 4) / 2));
@@ -132,14 +116,12 @@ export function miPoultryCalcFactory(cfg = {}) {
       const layerNestsPerFace = Math.round(this.effectiveLength / this.layerNestModuleM);
       this.layerNestsTotal = layerNestsPerFace * 2 * floors;
     },
-
     get formulaLabel() {
       if (this.locale === 'ar') {
         return 'طول فعّال ' + this.effectiveLength + 'م × 2 وجه × ' + this.floors + ' أدوار × ' + this.lines + ' خط × ' + this.birdsPerNest + ' طير/عش';
       }
       return 'Eff. ' + this.effectiveLength + 'm × 2 faces × ' + this.floors + ' floors × ' + this.lines + ' lines × ' + this.birdsPerNest + ' birds/nest';
     },
-
     get waLink() {
       const msg = this.locale === 'ar'
         ? ('السلام عليكم، تم حساب تقدير سعة عنبر:\n• الطيور: ' + this.fmt(this.birds)
@@ -156,7 +138,6 @@ export function miPoultryCalcFactory(cfg = {}) {
           + '\nPhone: ' + this.phone);
       return 'https://wa.me/' + this.waNumber + '?text=' + encodeURIComponent(msg);
     },
-
     fmt(n) {
       try {
         return new Intl.NumberFormat(this.locale === 'ar' ? 'ar-EG' : 'en-US').format(Number(n) || 0);
@@ -164,7 +145,6 @@ export function miPoultryCalcFactory(cfg = {}) {
         return String(n);
       }
     },
-
     validateLocal() {
       const errors = {};
       if (!this.name || this.name.length < 2) {
@@ -176,7 +156,6 @@ export function miPoultryCalcFactory(cfg = {}) {
       this.errors = errors;
       return Object.keys(errors).length === 0;
     },
-
     async saveEstimate() {
       if (!this.validateLocal()) {
         this.$el.querySelector('#calc-name')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -225,6 +204,3 @@ export function miPoultryCalcFactory(cfg = {}) {
     },
   };
 }
-
-window.miPoultryCalcFactory = miPoultryCalcFactory;
-window.miPoultryCalc = miPoultryCalcFactory;

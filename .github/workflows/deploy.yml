@@ -96,19 +96,18 @@ jobs:
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "set -e; \
              cd ${{ secrets.DEPLOY_PATH }}; \
-             cp public_shim/index.php index.php; \
-             cp public_shim/.htaccess .htaccess; \
+             cp deploy/root-shim/index.php index.php; \
+             cp deploy/root-shim/.htaccess .htaccess; \
              mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs storage/app/public bootstrap/cache; \
              chmod -R 775 storage bootstrap/cache || true; \
              [ -f .env ] || cp .env.example .env; \
+             php artisan migrate --force; \
              php artisan storage:link || true; \
-             php artisan migrate --force || echo 'migrate skipped (DB not ready yet)'; \
              php artisan optimize:clear; \
-             php artisan filament:assets; \
-             php artisan filament:optimize; \
-             php artisan view:clear; \
              php artisan config:cache; \
              php artisan route:cache; \
              php artisan view:cache; \
+             php artisan filament:assets; \
+             php artisan filament:optimize; \
              php artisan media-library:regenerate --force || true; \
              echo 'Deploy complete.'"

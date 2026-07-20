@@ -1,4 +1,4 @@
-# Auto-copied to project root by deploy.yml (legacy path kept in sync with deploy/root-shim).
+# Auto-copied to project root by deploy.yml.
 # Needed because Enhance docroot points to project root instead of /public.
 # The permanent fix is to change the Enhance Web Root to /public and delete
 # these files + the copy step.
