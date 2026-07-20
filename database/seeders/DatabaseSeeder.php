@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             HeroSlidesSeeder::class,
             ProductsSeeder::class,
+            FactoryProductsSeeder::class,
             FeaturesSeeder::class,
             ProductionStagesSeeder::class,
             ProjectsSeeder::class,

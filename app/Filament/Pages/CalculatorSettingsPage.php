@@ -190,13 +190,13 @@ class CalculatorSettingsPage extends Page implements HasForms
         $s->width_lines_map = $this->keyValueToMap($data['width_lines_map'] ?? []);
         $s->broiler_weight_birds_map = $this->keyValueToMap($data['broiler_weight_birds_map'] ?? []);
 
-        $s->default_length = (float) ($data['default_length'] ?? 81);
+        $s->default_length = (float) ($data['default_length'] ?? 71);
         $s->default_width = (float) ($data['default_width'] ?? 12);
         $s->default_height = (float) ($data['default_height'] ?? 3.5);
         $s->default_floors = (int) ($data['default_floors'] ?? 3);
         $s->default_lines = (int) ($data['default_lines'] ?? 4);
 
-        $s->min_length = (float) ($data['min_length'] ?? 81);
+        $s->min_length = (float) ($data['min_length'] ?? 71);
         $s->max_length = (float) ($data['max_length'] ?? 300);
         $s->min_width = (float) ($data['min_width'] ?? 8);
         $s->max_width = (float) ($data['max_width'] ?? 30);

@@ -18,6 +18,7 @@
     @endif
   </div>
   <div class="product-card-body">
+    <span class="product-card-cat">{{ $product->categoryLabel() }}</span>
     <h3 class="product-card-title">{{ $product->name }}</h3>
     @if($product->summary)
       <p class="product-card-desc">{{ Str::limit($product->summary, 110) }}</p>

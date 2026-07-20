@@ -48,7 +48,11 @@
             </div>
             <input type="range" class="calc-slider" x-model.number="length" @input="onLengthInput()"
                    :min="minLength" :max="maxLength" step="1" aria-hidden="true" tabindex="-1"/>
-            <div class="calc-hint">{{ __('messages.calc_length_hint') }}</div>
+            <div class="calc-hint">
+              <span x-text="(locale === 'ar'
+                ? ('الحد الأدنى ' + minLength + ' م · الحد الأقصى ' + maxLength + ' م')
+                : ('Min ' + minLength + ' m · Max ' + maxLength + ' m'))"></span>
+            </div>
           </div>
 
           <div class="calc-control">

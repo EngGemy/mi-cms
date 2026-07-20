@@ -45,6 +45,14 @@ class ProductResource extends Resource
                                 ->maxLength(255)
                                 ->columnSpan(2),
 
+                            Forms\Components\Select::make('category')
+                                ->label('التصنيف')
+                                ->options(Product::categoryOptions('ar'))
+                                ->required()
+                                ->native(false)
+                                ->helperText('شفاطات، شبابيك، سقايات، خرسانة، بطاريات…')
+                                ->columnSpan(1),
+
                             Forms\Components\TextInput::make('badge')
                                 ->label('شارة (Badge)')
                                 ->maxLength(60)
@@ -159,6 +167,12 @@ class ProductResource extends Resource
                     ->sortable()
                     ->weight('bold'),
 
+                Tables\Columns\TextColumn::make('category')
+                    ->label('التصنيف')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => Product::CATEGORIES[$state]['ar'] ?? ($state ?: '—'))
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('badge')
                     ->label('Badge')
                     ->badge()
@@ -188,6 +202,9 @@ class ProductResource extends Resource
             ->defaultSort('position')
             ->reorderable('position')
             ->filters([
+                Tables\Filters\SelectFilter::make('category')
+                    ->label('التصنيف')
+                    ->options(Product::categoryOptions('ar')),
                 Tables\Filters\TernaryFilter::make('is_active')->label('الحالة'),
                 Tables\Filters\TernaryFilter::make('is_featured')->label('المميزة'),
             ])

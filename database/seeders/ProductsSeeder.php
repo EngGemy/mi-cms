@@ -46,6 +46,7 @@ class ProductsSeeder extends Seeder
                 ],
                 'is_featured' => true,
                 'position'    => 1,
+                'category'    => 'cages',
             ],
             [
                 'name'    => ['ar' => 'بطاريات البياض A-Type', 'en' => 'A-Type Layer Cages'],
@@ -82,6 +83,7 @@ class ProductsSeeder extends Seeder
                 ],
                 'is_featured' => true,
                 'position'    => 2,
+                'category'    => 'cages',
             ],
             [
                 'name'    => ['ar' => 'أنظمة تغذية أوتوماتيكية', 'en' => 'Automatic Feeding Systems'],
@@ -116,6 +118,7 @@ class ProductsSeeder extends Seeder
                 ],
                 'is_featured' => false,
                 'position'    => 3,
+                'category'    => 'feeding',
             ],
             [
                 'name'    => ['ar' => 'تهوية أنفاق + Cooling Pad', 'en' => 'Tunnel Ventilation + Cooling Pad'],
@@ -150,6 +153,7 @@ class ProductsSeeder extends Seeder
                 ],
                 'is_featured' => false,
                 'position'    => 4,
+                'category'    => 'ventilation',
             ],
             [
                 'name'    => ['ar' => 'منصة MI-OS للتحكم الذكي', 'en' => 'MI-OS Smart Control Platform'],
@@ -184,6 +188,7 @@ class ProductsSeeder extends Seeder
                 ],
                 'is_featured' => true,
                 'position'    => 5,
+                'category'    => 'other',
             ],
             [
                 'name'    => ['ar' => 'صوامع الأعلاف والمخازن', 'en' => 'Feed Silos & Storage'],
@@ -218,13 +223,14 @@ class ProductsSeeder extends Seeder
                 ],
                 'is_featured' => false,
                 'position'    => 6,
+                'category'    => 'feeding',
             ],
         ];
 
         foreach ($items as $p) {
             Product::updateOrCreate(
                 ['slug' => Str::slug($p['name']['en'])],
-                array_merge($p, ['is_active' => true])
+                array_merge(['category' => 'cages', 'is_active' => true], $p)
             );
         }
     }

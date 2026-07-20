@@ -11,17 +11,38 @@
 
   {{-- PRODUCTS GRID --}}
   <section class="pd-index-grid-section">
-    <div class="section-inner">
+    <div class="section-inner"
+         x-data="{ cat: 'all' }">
+
+      @if($categoryOptions->isNotEmpty())
+        <div class="pd-cat-filters" data-reveal role="tablist" aria-label="{{ __('messages.products_filter_label') }}">
+          <button type="button"
+                  class="pd-cat-btn"
+                  :class="{ 'is-active': cat === 'all' }"
+                  @click="cat = 'all'">
+            {{ __('messages.products_filter_all') }}
+          </button>
+          @foreach($categoryOptions as $opt)
+            <button type="button"
+                    class="pd-cat-btn"
+                    :class="{ 'is-active': cat === '{{ $opt['key'] }}' }"
+                    @click="cat = '{{ $opt['key'] }}'">
+              {{ $opt['label'] }}
+            </button>
+          @endforeach
+        </div>
+      @endif
 
       @if($products->isEmpty())
         <p class="pd-empty" style="color:var(--ink-500)">{{ __('messages.no_products') }}</p>
       @else
-        {{-- Featured row --}}
         @php $featured = $products->where('is_featured', true); $rest = $products->where('is_featured', false); @endphp
         @if($featured->isNotEmpty())
           <div class="pd-index-featured" data-stagger>
             @foreach($featured as $product)
-              @include('products._card', ['product' => $product, 'size' => 'featured'])
+              <div x-show="cat === 'all' || cat === '{{ $product->category }}'" x-cloak>
+                @include('products._card', ['product' => $product, 'size' => 'featured'])
+              </div>
             @endforeach
           </div>
         @endif
@@ -29,7 +50,9 @@
         @if($rest->isNotEmpty())
           <div class="products-grid mt-12" data-stagger>
             @foreach($rest as $product)
-              @include('products._card', ['product' => $product, 'size' => 'normal'])
+              <div x-show="cat === 'all' || cat === '{{ $product->category }}'" x-cloak>
+                @include('products._card', ['product' => $product, 'size' => 'normal'])
+              </div>
             @endforeach
           </div>
         @endif

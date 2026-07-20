@@ -4,7 +4,7 @@
  */
 export function miPoultryCalcFactory(cfg = {}) {
   return {
-    length: Number(cfg.length) || 81,
+    length: Number(cfg.length) || 71,
     width: Number(cfg.width) || 12,
     height: Number(cfg.height) || 3.5,
     floors: Number(cfg.floors) || 3,
@@ -16,7 +16,7 @@ export function miPoultryCalcFactory(cfg = {}) {
     layerNestModuleM: Number(cfg.layerNestModuleM) || 0.6,
     widthLinesMap: cfg.widthLinesMap || {},
     weightMap: cfg.weightMap || {},
-    minLength: Number(cfg.minLength) || 81,
+    minLength: Number(cfg.minLength) || 71,
     maxLength: Number(cfg.maxLength) || 300,
     minWidth: Number(cfg.minWidth) || 8,
     maxWidth: Number(cfg.maxWidth) || 30,

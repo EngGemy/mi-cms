@@ -1089,6 +1089,14 @@
     color: var(--ink-700);
   }
   .product-card-body{ padding: 22px 24px 26px; }
+  .product-card-cat{
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--mi-red);
+    margin-bottom: 6px;
+  }
   .product-card-title{
     font-weight:800; font-size:20px; line-height:1.25;
     color: var(--ink-900); margin-bottom:8px;
@@ -2973,6 +2981,33 @@
 @media (max-width:768px) { .pd-index-header { padding: 48px 0 32px; } }
 .pd-index-title { margin-top: 12px; }
 .pd-index-lead { margin-top: 16px; max-width: 600px; }
+
+.pd-cat-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.pd-cat-btn {
+  appearance: none;
+  border: 1px solid rgba(26,22,17,.14);
+  background: #fff;
+  color: var(--ink-700);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.pd-cat-btn:hover { border-color: var(--mi-red); color: var(--mi-red); }
+.pd-cat-btn.is-active {
+  background: var(--mi-red);
+  border-color: var(--mi-red);
+  color: #fff;
+}
+
 .pd-index-grid-section { padding: 64px 0; background: var(--cream); }
 .pd-index-featured {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;

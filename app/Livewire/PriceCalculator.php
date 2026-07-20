@@ -9,7 +9,7 @@ use Livewire\Component;
 
 class PriceCalculator extends Component
 {
-    public float $length = 81;
+    public float $length = 71;
     public float $width = 12;
     public float $height = 3.5;
     public int $floors = 3;
@@ -21,7 +21,7 @@ class PriceCalculator extends Component
     {
         $tech = app(CalculatorSettings::class)->techConfig();
 
-        $this->length = (float) ($tech['default_length'] ?? 81);
+        $this->length = (float) ($tech['default_length'] ?? 71);
         $this->width = (float) ($tech['default_width'] ?? 12);
         $this->height = (float) ($tech['default_height'] ?? 3.5);
         $this->floors = (int) ($tech['default_floors'] ?? 3);
@@ -119,7 +119,7 @@ class PriceCalculator extends Component
             'layerNestModuleM' => (float) ($tech['layer_nest_module_m'] ?? 0.60),
             'widthLinesMap' => $tech['width_lines_map'] ?? [],
             'weightMap' => $tech['broiler_weight_birds_map'] ?? [],
-            'minLength' => (float) ($tech['min_length'] ?? 81),
+            'minLength' => (float) ($tech['min_length'] ?? 71),
             'maxLength' => (float) ($tech['max_length'] ?? 300),
             'minWidth' => (float) ($tech['min_width'] ?? 8),
             'maxWidth' => (float) ($tech['max_width'] ?? 30),

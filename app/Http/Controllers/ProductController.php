@@ -11,9 +11,19 @@ class ProductController extends Controller
     {
         $seo->setTitle(__('messages.products_title'));
 
+        $products = Product::active()->with('media')->get();
+        $categoriesInUse = $products->pluck('category')->unique()->filter()->values();
+
         return view('products.index', [
-            'products' => Product::active()->with('media')->get(),
-            'seo'      => $seo->toArray(),
+            'products' => $products,
+            'categoryOptions' => collect(Product::CATEGORIES)
+                ->only($categoriesInUse->all())
+                ->map(fn ($labels, $key) => [
+                    'key' => $key,
+                    'label' => $labels[app()->getLocale()] ?? $labels['en'],
+                ])
+                ->values(),
+            'seo' => $seo->toArray(),
         ]);
     }
 

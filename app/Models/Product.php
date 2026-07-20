@@ -18,13 +18,23 @@ class Product extends Model implements HasMedia
 {
     use HasFactory, HasTranslations, HasSlug, HasSeoMeta, InteractsWithMedia, LogsActivity;
 
+    public const CATEGORIES = [
+        'cages' => ['ar' => 'بطاريات وأنظمة', 'en' => 'Cages & systems'],
+        'ventilation' => ['ar' => 'شفاطات وتهوية', 'en' => 'Fans & ventilation'],
+        'windows' => ['ar' => 'شبابيك هواء', 'en' => 'Air inlets / windows'],
+        'drinkers' => ['ar' => 'سقايات ومياه', 'en' => 'Drinkers & water'],
+        'concrete' => ['ar' => 'خرسانة وإنشاءات', 'en' => 'Concrete & civil'],
+        'feeding' => ['ar' => 'تغذية وصوامع', 'en' => 'Feeding & silos'],
+        'other' => ['ar' => 'أخرى', 'en' => 'Other'],
+    ];
+
     public array $translatable = [
         'name', 'summary', 'description', 'badge',
         'specs', 'seo_title', 'seo_description',
     ];
 
     protected $fillable = [
-        'slug', 'name', 'summary', 'description', 'badge', 'specs',
+        'slug', 'category', 'name', 'summary', 'description', 'badge', 'specs',
         'seo_title', 'seo_description',
         'position', 'is_active', 'is_featured',
     ];
@@ -38,7 +48,7 @@ class Product extends Model implements HasMedia
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'position', 'is_active', 'is_featured', 'specs', 'badge'])
+            ->logOnly(['name', 'category', 'position', 'is_active', 'is_featured', 'specs', 'badge'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('product');
@@ -82,4 +92,33 @@ class Product extends Model implements HasMedia
 
     public function scopeActive($q) { return $q->where('is_active', true)->orderBy('position'); }
     public function scopeFeatured($q) { return $q->where('is_featured', true); }
+
+    public function scopeCategory($q, ?string $category)
+    {
+        if (!$category || $category === 'all') {
+            return $q;
+        }
+
+        return $q->where('category', $category);
+    }
+
+    public function categoryLabel(?string $locale = null): string
+    {
+        $locale = $locale ?: app()->getLocale();
+        $meta = self::CATEGORIES[$this->category] ?? self::CATEGORIES['other'];
+
+        return $meta[$locale] ?? $meta['en'] ?? $this->category;
+    }
+
+    /** @return array<string, string> */
+    public static function categoryOptions(?string $locale = null): array
+    {
+        $locale = $locale ?: app()->getLocale();
+        $out = [];
+        foreach (self::CATEGORIES as $key => $labels) {
+            $out[$key] = $labels[$locale] ?? $labels['en'];
+        }
+
+        return $out;
+    }
 }
