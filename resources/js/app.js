@@ -651,14 +651,14 @@ function initMiCarousels() {
     root.appendChild(wrapper);
     root.appendChild(pagination);
 
-    const per = parseFloat(root.getAttribute('data-mi-per') || '1.12') || 1.12;
+    const per = Math.min(1.05, parseFloat(root.getAttribute('data-mi-per') || '1') || 1);
 
     const swiper = new Swiper(root, {
       modules: [Pagination, A11y],
       slidesPerView: per,
-      spaceBetween: 14,
-      centeredSlides: true,
-      speed: reduced ? 0 : 520,
+      spaceBetween: 12,
+      centeredSlides: false,
+      speed: reduced ? 0 : 420,
       grabCursor: true,
       watchOverflow: true,
       resistanceRatio: 0.65,
@@ -670,23 +670,8 @@ function initMiCarousels() {
         dynamicBullets: true,
       },
       on: {
-        init(sw) {
+        init() {
           root.classList.add('is-ready');
-          if (!reduced) {
-            gsap.fromTo(sw.slides, {
-              opacity: 0.5,
-              y: 24,
-              scale: 0.96,
-            }, {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.55,
-              stagger: 0.06,
-              ease: 'power3.out',
-              clearProps: 'opacity,transform',
-            });
-          }
         },
       },
     });

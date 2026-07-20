@@ -13,6 +13,8 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    {{-- Sync classic script BEFORE Livewire/Alpine — registers Alpine.data('miPoultryCalc') on alpine:init --}}
+    <script src="{{ asset('js/mi-poultry-calc.js') }}?v={{ @filemtime(public_path('js/mi-poultry-calc.js')) ?: time() }}"></script>
     {{ $head ?? '' }}
 </head>
 <body>

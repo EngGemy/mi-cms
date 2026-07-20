@@ -1005,17 +1005,19 @@
     overflow: hidden;
     margin-inline: 0;
     padding-bottom: 8px;
+    /* neutralize parent grid when Swiper is active — prevents empty height gaps */
+    grid-template-columns: none !important;
+    gap: 0 !important;
   }
   .mi-carousel-swiper .swiper-wrapper{ align-items: stretch; }
   .mi-carousel-swiper .swiper-slide{
     height: auto;
-    opacity: .7;
-    transform: scale(.94);
-    transition: transform .45s var(--ease), opacity .45s var(--ease);
+    opacity: 1;
+    transform: none;
   }
   .mi-carousel-swiper .swiper-slide-active{
     opacity: 1;
-    transform: scale(1);
+    transform: none;
   }
   .mi-carousel-swiper .mi-carousel-item,
   .mi-carousel-swiper .product-card,

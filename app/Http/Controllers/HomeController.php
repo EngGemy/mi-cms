@@ -24,7 +24,7 @@ class HomeController extends Controller
 
         return view('home', [
             'heroSlides'       => HeroSlide::active()->get(),
-            'featuredProducts' => Product::active()->take(6)->get(),
+            'featuredProducts' => Product::active()->with('media')->take(8)->get(),
             'features'         => Feature::active()->take(3)->get(),
             'productionStages' => ProductionStage::active()->take(6)->get(),
             'projects'         => Project::active()->take(8)->get(),

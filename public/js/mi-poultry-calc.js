@@ -1,9 +1,11 @@
 /**
- * Capacity calculator Alpine factory (classic script for Livewire @assets).
- * Keep in sync with resources/js/mi-poultry-calc.js — single logical source.
- * Registration: Livewire @script calls Alpine.data('miPoultryCalc', window.miPoultryCalcFactory).
+ * MI Poultry capacity calculator — classic script (NOT a Vite module).
+ * Loaded sync in <head> BEFORE Livewire so alpine:init registers Alpine.data
+ * before any x-data="miPoultryCalc(...)" evaluates.
  */
 (function (global) {
+  'use strict';
+
   function miPoultryCalcFactory(cfg) {
     cfg = cfg || {};
     return {
@@ -36,7 +38,6 @@
       savedMsg: '',
       requestId: null,
       errors: {},
-
       birds: 0,
       birdsPerNest: 16,
       effectiveLength: 0,
@@ -47,20 +48,18 @@
       inlets: 0,
       layerNestsTotal: 0,
 
-      init: function () {
-        this.recompute();
-      },
+      init: function () { this.recompute(); },
 
       closeEstimate: function () {
         this.saved = false;
         document.body.classList.remove('calc-modal-open');
-        if (window.lenis) window.lenis.start();
+        if (global.lenis) global.lenis.start();
       },
 
       openEstimate: function () {
         this.saved = true;
         document.body.classList.add('calc-modal-open');
-        if (window.lenis) window.lenis.stop();
+        if (global.lenis) global.lenis.stop();
       },
 
       clamp: function (key, min, max) {
@@ -75,11 +74,9 @@
           width: [this.minWidth, this.maxWidth],
           height: [this.minHeight, this.maxHeight],
         };
-        var pair = bounds[key];
-        var min = pair[0];
-        var max = pair[1];
+        var pair = bounds[key] || [0, 9999];
         var next = Math.round((Number(this[key]) + delta) * 10) / 10;
-        this[key] = Math.min(max, Math.max(min, next));
+        this[key] = Math.min(pair[1], Math.max(pair[0], next));
         if (key === 'length') this.onLengthInput();
         else if (key === 'width') this.onWidthInput();
         else this.recompute();
@@ -94,11 +91,8 @@
         this.clamp('width', this.minWidth, this.maxWidth);
         var key = String(this.width);
         var keyInt = String(parseFloat(this.width));
-        if (this.widthLinesMap[key] != null) {
-          this.lines = Number(this.widthLinesMap[key]);
-        } else if (this.widthLinesMap[keyInt] != null) {
-          this.lines = Number(this.widthLinesMap[keyInt]);
-        }
+        if (this.widthLinesMap[key] != null) this.lines = Number(this.widthLinesMap[key]);
+        else if (this.widthLinesMap[keyInt] != null) this.lines = Number(this.widthLinesMap[keyInt]);
         this.recompute();
       },
 
@@ -108,13 +102,14 @@
         if (map[key] != null) return Number(map[key]);
         var closest = 16;
         var closestDiff = Infinity;
+        var self = this;
         Object.keys(map).forEach(function (w) {
-          var diff = Math.abs(Number(w) - this.birdWeightKg);
+          var diff = Math.abs(Number(w) - self.birdWeightKg);
           if (diff < closestDiff) {
             closestDiff = diff;
             closest = Number(map[w]);
           }
-        }.bind(this));
+        });
         return closest;
       },
 
@@ -122,18 +117,16 @@
         var L = Number(this.length) || 0;
         var floors = Number(this.floors) || 1;
         var lines = Number(this.lines) || 1;
-
         var rawEffective = Math.max(0, L - this.serviceLength);
         this.effectiveLength = Math.floor(rawEffective / 2) * 2;
         this.birdsPerNest = this.resolveBirdsPerNest();
         this.nestsPerLine = this.effectiveLength * 2 * floors;
         this.totalNests = this.nestsPerLine * lines;
         this.birds = this.totalNests * this.birdsPerNest;
-
         this.rearFans = Math.ceil((this.birds * this.birdWeightKg) / this.fanCapacityKg) || 0;
         this.coolingPadMeters = Math.ceil(this.rearFans * this.coolingPadMetersPerFan) || 0;
-        this.inlets = Math.max(0, (L % 2 === 1) ? ((L - 3) / 2) : ((L - 4) / 2));
-        this.inlets = Math.floor(this.inlets);
+        var rawInlets = (L % 2 === 1) ? ((L - 3) / 2) : ((L - 4) / 2);
+        this.inlets = Math.max(0, Math.floor(rawInlets));
         var layerNestsPerFace = Math.round(this.effectiveLength / this.layerNestModuleM);
         this.layerNestsTotal = layerNestsPerFace * 2 * floors;
       },
@@ -172,10 +165,10 @@
 
       validateLocal: function () {
         var errors = {};
-        if (!this.name || this.name.length < 2) {
+        if (!this.name || String(this.name).trim().length < 2) {
           errors.name = this.locale === 'ar' ? 'الاسم مطلوب' : 'Name is required';
         }
-        if (!this.phone || this.phone.replace(/\D+/g, '').length < 8) {
+        if (!this.phone || String(this.phone).replace(/\D+/g, '').length < 8) {
           errors.phone = this.locale === 'ar' ? 'رقم هاتف صحيح مطلوب' : 'Valid phone is required';
         }
         this.errors = errors;
@@ -208,7 +201,7 @@
         } catch (e) {
           var msg = String((e && e.message) || e || '');
           if (msg.toLowerCase().includes('expired')) {
-            window.location.reload();
+            global.location.reload();
             return;
           }
           var bag = (e && e.errors) || (e && e.detail && e.detail.errors);
@@ -235,26 +228,30 @@
   }
 
   global.miPoultryCalcFactory = miPoultryCalcFactory;
-  global.miPoultryCalc = miPoultryCalcFactory;
 
-  // If Alpine already started (rare), register + remount calculator roots
-  function bootMiPoultryCalcAlpine() {
+  function registerAlpineData() {
     var Alpine = global.Alpine;
-    if (!Alpine || typeof miPoultryCalcFactory !== 'function') return;
-    if (!Alpine.__miPoultryCalcRegistered) {
-      Alpine.__miPoultryCalcRegistered = true;
-      Alpine.data('miPoultryCalc', function (cfg) {
-        return miPoultryCalcFactory(cfg || {});
-      });
-    }
+    if (!Alpine || typeof Alpine.data !== 'function') return false;
+    if (Alpine.__miPoultryCalcRegistered) return true;
+    Alpine.__miPoultryCalcRegistered = true;
+    Alpine.data('miPoultryCalc', function (cfg) {
+      return miPoultryCalcFactory(cfg || {});
+    });
+    return true;
+  }
+
+  function remountBrokenCalcs() {
+    var Alpine = global.Alpine;
+    if (!Alpine) return;
+    registerAlpineData();
     var nodes = document.querySelectorAll('.calc-card--ux');
     for (var i = 0; i < nodes.length; i++) {
       var el = nodes[i];
       var ok = false;
       try {
         var data = Alpine.$data(el);
-        ok = !!(data && typeof data.saveEstimate === 'function');
-      } catch (e) {
+        ok = !!(data && typeof data.saveEstimate === 'function' && typeof data.fmt === 'function');
+      } catch (err) {
         ok = false;
       }
       if (ok) continue;
@@ -263,9 +260,21 @@
     }
   }
 
+  // Register as early as possible — BEFORE Alpine walks the DOM
+  document.addEventListener('alpine:init', function () {
+    registerAlpineData();
+  });
+
+  // Safety net if first init raced
+  document.addEventListener('livewire:init', function () {
+    remountBrokenCalcs();
+  });
+  document.addEventListener('livewire:navigated', function () {
+    remountBrokenCalcs();
+  });
+
   if (global.Alpine) {
-    bootMiPoultryCalcAlpine();
+    registerAlpineData();
+    remountBrokenCalcs();
   }
-  document.addEventListener('livewire:init', bootMiPoultryCalcAlpine);
-  document.addEventListener('livewire:navigated', bootMiPoultryCalcAlpine);
 })(window);

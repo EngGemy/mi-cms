@@ -15,7 +15,7 @@
     <div
       class="products-grid mi-carousel"
       data-mi-carousel
-      data-mi-per="1.12"
+      data-mi-per="1"
       data-stagger
     >
       @foreach($products as $product)
