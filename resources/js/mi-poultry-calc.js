@@ -227,3 +227,4 @@ export function miPoultryCalcFactory(cfg = {}) {
 }
 
 window.miPoultryCalcFactory = miPoultryCalcFactory;
+window.miPoultryCalc = miPoultryCalcFactory;

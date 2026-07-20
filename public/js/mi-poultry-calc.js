@@ -235,4 +235,6 @@
   }
 
   global.miPoultryCalcFactory = miPoultryCalcFactory;
+  // Alias for any leftover Alpine.data('miPoultryCalc') / x-data="miPoultryCalc(...)" references
+  global.miPoultryCalc = miPoultryCalcFactory;
 })(window);

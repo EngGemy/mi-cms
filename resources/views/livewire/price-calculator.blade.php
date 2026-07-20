@@ -6,7 +6,7 @@
   <div
     class="calc-card calc-card--ux"
     wire:ignore
-    x-data="miPoultryCalc(@js($cfg))"
+    x-data="miPoultryCalcFactory(@js($cfg))"
     x-cloak
     @keydown.escape.window="if (saved) closeEstimate()"
   >
@@ -294,24 +294,3 @@
     </div>
   </div>
 </div>
-
-{{--
-  Factory must be available before Alpine.data registration (Vite is deferred).
-  @assets injects this classic script into <head>.
---}}
-@assets
-<script src="{{ asset('js/mi-poultry-calc.js') }}?v={{ @filemtime(public_path('js/mi-poultry-calc.js')) ?: '1' }}"></script>
-@endassets
-
-{{--
-  Canonical Alpine.data registration for this Livewire component.
-  @script runs on Livewire's Alpine after it is available and before x-data evaluates.
---}}
-@script
-<script>
-    if (!Alpine.__miPoultryCalcRegistered) {
-        Alpine.__miPoultryCalcRegistered = true;
-        Alpine.data('miPoultryCalc', window.miPoultryCalcFactory);
-    }
-</script>
-@endscript
