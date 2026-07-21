@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCertModal();
   initCertHoverPreview();
   initChairmanTypewriter();
+  initSideRailShare();
   ScrollTrigger.refresh();
 });
 
@@ -979,6 +980,31 @@ function initSmoothAnchors() {
     a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
       if (target) { e.preventDefault(); lenis?.scrollTo(target, { offset: -76, duration: 1.4 }); }
+    });
+  });
+}
+
+function initSideRailShare() {
+  document.querySelectorAll('[data-mi-share]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const url = btn.getAttribute('data-share-url') || window.location.href;
+      const title = btn.getAttribute('data-share-title') || document.title;
+      const fallback = btn.getAttribute('data-share-fallback');
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, url });
+          return;
+        }
+      } catch (e) {
+        if (e && e.name === 'AbortError') return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        btn.classList.add('is-copied');
+        window.setTimeout(() => btn.classList.remove('is-copied'), 1600);
+      } catch (_) {
+        if (fallback) window.open(fallback, '_blank', 'noopener,noreferrer');
+      }
     });
   });
 }

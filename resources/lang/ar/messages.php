@@ -34,6 +34,26 @@ return [
     'stat_birds'         => '+80 مليون طائر',
     'stat_countries'     => '12 دولة',
 
+    // Calculator gateway (under hero)
+    'gateway_eyebrow'       => 'START HERE',
+    'gateway_title'         => 'عاوز عرض سعة أو تعرف منهجيتنا؟',
+    'gateway_blurb'         => 'ابدأ من هنا — احسب سعة العنبر فوراً، تصفّح حلولنا، أو تعرّف على خطوات التنفيذ من الاستشارة حتى التسليم.',
+    'gateway_cta_calc'      => 'حاسبة السعة',
+    'gateway_cta_products'  => 'منتجاتنا',
+    'gateway_cta_method'    => 'منهجيتنا',
+    'gateway_help_eyebrow'  => 'MI EXPERIENCE',
+    'gateway_help_title'    => 'كيف يمكننا مساعدتك؟',
+    'gateway_help_blurb'    => 'فضلاً اختر نوع المشروع المناسب لك ثم استمر إلى الحاسبة',
+    'gateway_help_continue' => 'استمر',
+    'gateway_chip_layers'   => 'إنتاج البيض',
+    'gateway_chip_broilers' => 'تربية التسمين',
+    'gateway_chip_turnkey'  => 'عنابر جاهزة',
+    'gateway_chip_consult'  => 'استشارة هندسية',
+    'rail_aria'             => 'اختصارات سريعة',
+    'rail_calc'             => 'الحاسبة',
+    'rail_contact'          => 'اتصال',
+    'rail_share'            => 'مشاركة',
+
     // Features section
     'features_eyebrow' => 'لماذا إم آي؟',
     'features_title'   => 'ما الذي يجعلنا الاختيار الأول؟',

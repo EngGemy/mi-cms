@@ -1,5 +1,6 @@
 <x-layouts.public>
 @include('sections.hero',              ['slides' => $heroSlides])
+@include('sections.calc-gateway')
 @include('sections.products',          ['products' => $featuredProducts])
 @include('sections.features',          ['features' => $features])
 @include('sections.video-showcase')

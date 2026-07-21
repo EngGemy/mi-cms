@@ -18,6 +18,7 @@
     @include('partials.mobile-drawer')
     <main>{{ $slot }}</main>
     @include('partials.footer')
+    @include('partials.side-rail')
     @include('partials.whatsapp')
     @livewireScripts
     @stack('scripts')

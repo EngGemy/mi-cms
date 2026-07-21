@@ -34,6 +34,26 @@ return [
     'stat_birds'         => '+80 Million Birds',
     'stat_countries'     => '12 Countries',
 
+    // Calculator gateway (under hero)
+    'gateway_eyebrow'       => 'START HERE',
+    'gateway_title'         => 'Need a capacity estimate or our methodology?',
+    'gateway_blurb'         => 'Start here — calculate house capacity instantly, browse our solutions, or see how we take you from consultation to handover.',
+    'gateway_cta_calc'      => 'Capacity Calculator',
+    'gateway_cta_products'  => 'Our Products',
+    'gateway_cta_method'    => 'Our Method',
+    'gateway_help_eyebrow'  => 'MI EXPERIENCE',
+    'gateway_help_title'    => 'How can we help you?',
+    'gateway_help_blurb'    => 'Please choose the project type that fits you, then continue to the calculator',
+    'gateway_help_continue' => 'Continue',
+    'gateway_chip_layers'   => 'Egg production',
+    'gateway_chip_broilers' => 'Broiler farming',
+    'gateway_chip_turnkey'  => 'Turnkey houses',
+    'gateway_chip_consult'  => 'Engineering consult',
+    'rail_aria'             => 'Quick shortcuts',
+    'rail_calc'             => 'Calculator',
+    'rail_contact'          => 'Contact',
+    'rail_share'            => 'Share',
+
     // Features section
     'features_eyebrow' => 'Why MI?',
     'features_title'   => 'What Makes Us the First Choice?',

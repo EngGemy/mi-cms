@@ -27,6 +27,7 @@
 </main>
 
 @include('partials.footer')
+@include('partials.side-rail')
 @include('partials.whatsapp')
 
 @livewireScripts
