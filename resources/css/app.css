@@ -1634,7 +1634,7 @@
   @media (max-width: 767px){
     .mi-rail{
       top: auto;
-      bottom: max(160px, calc(140px + env(safe-area-inset-bottom, 0px)));
+      bottom: max(168px, calc(156px + env(safe-area-inset-bottom, 0px))); /* above WhatsApp on the right */
       transform: none;
     }
     .mi-rail-btn{
@@ -1724,6 +1724,8 @@
     .wa-float{
       width: 56px;
       height: 56px;
+      left: auto;
+      right: max(16px, env(safe-area-inset-right, 0px));
       bottom: max(88px, calc(76px + env(safe-area-inset-bottom, 0px))); /* above calc sticky bar */
     }
     .wa-float-label{ display: none; }
