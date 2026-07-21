@@ -9,7 +9,6 @@
       class="features-grid mi-carousel"
       data-mi-carousel
       data-mi-per="1.15"
-      data-stagger
     >
       @foreach($features as $feature)
         <div class="feature-card mi-carousel-item">

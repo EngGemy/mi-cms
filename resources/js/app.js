@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initLenis();
   initHeader();
   initRotator();
-  initReveals();
   initParallax();
   initFooterReveal();
   initCounters();
@@ -33,7 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   initStagesSlider();
   initProjectsSection();
+  // Carousels BEFORE reveals so GSAP does not leave moved nodes at opacity:0
   initMiCarousels();
+  initReveals();
   initSmoothAnchors();
   initAboutPage();
   initProjectPage();
@@ -269,6 +270,9 @@ function initReveals() {
 
   // 2) Stagger containers
   gsap.utils.toArray('[data-stagger]').forEach(c => {
+    // Skip mobile carousels — Swiper reparents children and leaves them invisible if staggered first
+    if (c.hasAttribute('data-mi-carousel')) return;
+
     const delay = parseFloat(c.getAttribute('data-reveal-delay')) || 0;
     const children = [...c.children].filter(ch => !ch.hasAttribute('data-no-reveal'));
     if (!children.length) return;
@@ -672,6 +676,13 @@ function initMiCarousels() {
       on: {
         init() {
           root.classList.add('is-ready');
+          // Ensure cards are visible after Swiper reparents them
+          items.forEach((item) => {
+            item.style.opacity = '1';
+            item.style.transform = 'none';
+            item.style.filter = 'none';
+            item.style.visibility = 'visible';
+          });
         },
       },
     });

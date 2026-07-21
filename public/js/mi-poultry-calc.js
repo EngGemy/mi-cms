@@ -229,52 +229,90 @@
 
   global.miPoultryCalcFactory = miPoultryCalcFactory;
 
-  function registerAlpineData() {
-    var Alpine = global.Alpine;
-    if (!Alpine || typeof Alpine.data !== 'function') return false;
-    if (Alpine.__miPoultryCalcRegistered) return true;
-    Alpine.__miPoultryCalcRegistered = true;
-    Alpine.data('miPoultryCalc', function (cfg) {
-      return miPoultryCalcFactory(cfg || {});
-    });
-    return true;
-  }
+  var mountCount = 0;
 
-  function remountBrokenCalcs() {
-    var Alpine = global.Alpine;
-    if (!Alpine) return;
-    registerAlpineData();
-    var nodes = document.querySelectorAll('.calc-card--ux');
-    for (var i = 0; i < nodes.length; i++) {
-      var el = nodes[i];
-      var ok = false;
-      try {
-        var data = Alpine.$data(el);
-        ok = !!(data && typeof data.saveEstimate === 'function' && typeof data.fmt === 'function');
-      } catch (err) {
-        ok = false;
-      }
-      if (ok) continue;
-      if (typeof Alpine.destroyTree === 'function') Alpine.destroyTree(el);
-      Alpine.initTree(el);
+  function isMounted(el) {
+    try {
+      var Alpine = global.Alpine;
+      if (!Alpine || typeof Alpine.$data !== 'function') return false;
+      var data = Alpine.$data(el);
+      return !!(data && typeof data.saveEstimate === 'function' && typeof data.fmt === 'function');
+    } catch (e) {
+      return false;
     }
   }
 
-  // Register as early as possible — BEFORE Alpine walks the DOM
-  document.addEventListener('alpine:init', function () {
-    registerAlpineData();
-  });
+  /**
+   * Livewire sandboxes Alpine expressions — window.miPoultryCalcFactory in x-data never runs.
+   * Cards use x-ignore + data-calc-cfg; we mount via Alpine.data(key) + initTree so $wire works.
+   */
+  function mountCalcs() {
+    var Alpine = global.Alpine;
+    if (!Alpine || typeof Alpine.data !== 'function' || typeof Alpine.initTree !== 'function') return 0;
 
-  // Safety net if first init raced
-  document.addEventListener('livewire:init', function () {
-    remountBrokenCalcs();
-  });
-  document.addEventListener('livewire:navigated', function () {
-    remountBrokenCalcs();
-  });
+    var mounted = 0;
+    var nodes = document.querySelectorAll('[data-mi-calc]');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (isMounted(el)) {
+        mounted += 1;
+        continue;
+      }
 
-  if (global.Alpine) {
-    registerAlpineData();
-    remountBrokenCalcs();
+      var cfg = {};
+      try {
+        cfg = JSON.parse(el.getAttribute('data-calc-cfg') || '{}');
+      } catch (e) {
+        cfg = {};
+      }
+
+      try {
+        if (typeof Alpine.destroyTree === 'function') Alpine.destroyTree(el);
+      } catch (e2) { /* ignore */ }
+
+      var key = el.getAttribute('data-mi-calc-key');
+      if (!key) {
+        mountCount += 1;
+        key = 'miCalc' + mountCount;
+        el.setAttribute('data-mi-calc-key', key);
+      }
+
+      Alpine.data(key, (function (capturedCfg) {
+        return function () {
+          return miPoultryCalcFactory(capturedCfg);
+        };
+      })(cfg));
+
+      el.removeAttribute('x-ignore');
+      el.setAttribute('x-data', key);
+
+      try {
+        Alpine.initTree(el);
+        if (isMounted(el)) mounted += 1;
+      } catch (e3) {
+        console.warn('[miPoultryCalc] mount failed', e3);
+      }
+    }
+    return mounted;
+  }
+
+  function boot() {
+    mountCalcs();
+    var tries = 0;
+    var t = setInterval(function () {
+      tries += 1;
+      var n = mountCalcs();
+      var total = document.querySelectorAll('[data-mi-calc]').length;
+      if ((total > 0 && n >= total) || tries >= 25) clearInterval(t);
+    }, 150);
+  }
+
+  document.addEventListener('alpine:initialized', boot);
+  document.addEventListener('livewire:init', boot);
+  document.addEventListener('livewire:navigated', mountCalcs);
+  document.addEventListener('DOMContentLoaded', boot);
+
+  if (global.Alpine && global.Alpine.version) {
+    boot();
   }
 })(window);

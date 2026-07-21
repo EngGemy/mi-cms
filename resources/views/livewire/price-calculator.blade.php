@@ -1,12 +1,17 @@
 @php
   $cfg = $alpineConfig;
 @endphp
-{{-- Livewire root: keep stable; Alpine UI is wire:ignore so remorph never blanks the card --}}
+{{--
+  Do NOT put factory calls in x-data — Livewire's Alpine sandbox cannot see window.*.
+  Mount is done by public/js/mi-poultry-calc.js via x-ignore + Alpine.data + initTree.
+--}}
 <div>
   <div
-    class="calc-card calc-card--ux"
     wire:ignore
-    x-data="miPoultryCalc(@js($cfg))"
+    class="calc-card--ux"
+    data-mi-calc
+    data-calc-cfg='@json($cfg)'
+    x-ignore
     x-cloak
     @keydown.escape.window="if (saved) closeEstimate()"
   >

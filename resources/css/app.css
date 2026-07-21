@@ -1026,6 +1026,10 @@
   .mi-carousel-swiper .testimonial-card{
     height: 100%;
     width: 100%;
+    /* GSAP stagger can leave opacity:0 after Swiper reparents nodes */
+    opacity: 1 !important;
+    visibility: visible !important;
+    filter: none !important;
   }
   .mi-carousel-pagination{
     position: static !important;

@@ -11,7 +11,6 @@
       class="team-grid mi-carousel"
       data-mi-carousel
       data-mi-per="1.12"
-      data-stagger
     >
       @foreach($members as $m)
         <div class="team-card mi-carousel-item @if($m->is_featured)is-featured @endif">

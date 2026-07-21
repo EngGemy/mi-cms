@@ -16,7 +16,6 @@
       class="products-grid mi-carousel"
       data-mi-carousel
       data-mi-per="1"
-      data-stagger
     >
       @foreach($products as $product)
         <a href="{{ route('products.show', [app()->getLocale(), $product->slug]) }}"
