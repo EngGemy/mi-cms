@@ -23,7 +23,7 @@
       <a href="{{ route('products.index', $locale) }}" class="{{ $routeIs('products.*') ? 'active' : '' }}">{{ __('messages.nav_products') }}</a>
       <a href="{{ route('home', $locale) }}#features">{{ __('messages.nav_features') }}</a>
       <a href="{{ route('projects.index', $locale) }}" class="{{ $routeIs('projects.*') ? 'active' : '' }}">{{ __('messages.nav_projects') }}</a>
-      <a href="{{ route('home', $locale) }}#calculator">{{ __('messages.nav_calculator') }}</a>
+      <a href="{{ route('home', $locale) }}#start">{{ __('messages.nav_calculator') }}</a>
       <a href="{{ route('process.index', $locale) }}" class="{{ $routeIs('process.*') ? 'active' : '' }}">{{ __('messages.nav_how') }}</a>
       <a href="{{ route('about', $locale) }}" class="{{ $routeIs('about') ? 'active' : '' }}">{{ __('messages.nav_about') }}</a>
       <a href="{{ route('blog.index', $locale) }}" class="{{ $routeIs('blog.*') ? 'active' : '' }}">{{ __('messages.nav_blog') }}</a>

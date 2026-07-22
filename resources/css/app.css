@@ -1634,8 +1634,306 @@
   }
 
   /* ===================================================================
-     CALC GATEWAY (under hero) + SIDE RAIL
+     CAPACITY PROMO (under hero) + CALC GATEWAY + SIDE RAIL
      =================================================================== */
+  .cap-promo{ position: relative; isolation: isolate; }
+  .cap-promo-band{
+    background:
+      radial-gradient(900px 420px at 0% 0%, rgba(200,16,46,.08), transparent 55%),
+      radial-gradient(700px 360px at 100% 20%, rgba(26,22,17,.04), transparent 50%),
+      linear-gradient(180deg, #fff 0%, var(--paper) 100%);
+    padding: clamp(48px, 8vw, 88px) 0 clamp(40px, 6vw, 64px);
+    border-bottom: 1px solid rgba(26,22,17,.06);
+  }
+  .cap-promo-eyebrow{
+    display: inline-block;
+    font-family: var(--font-mono), "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--mi-red);
+    margin-bottom: 14px;
+  }
+  .cap-promo-title{
+    font-family: "Cairo", var(--font-display), sans-serif;
+    font-size: clamp(30px, 4.6vw, 48px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--ink-900);
+    letter-spacing: -.02em;
+    max-width: 18ch;
+  }
+  .cap-promo-blurb{
+    margin-top: 14px;
+    font-size: clamp(15px, 1.6vw, 17px);
+    line-height: 1.7;
+    color: var(--ink-700);
+    max-width: 42ch;
+  }
+  .cap-promo-types{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 36px;
+  }
+  @media (min-width: 720px){
+    .cap-promo-types{ grid-template-columns: 1fr 1fr; gap: 18px; }
+  }
+  .cap-promo-type{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: start;
+    padding: 28px 24px;
+    border-radius: 22px;
+    border: 1px solid rgba(26,22,17,.1);
+    background: #fff;
+    box-shadow: 0 18px 40px -24px rgba(26,22,17,.35);
+    cursor: pointer;
+    transition: transform .35s var(--ease), border-color .25s ease, box-shadow .35s ease;
+  }
+  .cap-promo-type:hover{
+    transform: translateY(-4px);
+    border-color: rgba(200,16,46,.35);
+    box-shadow: 0 24px 48px -20px rgba(200,16,46,.28);
+  }
+  .cap-promo-type-icon{
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: grid; place-items: center;
+    background: rgba(200,16,46,.08);
+    color: var(--mi-red);
+    margin-bottom: 6px;
+  }
+  .cap-promo-type-icon svg{ width: 22px; height: 22px; }
+  .cap-promo-type-label{
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--ink-900);
+  }
+  .cap-promo-type-hint{
+    font-size: 14px;
+    color: var(--ink-600);
+  }
+  .cap-promo-type-go{
+    position: absolute;
+    inset-inline-end: 20px;
+    bottom: 22px;
+    width: 36px; height: 36px;
+    border-radius: 999px;
+    display: grid; place-items: center;
+    background: var(--ink-900);
+    color: #fff;
+    transition: background .25s ease, transform .25s ease;
+  }
+  .cap-promo-type:hover .cap-promo-type-go{
+    background: var(--mi-red);
+    transform: translateX(-3px);
+  }
+  [dir="ltr"] .cap-promo-type:hover .cap-promo-type-go{ transform: translateX(3px); }
+  .cap-promo-type-go svg{ width: 16px; height: 16px; }
+  [dir="ltr"] .cap-promo-type-go svg{ transform: scaleX(-1); }
+
+  .cap-promo-enter{ transition: opacity .4s ease, transform .45s var(--ease); }
+  .cap-promo-enter-start{ opacity: 0; transform: translateY(18px); }
+  .cap-promo-enter-end{ opacity: 1; transform: translateY(0); }
+
+  .cap-promo-data{
+    margin-top: 32px;
+    padding: 28px 24px;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px solid rgba(26,22,17,.08);
+    box-shadow: 0 20px 50px -28px rgba(26,22,17,.35);
+  }
+  .cap-promo-data-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .cap-promo-back{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-600);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+  .cap-promo-back svg{ width: 16px; height: 16px; }
+  [dir="ltr"] .cap-promo-back svg{ transform: scaleX(-1); }
+  .cap-promo-badge{
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(200,16,46,.1);
+    color: var(--mi-red);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .cap-promo-fields{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (min-width: 900px){
+    .cap-promo-fields{ grid-template-columns: repeat(3, 1fr); }
+  }
+  .cap-promo-field{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-700);
+  }
+  .cap-promo-field input,
+  .cap-promo-field select{
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid rgba(26,22,17,.12);
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-900);
+    background: var(--paper);
+  }
+  .cap-promo-field--service{ grid-column: 1 / -1; }
+  @media (min-width: 900px){
+    .cap-promo-field--service{ grid-column: span 1; }
+  }
+  .cap-promo-service{
+    display: flex;
+    gap: 8px;
+  }
+  .cap-promo-service button{
+    flex: 1;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid rgba(26,22,17,.12);
+    background: var(--paper);
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, color .2s ease;
+  }
+  .cap-promo-service button.is-on{
+    border-color: var(--mi-red);
+    background: rgba(200,16,46,.08);
+    color: var(--mi-red);
+  }
+  .cap-promo-note{
+    margin: 16px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-600);
+  }
+  .cap-promo-open{
+    margin-top: 20px;
+    width: 100%;
+    min-height: 54px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+  }
+  .cap-promo-open svg{ width: 18px; height: 18px; }
+
+  .cap-workspace-modal{
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: grid;
+    place-items: end center;
+  }
+  @media (min-width: 900px){
+    .cap-workspace-modal{ place-items: center; padding: 24px; }
+  }
+  .cap-workspace-backdrop{
+    position: absolute;
+    inset: 0;
+    background: rgba(18,14,10,.62);
+    backdrop-filter: blur(6px);
+  }
+  .cap-workspace-panel{
+    position: relative;
+    z-index: 1;
+    width: min(1120px, 100%);
+    max-height: min(92vh, 920px);
+    background: var(--paper);
+    border-radius: 28px 28px 0 0;
+    overflow: hidden;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.45);
+  }
+  @media (min-width: 900px){
+    .cap-workspace-panel{ border-radius: 28px; }
+  }
+  .cap-workspace-enter{ transition: transform .45s var(--ease), opacity .35s ease; }
+  .cap-workspace-enter-start{ opacity: 0; transform: translateY(40px) scale(.97); }
+  .cap-workspace-enter-end{ opacity: 1; transform: translateY(0) scale(1); }
+  .cap-workspace-close{
+    position: absolute;
+    top: 14px;
+    inset-inline-end: 14px;
+    z-index: 5;
+    width: 42px; height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(26,22,17,.12);
+    background: #fff;
+    display: grid; place-items: center;
+    cursor: pointer;
+    color: var(--ink-800);
+  }
+  .cap-workspace-close:hover{ border-color: var(--mi-red); color: var(--mi-red); }
+  .cap-workspace-scroll{
+    max-height: min(92vh, 920px);
+    overflow: auto;
+    padding: 52px 16px 24px;
+  }
+  @media (min-width: 900px){
+    .cap-workspace-scroll{ padding: 56px 28px 28px; }
+  }
+  .cap-workspace-scroll .calc-sticky-bar{ display: none !important; }
+
+  .calc-live-type{
+    display: inline-flex;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: rgba(255,255,255,.8);
+  }
+  .calc-live-meta{
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .calc-live-meta-item{
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,.55);
+  }
+  .calc-live-meta-item strong{
+    color: #fff;
+    font-weight: 700;
+    text-align: end;
+  }
+
   .calc-gateway{
     position: relative;
     isolation: isolate;

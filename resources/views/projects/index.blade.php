@@ -100,7 +100,7 @@
         <p class="lead" style="color:rgba(255,255,255,.65);max-width:480px">
           {{ __('messages.project_cta_blurb') }}
         </p>
-        <a href="{{ route('home', app()->getLocale()) }}#calculator"
+        <a href="{{ route('home', app()->getLocale()) }}#start"
            class="btn btn-primary btn-lg mt-2" data-magnetic>
           {{ __('messages.nav_calculator') }}
         </a>

@@ -203,7 +203,7 @@
           <h3 class="display-3">{{ __('messages.calc_cta_title') }}</h3>
           <p class="lead">{{ __('messages.calc_cta_blurb') }}</p>
         </div>
-        <a href="{{ route('home', app()->getLocale()) }}#calculator"
+        <a href="{{ route('home', app()->getLocale()) }}#start"
            class="btn btn-dark btn-lg" data-magnetic>
           <i data-lucide="calculator" class="w-4 h-4"></i>
           {{ __('messages.calc_eyebrow') }}

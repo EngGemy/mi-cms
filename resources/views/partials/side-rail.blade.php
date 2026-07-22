@@ -4,7 +4,7 @@
   $waUrl = 'https://wa.me/' . $waNumber . ($waMsg ? '?text=' . $waMsg : '');
 @endphp
 <nav class="mi-rail" aria-label="{{ __('messages.rail_aria') }}">
-  <a href="#calculator" class="mi-rail-btn" title="{{ __('messages.rail_calc') }}">
+  <a href="#start" class="mi-rail-btn" title="{{ __('messages.rail_calc') }}">
     <span class="mi-rail-icon" aria-hidden="true"><i data-lucide="calculator"></i></span>
     <span class="mi-rail-label">{{ __('messages.rail_calc') }}</span>
   </a>

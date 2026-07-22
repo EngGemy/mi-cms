@@ -86,7 +86,7 @@
       <h2 class="display-3">{{ __('messages.process_cta_title') }}</h2>
       <p class="lead">{{ __('messages.process_cta_blurb') }}</p>
       <div class="page-bottom-cta-actions">
-        <a href="{{ route('home', app()->getLocale()) }}#calculator" class="btn btn-primary">{{ __('messages.nav_calculator') }}</a>
+        <a href="{{ route('home', app()->getLocale()) }}#start" class="btn btn-primary">{{ __('messages.nav_calculator') }}</a>
         <a href="{{ route('home', app()->getLocale()) }}#contact" class="btn btn-dark">{{ __('messages.nav_contact') }}</a>
       </div>
     </div>

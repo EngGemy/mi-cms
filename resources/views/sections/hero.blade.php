@@ -68,7 +68,7 @@
       <p class="hero-lead" data-hero-fade>{{ __('messages.hero_paragraph') }}</p>
 
       <div class="hero-actions" data-hero-fade>
-        <a href="#calculator" class="btn btn-primary btn-lg hero-cta" data-magnetic>
+        <a href="#start" class="btn btn-primary btn-lg hero-cta" data-magnetic>
           {{ __('messages.hero_cta_primary') }}
           <i data-lucide="arrow-left" class="w-4 h-4"></i>
         </a>

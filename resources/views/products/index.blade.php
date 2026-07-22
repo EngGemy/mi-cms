@@ -57,7 +57,7 @@
       <div class="pd-index-cta-inner">
         <h2 class="display-3">{{ __('messages.products_cta_title') }}</h2>
         <p class="lead">{{ __('messages.products_cta_blurb') }}</p>
-        <a href="{{ route('home', app()->getLocale()) }}#calculator" class="btn btn-primary btn-lg" data-magnetic>
+        <a href="{{ route('home', app()->getLocale()) }}#start" class="btn btn-primary btn-lg" data-magnetic>
           {{ __('messages.nav_calculator') }}
         </a>
       </div>

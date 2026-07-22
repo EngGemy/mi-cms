@@ -106,10 +106,14 @@ class CalculatorService implements CalculatorServiceInterface
         $p = $this->prices;
         $cfgFallback = config('poultry_pricing', []);
 
-        $birdWeightKg = (float) ($p['bird_weight_kg'] ?? 2.1);
-        $serviceLength = (float) ($p['service_length'] ?? $cfgFallback['default_service_length'] ?? 10);
+        $birdWeightKg = 2.1; // average bird weight 2100 g
+        $serviceLength = (float) ($input['service_length'] ?? $p['service_length'] ?? $cfgFallback['default_service_length'] ?? 10);
+        if ($serviceLength != 8.0 && $serviceLength != 10.0) {
+            $serviceLength = 10.0;
+        }
         $rawEffective = max(0, $L - $serviceLength);
-        $effectiveLength = (int) ((floor($rawEffective / 2) * 2));
+        // Always even — round UP (e.g. 71 → 72)
+        $effectiveLength = (int) (ceil($rawEffective / 2) * 2);
 
         $widthMap = $p['width_lines_map'] ?? $cfgFallback['width_lines_map'] ?? [];
         $mappedLines = $widthMap[(string) $W]
@@ -121,7 +125,7 @@ class CalculatorService implements CalculatorServiceInterface
 
         $nestsPerLine = (int) ($effectiveLength * 2 * $floors);
         $totalNests = $nestsPerLine * $lines;
-        $totalBirds = $totalNests * $birdsPerNest;
+        $totalBirds = (int) (ceil(($totalNests * $birdsPerNest) / 2) * 2);
 
         $fanCapacity = (float) ($p['fan_capacity_kg'] ?? $cfgFallback['fan_capacity_kg'] ?? 5000);
         $rearFans = (int) ceil($totalBirds * $birdWeightKg / max(1, $fanCapacity));
@@ -143,12 +147,15 @@ class CalculatorService implements CalculatorServiceInterface
                 'height' => $H,
                 'floors' => $floors,
                 'lines'  => $lines,
+                'service_length' => $serviceLength,
             ],
             'service_length'      => $serviceLength,
             'effective_length'    => $effectiveLength,
             'mapped_lines'        => $mappedLines !== null ? (int) $mappedLines : null,
             'birds_per_nest'      => $birdsPerNest,
             'bird_weight_kg'      => $birdWeightKg,
+            'bird_weight_grams'   => 2100,
+            'fan_spec'            => '140×140 Munters Italy',
             'nests_per_line'      => $nestsPerLine,
             'total_nests'         => $totalNests,
             'birds'               => $totalBirds,

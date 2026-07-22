@@ -12,12 +12,30 @@
     {{-- Live capacity panel --}}
     <aside class="calc-live" aria-live="polite">
       <div class="calc-live-kicker">{{ __('messages.calc_capacity_title') }}</div>
+      <div class="calc-live-type" x-show="barnType">
+        <span x-text="barnType === 'layer'
+          ? '{{ __('messages.cap_promo_type_layer') }}'
+          : '{{ __('messages.cap_promo_type_broiler') }}'"></span>
+      </div>
       <div class="calc-live-main">
         <span class="calc-live-num" x-text="fmt(birds)"></span>
         <span class="calc-live-unit">{{ __('messages.birds_unit') }}</span>
       </div>
       <p class="calc-live-approx">{{ __('messages.calc_capacity_approx') }}</p>
-      <p class="calc-live-formula" x-text="formulaLabel"></p>
+      <div class="calc-live-meta">
+        <div class="calc-live-meta-item">
+          <span>{{ __('messages.calc_bird_weight') }}</span>
+          <strong>2100 {{ __('messages.unit_g') }}</strong>
+        </div>
+        <div class="calc-live-meta-item">
+          <span>{{ __('messages.calc_fan_spec') }}</span>
+          <strong x-text="fanSpec">140×140 Munters Italy</strong>
+        </div>
+        <div class="calc-live-meta-item">
+          <span>{{ __('messages.calc_effective_length') }}</span>
+          <strong x-text="effectiveLength + ' {{ __('messages.unit_m') }}'"></strong>
+        </div>
+      </div>
 
       <div class="calc-live-stats">
         <div class="calc-live-stat">
@@ -42,9 +60,10 @@
         <div class="calc-live-tech-title">{{ __('messages.calc_tech_outputs') }}</div>
         <div class="calc-live-tech-grid">
           <div><span>{{ __('messages.calc_rear_fans') }}</span><b x-text="rearFans"></b></div>
+          <div><span>{{ __('messages.calc_fan_spec') }}</span><b style="font-size:11px" x-text="fanSpec"></b></div>
           <div><span>{{ __('messages.calc_cooling') }}</span><b><span x-text="coolingPadMeters"></span> م</b></div>
           <div><span>{{ __('messages.calc_inlets') }}</span><b x-text="inlets"></b></div>
-          <div><span>{{ __('messages.calc_layer_nests') }}</span><b x-text="fmt(layerNestsTotal)"></b></div>
+          <div x-show="barnType !== 'broiler'"><span>{{ __('messages.calc_layer_nests') }}</span><b x-text="fmt(layerNestsTotal)"></b></div>
         </div>
       </div>
     </aside>
@@ -109,6 +128,18 @@
             </div>
             <input type="range" class="calc-slider" x-model.number="height" @input="recompute()"
                    :min="minHeight" :max="maxHeight" step="0.5" aria-hidden="true" tabindex="-1"/>
+          </div>
+
+          <div class="calc-control">
+            <div class="calc-control-label-only">{{ __('messages.calc_service_length') }}</div>
+            <div class="calc-chip-group" role="group" aria-label="{{ __('messages.calc_service_length') }}">
+              <template x-for="v in serviceLengthOptions" :key="'svc'+v">
+                <button type="button" class="calc-chip" :class="serviceLength === v && 'is-active'"
+                        :aria-pressed="serviceLength === v"
+                        @click="setServiceLength(v)" x-text="v + ' {{ __('messages.unit_m') }}'"></button>
+              </template>
+            </div>
+            <div class="calc-hint">{{ __('messages.calc_service_hint') }}</div>
           </div>
         </div>
       </div>
@@ -339,7 +370,6 @@
           </div>
         </div>
 
-        <p class="calc-estimate-formula" x-text="formulaLabel"></p>
         <p class="calc-estimate-note">{{ __('messages.calc_estimate_note') }}</p>
       </div>
 

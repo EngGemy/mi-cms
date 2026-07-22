@@ -11,6 +11,12 @@
     return meta ? meta.getAttribute('content') : '';
   }
 
+  function ceilEven(n) {
+    var v = Number(n) || 0;
+    if (v <= 0) return 0;
+    return Math.ceil(v / 2) * 2;
+  }
+
   global.miPoultryCalcInline = function miPoultryCalcInline(cfg) {
     cfg = cfg || {};
     return {
@@ -20,10 +26,14 @@
       floors: Number(cfg.floors) || 3,
       lines: Number(cfg.lines) || 4,
       serviceLength: Number(cfg.serviceLength) || 10,
-      birdWeightKg: Number(cfg.birdWeightKg) || 2.1,
+      serviceLengthOptions: (cfg.serviceLengthOptions || [8, 10]).map(Number),
+      birdWeightKg: 2.1,
+      birdWeightGrams: 2100,
       fanCapacityKg: Number(cfg.fanCapacityKg) || 5000,
       coolingPadMetersPerFan: Number(cfg.coolingPadMetersPerFan) || 5.5,
       layerNestModuleM: Number(cfg.layerNestModuleM) || 0.6,
+      fanSpec: cfg.fanSpec || '140×140 Munters Italy',
+      barnType: cfg.barnType || 'layer',
       widthLinesMap: cfg.widthLinesMap || {},
       weightMap: cfg.weightMap || {},
       minLength: Number(cfg.minLength) || 71,
@@ -55,7 +65,22 @@
       inlets: 0,
       layerNestsTotal: 0,
 
-      init: function () { this.recompute(); },
+      init: function () {
+        var self = this;
+        window.addEventListener('mi-calc-hydrate', function (e) {
+          var d = (e && e.detail) || {};
+          if (d.length != null) self.length = Number(d.length);
+          if (d.width != null) self.width = Number(d.width);
+          if (d.height != null) self.height = Number(d.height);
+          if (d.floors != null) self.floors = Number(d.floors);
+          if (d.lines != null) self.lines = Number(d.lines);
+          if (d.serviceLength != null) self.serviceLength = Number(d.serviceLength);
+          if (d.barnType) self.barnType = d.barnType;
+          self.birdWeightKg = 2.1;
+          self.recompute();
+        });
+        this.recompute();
+      },
 
       closeEstimate: function () {
         this.saved = false;
@@ -134,15 +159,20 @@
       },
 
       recompute: function () {
+        this.birdWeightKg = 2.1;
         var L = Number(this.length) || 0;
         var floors = Number(this.floors) || 1;
         var lines = Number(this.lines) || 1;
-        var rawEffective = Math.max(0, L - this.serviceLength);
-        this.effectiveLength = Math.floor(rawEffective / 2) * 2;
+        var service = Number(this.serviceLength) || 10;
+        if (service !== 8 && service !== 10) service = 10;
+        this.serviceLength = service;
+        // Effective length = input − service (8 or 10 m), always even (round UP: 71 → 72)
+        var rawEffective = Math.max(0, L - service);
+        this.effectiveLength = ceilEven(rawEffective);
         this.birdsPerNest = this.resolveBirdsPerNest();
         this.nestsPerLine = this.effectiveLength * 2 * floors;
         this.totalNests = this.nestsPerLine * lines;
-        this.birds = this.totalNests * this.birdsPerNest;
+        this.birds = ceilEven(this.totalNests * this.birdsPerNest);
         this.rearFans = Math.ceil((this.birds * this.birdWeightKg) / this.fanCapacityKg) || 0;
         this.coolingPadMeters = Math.ceil(this.rearFans * this.coolingPadMetersPerFan) || 0;
         var rawInlets = (L % 2 === 1) ? ((L - 3) / 2) : ((L - 4) / 2);
@@ -152,10 +182,12 @@
       },
 
       get formulaLabel() {
-        if (this.locale === 'ar') {
-          return 'طول فعّال ' + this.effectiveLength + 'م × 2 وجه × ' + this.floors + ' أدوار × ' + this.lines + ' خط × ' + this.birdsPerNest + ' طير/عش';
-        }
-        return 'Eff. ' + this.effectiveLength + 'm × 2 faces × ' + this.floors + ' floors × ' + this.lines + ' lines × ' + this.birdsPerNest + ' birds/nest';
+        return '';
+      },
+
+      setServiceLength: function (v) {
+        this.serviceLength = Number(v) === 8 ? 8 : 10;
+        this.recompute();
       },
 
       get waLink() {
@@ -248,6 +280,8 @@
               height: this.height,
               floors: this.floors,
               lines: this.lines,
+              service_length: this.serviceLength,
+              barn_type: this.barnType || 'layer',
               name: this.name,
               phone: this.phone,
             }),
@@ -295,6 +329,72 @@
         } finally {
           this.saving = false;
         }
+      },
+    };
+  };
+
+  /** Hero promotional wizard → opens capacity calculator modal */
+  global.miCapacityPromo = function miCapacityPromo(cfg) {
+    cfg = cfg || {};
+    return {
+      step: 1,
+      barnType: null,
+      modalOpen: false,
+      length: Number(cfg.length) || 71,
+      width: Number(cfg.width) || 12,
+      height: Number(cfg.height) || 3.5,
+      floors: Number(cfg.floors) || 3,
+      lines: Number(cfg.lines) || 4,
+      serviceLength: Number(cfg.serviceLength) === 8 ? 8 : 10,
+      floorsOptions: (cfg.floorsOptions || [1, 2, 3, 4, 5]).map(Number),
+      linesOptions: (cfg.linesOptions || [3, 4, 5, 6]).map(Number),
+      minLength: Number(cfg.minLength) || 71,
+      maxLength: Number(cfg.maxLength) || 300,
+      minWidth: Number(cfg.minWidth) || 8,
+      maxWidth: Number(cfg.maxWidth) || 30,
+      minHeight: Number(cfg.minHeight) || 3,
+      maxHeight: Number(cfg.maxHeight) || 6,
+      locale: cfg.locale || 'ar',
+
+      pickType: function (type) {
+        this.barnType = type;
+        if (type === 'layer') {
+          this.floors = 4;
+          this.lines = 4;
+        } else {
+          this.floors = 3;
+          this.lines = 4;
+        }
+        this.step = 2;
+      },
+
+      backToType: function () {
+        this.step = 1;
+      },
+
+      openModal: function () {
+        if (!this.barnType) return;
+        this.modalOpen = true;
+        document.body.classList.add('calc-modal-open');
+        if (global.lenis) global.lenis.stop();
+        var detail = {
+          length: this.length,
+          width: this.width,
+          height: this.height,
+          floors: this.floors,
+          lines: this.lines,
+          serviceLength: this.serviceLength,
+          barnType: this.barnType,
+        };
+        this.$nextTick(function () {
+          window.dispatchEvent(new CustomEvent('mi-calc-hydrate', { detail: detail }));
+        });
+      },
+
+      closeModal: function () {
+        this.modalOpen = false;
+        document.body.classList.remove('calc-modal-open');
+        if (global.lenis) global.lenis.start();
       },
     };
   };

@@ -42,7 +42,7 @@
           <li><a href="{{ route('products.index', $locale) }}" class="footer-link">{{ __('messages.nav_products') }}</a></li>
           <li><a href="{{ route('home', $locale) }}#features" class="footer-link">{{ __('messages.nav_features') }}</a></li>
           <li><a href="{{ route('projects.index', $locale) }}" class="footer-link">{{ __('messages.nav_projects') }}</a></li>
-          <li><a href="{{ route('home', $locale) }}#calculator" class="footer-link">{{ __('messages.nav_calculator') }}</a></li>
+          <li><a href="{{ route('home', $locale) }}#start" class="footer-link">{{ __('messages.nav_calculator') }}</a></li>
           <li><a href="{{ route('process.index', $locale) }}" class="footer-link">{{ __('messages.nav_how') }}</a></li>
           <li><a href="{{ route('about', $locale) }}" class="footer-link">{{ __('messages.nav_about') }}</a></li>
           <li><a href="{{ route('blog.index', $locale) }}" class="footer-link">{{ __('messages.nav_blog') }}</a></li>

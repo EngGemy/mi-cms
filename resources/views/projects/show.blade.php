@@ -705,7 +705,7 @@
             {{ __('messages.project_cta_btn') }}
             <i data-lucide="arrow-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}" class="w-4 h-4"></i>
           </a>
-          <a href="{{ route('home', app()->getLocale()) }}#calculator"
+          <a href="{{ route('home', app()->getLocale()) }}#start"
              class="btn btn-ghost btn-lg" style="color:#fff;border-color:rgba(255,255,255,.2)">
             {{ __('messages.calc_eyebrow') }}
           </a>

@@ -18,7 +18,7 @@
       <a href="{{ route('products.index', $locale) }}" data-mob-link class="{{ $routeIs('products.*') ? 'active' : '' }}"><span class="num">01</span><span class="label">{{ __('messages.nav_products') }}</span></a>
       <a href="{{ route('home', $locale) }}#features" data-mob-link><span class="num">02</span><span class="label">{{ __('messages.nav_features') }}</span></a>
       <a href="{{ route('projects.index', $locale) }}" data-mob-link class="{{ $routeIs('projects.*') ? 'active' : '' }}"><span class="num">03</span><span class="label">{{ __('messages.nav_projects') }}</span></a>
-      <a href="{{ route('home', $locale) }}#calculator" data-mob-link><span class="num">04</span><span class="label">{{ __('messages.nav_calculator') }}</span></a>
+      <a href="{{ route('home', $locale) }}#start" data-mob-link><span class="num">04</span><span class="label">{{ __('messages.nav_calculator') }}</span></a>
       <a href="{{ route('process.index', $locale) }}" data-mob-link class="{{ $routeIs('process.*') ? 'active' : '' }}"><span class="num">05</span><span class="label">{{ __('messages.nav_how') }}</span></a>
       <a href="{{ route('about', $locale) }}" data-mob-link class="{{ $routeIs('about') ? 'active' : '' }}"><span class="num">06</span><span class="label">{{ __('messages.nav_about') }}</span></a>
       <a href="{{ route('blog.index', $locale) }}" data-mob-link class="{{ $routeIs('blog.*') ? 'active' : '' }}"><span class="num">07</span><span class="label">{{ __('messages.nav_blog') }}</span></a>

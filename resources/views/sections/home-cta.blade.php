@@ -30,7 +30,7 @@
     </div>
 
     <div class="home-cta-links" data-reveal>
-      <a href="{{ route('home', $locale) }}#calculator" class="btn btn-primary">{{ __('messages.nav_calculator') }}</a>
+      <a href="{{ route('home', $locale) }}#start" class="btn btn-primary">{{ __('messages.nav_calculator') }}</a>
       <a href="mailto:{{ config('mi.email', 'info@mi-poultry.com') }}" class="btn home-cta-ghost">{{ __('messages.home_cta_email') }}</a>
     </div>
   </div>

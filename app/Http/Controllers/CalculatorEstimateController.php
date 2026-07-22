@@ -28,6 +28,8 @@ class CalculatorEstimateController extends Controller
                     'height' => ['required', 'numeric', 'min:'.$tech['min_height'], 'max:'.$tech['max_height']],
                     'floors' => ['required', 'integer', Rule::in($floorsOptions)],
                     'lines' => ['required', 'integer', Rule::in($linesOptions)],
+                    'service_length' => ['nullable', 'numeric', Rule::in([8, 10])],
+                    'barn_type' => ['nullable', 'string', Rule::in(['layer', 'broiler'])],
                     'name' => ['required', 'string', 'min:2', 'max:100'],
                     'phone' => ['required', 'string', 'min:8', 'max:30'],
                 ],
@@ -50,6 +52,8 @@ class CalculatorEstimateController extends Controller
             'height' => (float) $validated['height'],
             'floors' => (int) $validated['floors'],
             'lines' => (int) $validated['lines'],
+            'service_length' => (float) ($validated['service_length'] ?? 10),
+            'barn_type' => $validated['barn_type'] ?? 'layer',
             'name' => trim($validated['name']),
             'phone' => trim($validated['phone']),
         ], $request);
