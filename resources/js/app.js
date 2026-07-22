@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLoader();
   initLenis();
   initHeader();
+  initHeroCinematic();
   initRotator();
   initParallax();
   initFooterReveal();
@@ -126,47 +127,67 @@ function initLenis() {
 function runHeroEntrance() {
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-  // Headline lines clip reveal
   tl.fromTo('[data-hero-headline] .char-line',
     { y: '115%', rotateX: -8 },
     { y: '0%', rotateX: 0, duration: 1.3, stagger: 0.14, transformOrigin: 'center bottom' },
     0
   );
 
-  // Rotating word
   tl.fromTo('[data-hero-headline] .rotating-word',
     { opacity: 0, y: 24, scale: .92 },
     { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'power4.out' },
     0.45
   );
 
-  // Fade elements (paragraph, CTA, etc.)
   tl.fromTo('[data-hero-fade]',
     { opacity: 0, y: 28, filter: 'blur(6px)' },
     { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, stagger: 0.1 },
     0.25
   );
 
-  // Hero visual — scale from slightly smaller with slight rotation
-  tl.fromTo('[data-hero-visual] .hero-visual',
-    { opacity: 0, scale: 0.94, y: 32, rotateY: 3 },
-    { opacity: 1, scale: 1, y: 0, rotateY: 0, duration: 1.4, ease: 'power4.out' },
-    0.08
-  );
-
-  // Tags — spring pop in
-  tl.fromTo('[data-hero-tag]',
-    { opacity: 0, scale: 0.5, y: 16 },
-    { opacity: 1, scale: 1, y: 0, duration: .8, stagger: 0.16, ease: 'back.out(1.8)' },
-    0.95
-  );
-
-  /* Stats counter elements */
-  tl.fromTo('.hero-stats > div',
+  tl.fromTo('.hero--cinematic .hero-stats > div',
     { opacity: 0, y: 20 },
     { opacity: 1, y: 0, duration: .7, stagger: 0.08, ease: 'power3.out' },
-    1.1
+    1.0
   );
+}
+
+function initHeroCinematic() {
+  const root = document.querySelector('[data-hero-cinematic]');
+  if (!root) return;
+
+  document.body.classList.add('has-cinematic-hero');
+
+  const video = root.querySelector('[data-hero-video]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!video) {
+    root.classList.add('hero--no-video');
+  } else if (reduced) {
+    root.classList.add('hero--reduced');
+    video.removeAttribute('autoplay');
+    try { video.pause(); } catch (_) {}
+  } else {
+    const tryPlay = () => {
+      const p = video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => root.classList.add('hero--video-failed'));
+      }
+    };
+    video.addEventListener('error', () => root.classList.add('hero--video-failed'), { once: true });
+    if (video.readyState >= 2) tryPlay();
+    else video.addEventListener('loadeddata', tryPlay, { once: true });
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) tryPlay();
+        else {
+          try { video.pause(); } catch (_) {}
+        }
+      });
+    }, { threshold: 0.15 });
+    io.observe(root);
+  }
 }
 
 function initRotator() {
@@ -175,8 +196,9 @@ function initRotator() {
   const items = [...root.querySelectorAll('.rw-item')];
   if (items.length < 2) return;
 
-  const imgLayers = [...document.querySelectorAll('.hero-image-layer')];
-  const imgLabels = [...document.querySelectorAll('.hero-layer-label')];
+  const hero = document.querySelector('[data-hero-cinematic]');
+  const hasVideo = !!(hero && hero.querySelector('[data-hero-video]') && !hero.classList.contains('hero--reduced') && !hero.classList.contains('hero--video-failed'));
+  const imgLayers = hasVideo ? [] : [...document.querySelectorAll('[data-hero-images] .hero-image-layer')];
 
   let idx = 0;
   setInterval(() => {
@@ -187,7 +209,6 @@ function initRotator() {
     requestAnimationFrame(() => next.classList.add('is-active'));
     setTimeout(() => cur.classList.remove('is-exit'), 700);
     imgLayers.forEach((l, i) => l.classList.toggle('is-active', i === idx));
-    imgLabels.forEach((l, i) => l.classList.toggle('is-active', i === idx));
   }, 3200);
 }
 
@@ -864,10 +885,14 @@ function initHeader() {
   const header = document.querySelector('header');
   if (!header) return;
 
-  // Scroll state — adds shadow + more opaque background
+  const cinematic = document.querySelector('[data-hero-cinematic]');
+
   const onScroll = () => {
     const scrolled = window.scrollY > 20;
     header.classList.toggle('is-scrolled', scrolled);
+    if (cinematic) {
+      header.classList.toggle('header--over-hero', !scrolled);
+    }
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

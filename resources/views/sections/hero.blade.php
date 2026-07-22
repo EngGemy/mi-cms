@@ -1,17 +1,63 @@
-<section class="hero" id="home">
-  <div class="hero-inner">
-    <div>
-      <div class="serif-italic mb-3" data-hero-fade style="font-size:18px;color:var(--ink-700)">
-        {{ __('messages.hero_kicker') }}
-      </div>
+@php
+  /** @var \Illuminate\Support\Collection|\App\Models\HeroSlide[] $slides */
+  $slides = $slides ?? collect();
+  $videoSlide = $slides->first(fn ($s) => $s->hasVideo());
+  $fallbackImage = $videoSlide?->getPosterUrl('hero')
+      ?? $slides->first()?->getImageUrl('hero')
+      ?? 'https://images.unsplash.com/photo-1569466593977-94ee7ed02ec9?w=1920&q=85&auto=format&fit=crop';
+  $fallbackMobile = $videoSlide?->getPosterUrl('mobile')
+      ?? $slides->first()?->getImageUrl('mobile')
+      ?? $fallbackImage;
+@endphp
+<section class="hero hero--cinematic" id="home" data-hero-cinematic>
+  <div class="hero-media" aria-hidden="true">
+    @if($videoSlide)
+      <video
+        class="hero-video"
+        data-hero-video
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster="{{ $videoSlide->getPosterUrl('hero') }}"
+      >
+        <source src="{{ $videoSlide->getVideoUrl() }}" type="{{ str_ends_with(strtolower((string) $videoSlide->getVideoUrl()), '.webm') ? 'video/webm' : 'video/mp4' }}">
+      </video>
+    @endif
 
-      <h1 class="display-1" data-hero-headline>
+    <div class="hero-image-stack {{ $videoSlide ? 'hero-image-stack--fallback' : '' }}" data-hero-images>
+      @forelse($slides as $i => $slide)
+        @php
+          $desk = $slide->getImageUrl('hero') ?: $slide->getPosterUrl('hero') ?: $fallbackImage;
+          $mob  = $slide->getImageUrl('mobile') ?: $slide->getPosterUrl('mobile') ?: $desk;
+        @endphp
+        <picture class="hero-image-layer @if($loop->first) is-active @endif" data-img="{{ $i }}">
+          <source media="(max-width: 767px)" srcset="{{ $mob }}">
+          <img src="{{ $desk }}" alt="" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async">
+        </picture>
+      @empty
+        <picture class="hero-image-layer is-active" data-img="0">
+          <source media="(max-width: 767px)" srcset="{{ $fallbackMobile }}">
+          <img src="{{ $fallbackImage }}" alt="" loading="eager" decoding="async">
+        </picture>
+      @endforelse
+    </div>
+
+    <div class="hero-scrim"></div>
+    <div class="hero-grain"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-content-inner">
+      <p class="hero-kicker" data-hero-fade>{{ __('messages.hero_kicker') }}</p>
+
+      <h1 class="hero-title" data-hero-headline>
         <span class="char-reveal"><span class="char-line">{{ __('messages.hero_main_line') }}</span></span>
       </h1>
 
-      <div class="display-1 mt-1" data-hero-headline>
+      <div class="hero-title hero-title--rotate" data-hero-headline>
         <div class="rotating-word" id="rotWord">
-          @forelse($slides as $i => $slide)
+          @forelse($slides as $slide)
             <span class="rw-item @if($loop->first)is-active @endif">{{ $slide->label }}</span>
           @empty
             <span class="rw-item is-active">{{ __('messages.hero_default_label') }}</span>
@@ -19,60 +65,41 @@
         </div>
       </div>
 
-      <p class="lead mt-7 max-w-xl" data-hero-fade>{{ __('messages.hero_paragraph') }}</p>
+      <p class="hero-lead" data-hero-fade>{{ __('messages.hero_paragraph') }}</p>
 
-      <div class="flex flex-wrap gap-3 mt-8" data-hero-fade>
-        <a href="#products" class="btn btn-primary btn-lg" data-magnetic>
-          {{ __('messages.hero_cta_primary') }} <i data-lucide="arrow-left" class="w-4 h-4"></i>
+      <div class="hero-actions" data-hero-fade>
+        <a href="#calculator" class="btn btn-primary btn-lg hero-cta" data-magnetic>
+          {{ __('messages.hero_cta_primary') }}
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
         </a>
-        <a href="tel:{{ config('mi.phone_primary') }}" class="btn btn-ghost btn-lg" data-magnetic>
-          <i data-lucide="phone" class="w-4 h-4"></i>
-          <span dir="ltr" class="font-mono">{{ config('mi.phone_primary') }}</span>
+        <a href="#products" class="btn hero-cta-ghost" data-magnetic>
+          {{ __('messages.gateway_cta_products') }}
         </a>
       </div>
 
       <div class="hero-stats" data-hero-fade>
-        <div><div class="hero-stat-num">+<span data-counter data-target="500">0</span></div>
-             <div class="hero-stat-label">{{ __('messages.stat_houses') }}</div></div>
-        <div><div class="hero-stat-num"><span data-counter data-target="12">0</span>M+</div>
-             <div class="hero-stat-label">{{ __('messages.stat_birds') }}</div></div>
-        <div><div class="hero-stat-num"><span data-counter data-target="15">0</span>+</div>
-             <div class="hero-stat-label">{{ __('messages.stat_years') }}</div></div>
-        <div><div class="hero-stat-num">8</div>
-             <div class="hero-stat-label">{{ __('messages.stat_countries') }}</div></div>
+        <div>
+          <div class="hero-stat-num">+<span data-counter data-target="500">0</span></div>
+          <div class="hero-stat-label">{{ __('messages.stat_houses') }}</div>
+        </div>
+        <div>
+          <div class="hero-stat-num"><span data-counter data-target="12">0</span>M+</div>
+          <div class="hero-stat-label">{{ __('messages.stat_birds') }}</div>
+        </div>
+        <div>
+          <div class="hero-stat-num"><span data-counter data-target="15">0</span>+</div>
+          <div class="hero-stat-label">{{ __('messages.stat_years') }}</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">8</div>
+          <div class="hero-stat-label">{{ __('messages.stat_countries') }}</div>
+        </div>
       </div>
     </div>
 
-    <div class="relative" data-hero-visual>
-      <div class="hero-tag t1" data-hero-tag>
-        <div class="flex items-center gap-2">
-          <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="serif-italic" style="font-size:15px;color:var(--ink-900)">live · damietta</span>
-        </div>
-        <div class="text-[10px] mt-1 font-mono" style="color:var(--ink-500);letter-spacing:.14em">FACTORY · ONLINE</div>
-      </div>
-      <div class="hero-tag t2" data-hero-tag>
-        <div class="flex items-center gap-1" style="color:#D4A968">
-          @for($i=0;$i<5;$i++)<i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>@endfor
-          <span class="serif-italic mr-1" style="font-size:15px;color:var(--ink-900)">4.9</span>
-        </div>
-        <div class="text-[10px] mt-1 font-mono" style="color:var(--ink-500);letter-spacing:.14em">500+ CLIENTS · 8 COUNTRIES</div>
-      </div>
-      <div class="hero-visual">
-        <div class="hero-image-stack">
-          @forelse($slides as $i => $slide)
-            <div class="hero-image-layer @if($loop->first) is-active @endif"
-                 data-img="{{ $i }}"
-                 style="background-image:url('{{ $slide->getImageUrl() }}')"></div>
-          @empty
-            <div class="hero-image-layer is-active"
-                 style="background-image:url('https://images.unsplash.com/photo-1569466593977-94ee7ed02ec9?w=1400&q=85&auto=format&fit=crop')"></div>
-          @endforelse
-        </div>
-        @foreach($slides as $i => $slide)
-          <div class="hero-layer-label @if($loop->first) is-active @endif" data-img="{{ $i }}">{{ $slide->label }}</div>
-        @endforeach
-      </div>
-    </div>
+    <a href="#start" class="hero-scroll" data-hero-fade aria-label="{{ __('messages.hero_scroll') }}">
+      <span class="hero-scroll-line" aria-hidden="true"></span>
+      <span>{{ __('messages.hero_scroll') }}</span>
+    </a>
   </div>
 </section>

@@ -32,7 +32,7 @@ class HeroSlideResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('النص والصورة')->schema([
+            Forms\Components\Section::make('النص')->schema([
                 Forms\Components\TextInput::make('label')
                     ->label('النص الظاهر')
                     ->required()
@@ -42,12 +42,33 @@ class HeroSlideResource extends Resource
                     ])
                     ->helperText('مطلوب بالعربية — الإنجليزية اختيارية')
                     ->columnSpanFull(),
+            ]),
 
+            Forms\Components\Section::make('فيديو الخلفية (سينمائي)')->schema([
+                SpatieMediaLibraryFileUpload::make('video')
+                    ->label('فيديو الخلفية')
+                    ->collection('video')
+                    ->acceptedFileTypes(['video/mp4', 'video/webm'])
+                    ->maxSize(20480)
+                    ->helperText('مطلوب للهيرو السينمائي: 1920×1080 MP4 H.264، حلقة ≤15 ثانية، ≤8MB مفضّل (حد أقصى 20MB)، بدون صوت.')
+                    ->columnSpanFull(),
+
+                SpatieMediaLibraryFileUpload::make('poster')
+                    ->label('صورة الملصق (Poster)')
+                    ->collection('poster')
+                    ->image()
+                    ->imageEditor()
+                    ->helperText('1920×1080 JPG/WebP — تظهر قبل تشغيل الفيديو وعلى الموبايل عند تقليل الحركة.')
+                    ->columnSpanFull(),
+            ]),
+
+            Forms\Components\Section::make('صورة بديلة (Fallback)')->schema([
                 SpatieMediaLibraryFileUpload::make('image')
-                    ->label('الصورة')
+                    ->label('صورة الشريحة')
                     ->collection('image')
                     ->image()
-                    ->imageEditor(),
+                    ->imageEditor()
+                    ->helperText('تُستخدم إذا لم يُرفع فيديو، أو كطبقة في التبديل بين الشرائح.'),
 
                 Forms\Components\TextInput::make('image_url')
                     ->label('أو رابط صورة خارجي')
@@ -74,7 +95,12 @@ class HeroSlideResource extends Resource
             ->columns([
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('image')
                     ->collection('image')
-                    ->square(),
+                    ->square()
+                    ->label('صورة'),
+                Tables\Columns\IconColumn::make('has_video')
+                    ->label('فيديو')
+                    ->boolean()
+                    ->getStateUsing(fn (HeroSlide $record) => $record->hasVideo()),
                 Tables\Columns\TextColumn::make('label')
                     ->label('النص')
                     ->searchable()

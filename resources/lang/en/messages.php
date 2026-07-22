@@ -29,6 +29,7 @@ return [
     'hero_paragraph'     => 'From Damietta to the world — we design, manufacture, and install complete house systems for large commercial farms.',
     'hero_cta_primary'   => 'Request Free Consultation',
     'hero_default_label' => 'Integrated Poultry Cage Systems',
+    'hero_scroll'        => 'Discover more',
     'stat_years'         => '15+ Years Experience',
     'stat_houses'        => '+1,200 Houses Delivered',
     'stat_birds'         => '+80 Million Birds',

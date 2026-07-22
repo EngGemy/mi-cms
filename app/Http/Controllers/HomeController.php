@@ -23,7 +23,7 @@ class HomeController extends Controller
             ->setDescription(__('messages.home_seo_description'));
 
         return view('home', [
-            'heroSlides'       => HeroSlide::active()->get(),
+            'heroSlides'       => HeroSlide::active()->with('media')->get(),
             'featuredProducts' => Product::active()->with('media')->take(8)->get(),
             'features'         => Feature::active()->take(3)->get(),
             'productionStages' => ProductionStage::active()->take(6)->get(),
