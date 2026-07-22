@@ -702,32 +702,35 @@
     width: 100%;
   }
   body.has-cinematic-hero header.header--over-hero{
-    background: linear-gradient(180deg, rgba(26,22,17,.72) 0%, rgba(26,22,17,.35) 55%, transparent 100%);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom-color: transparent;
-    box-shadow: none;
+    background: rgba(18, 14, 10, .78);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-bottom-color: rgba(255,255,255,.08);
+    box-shadow: 0 8px 32px -8px rgba(0,0,0,.45);
   }
   body.has-cinematic-hero header.header--over-hero .header-brand-text,
   body.has-cinematic-hero header.header--over-hero .header-nav a,
   body.has-cinematic-hero header.header--over-hero .header-mobile-btn,
   body.has-cinematic-hero header.header--over-hero .lang-btn{
     color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
   }
   body.has-cinematic-hero header.header--over-hero .header-nav a:hover,
   body.has-cinematic-hero header.header--over-hero .header-nav a.active{
     color: #fff;
-    background: rgba(255,255,255,.14);
+    background: rgba(255,255,255,.16);
+    text-shadow: none;
   }
   body.has-cinematic-hero header.header--over-hero .header-nav a::after{ background: #fff; }
   body.has-cinematic-hero header.header--over-hero .btn-dark{
-    background: rgba(255,255,255,.14);
+    background: rgba(255,255,255,.16);
     color: #fff;
-    border: 1px solid rgba(255,255,255,.32);
+    border: 1px solid rgba(255,255,255,.4);
+    text-shadow: none;
   }
   body.has-cinematic-hero header.header--over-hero .header-mobile-btn{
-    border-color: rgba(255,255,255,.3);
-    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.35);
+    background: rgba(255,255,255,.1);
   }
   /* Scrolled: cream bar + dark ink (override any leftover over-hero contrast) */
   body.has-cinematic-hero header.is-scrolled{
@@ -1764,7 +1767,7 @@
     top: 14px;
     inset-inline-end: 14px;
     appearance: none;
-    border: 1px solid rgba(26,22,17,.12);
+    border: 1.5px solid rgba(26,22,17,.18);
     background: #fff;
     width: 36px;
     height: 36px;
@@ -1772,10 +1775,20 @@
     display: grid;
     place-items: center;
     cursor: pointer;
-    color: var(--ink-700);
+    color: var(--ink-900);
+    z-index: 2;
   }
-  .gw-modal-close:hover{ border-color: var(--mi-red); color: var(--mi-red); }
-  .gw-modal-close svg{ width: 16px; height: 16px; }
+  .gw-modal-close:hover{
+    border-color: var(--mi-red);
+    color: var(--mi-red);
+    background: rgba(200,16,46,.06);
+  }
+  .gw-modal-close svg{
+    width: 16px;
+    height: 16px;
+    display: block;
+    pointer-events: none;
+  }
   .gw-modal-title{
     margin: 0 0 8px;
     font-family: "Cairo", var(--font-display), sans-serif;
