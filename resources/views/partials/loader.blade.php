@@ -4,7 +4,7 @@
       ? \Illuminate\Support\Facades\Storage::disk('public')->url($logoPath)
       : asset('images/logo.jpg');
   $siteName = $generalSettings?->site_name ?? 'MI Automatic Poultry Cages';
-  {{-- Word-level split keeps Arabic letter joining intact --}}
+  // Word-level split keeps Arabic letter joining intact
   $arWords = ['إم', 'آي'];
 @endphp
 <div class="loader" id="loader" aria-hidden="true">
