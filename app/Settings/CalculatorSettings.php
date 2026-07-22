@@ -86,6 +86,41 @@ class CalculatorSettings extends Settings
         ];
     }
 
+    /**
+     * Config blob for the public Alpine calculator (no Livewire).
+     */
+    public function alpineFrontendConfig(): array
+    {
+        $tech = $this->techConfig();
+
+        return [
+            'length' => (float) ($tech['default_length'] ?? 71),
+            'width' => (float) ($tech['default_width'] ?? 12),
+            'height' => (float) ($tech['default_height'] ?? 3.5),
+            'floors' => (int) ($tech['default_floors'] ?? 3),
+            'lines' => (int) ($tech['default_lines'] ?? 4),
+            'serviceLength' => (float) ($tech['service_length'] ?? 10),
+            'birdWeightKg' => (float) ($tech['bird_weight_kg'] ?? 2.1),
+            'fanCapacityKg' => (float) ($tech['fan_capacity_kg'] ?? 5000),
+            'coolingPadMetersPerFan' => (float) ($tech['cooling_pad_meters_per_fan'] ?? 5.5),
+            'layerNestModuleM' => (float) ($tech['layer_nest_module_m'] ?? 0.60),
+            'widthLinesMap' => $tech['width_lines_map'] ?? [],
+            'weightMap' => $tech['broiler_weight_birds_map'] ?? [],
+            'minLength' => (float) ($tech['min_length'] ?? 71),
+            'maxLength' => (float) ($tech['max_length'] ?? 300),
+            'minWidth' => (float) ($tech['min_width'] ?? 8),
+            'maxWidth' => (float) ($tech['max_width'] ?? 30),
+            'minHeight' => (float) ($tech['min_height'] ?? 3),
+            'maxHeight' => (float) ($tech['max_height'] ?? 6),
+            'floorsOptions' => $tech['floors_options'] ?? [1, 2, 3, 4, 5],
+            'linesOptions' => $tech['lines_options'] ?? [3, 4, 5, 6],
+            'waNumber' => preg_replace('/\D+/', '', (string) config('mi.whatsapp', '201030003186')),
+            'locale' => app()->getLocale(),
+            'saveUrl' => route('calculator.estimate', ['locale' => app()->getLocale()]),
+            'csrf' => csrf_token(),
+        ];
+    }
+
     private function normalizeMap(array $map): array
     {
         $out = [];

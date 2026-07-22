@@ -1,10 +1,15 @@
 /**
  * MI Poultry capacity calculator — eager classic script (NOT a Vite module).
- * Loaded sync in <head> BEFORE @livewireScripts so Alpine x-data can resolve
- * miPoultryCalcInline(...) when initTree runs.
+ * Pure Alpine + fetch — no Livewire / $wire.
  */
 (function (global) {
   'use strict';
+
+  function csrfToken(cfg) {
+    if (cfg && cfg.csrf) return cfg.csrf;
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+  }
 
   global.miPoultryCalcInline = function miPoultryCalcInline(cfg) {
     cfg = cfg || {};
@@ -31,6 +36,8 @@
       linesOptions: (cfg.linesOptions || [3, 4, 5, 6]).map(Number),
       locale: cfg.locale || 'ar',
       waNumber: String(cfg.waNumber || '201030003186').replace(/\D+/g, ''),
+      saveUrl: cfg.saveUrl || '',
+      csrf: csrfToken(cfg),
       name: '',
       phone: '',
       saving: false,
@@ -60,6 +67,19 @@
         this.saved = true;
         document.body.classList.add('calc-modal-open');
         if (global.lenis) global.lenis.stop();
+      },
+
+      applyBreakdown: function (b) {
+        if (!b || typeof b !== 'object') return;
+        if (b.birds != null) this.birds = Number(b.birds) || 0;
+        if (b.birds_per_nest != null) this.birdsPerNest = Number(b.birds_per_nest) || this.birdsPerNest;
+        if (b.effective_length != null) this.effectiveLength = Number(b.effective_length) || 0;
+        if (b.nests_per_line != null) this.nestsPerLine = Number(b.nests_per_line) || 0;
+        if (b.total_nests != null) this.totalNests = Number(b.total_nests) || 0;
+        if (b.rear_fans != null) this.rearFans = Number(b.rear_fans) || 0;
+        if (b.cooling_pad_meters != null) this.coolingPadMeters = Number(b.cooling_pad_meters) || 0;
+        if (b.inlets != null) this.inlets = Number(b.inlets) || 0;
+        if (b.layer_nests_total != null) this.layerNestsTotal = Number(b.layer_nests_total) || 0;
       },
 
       clamp: function (key, min, max) {
@@ -139,19 +159,41 @@
       },
 
       get waLink() {
-        var msg = this.locale === 'ar'
-          ? ('السلام عليكم، تم حساب تقدير سعة عنبر:\n• الطيور: ' + this.fmt(this.birds)
-            + '\n• الأبعاد: ' + this.length + '×' + this.width + '×' + this.height + ' م'
-            + '\n• الأدوار/الخطوط: ' + this.floors + '/' + this.lines
-            + '\n• الأعشاش: ' + this.fmt(this.totalNests)
-            + '\nالاسم: ' + this.name
-            + '\nالهاتف: ' + this.phone)
-          : ('Hello, capacity estimate:\n• Birds: ' + this.fmt(this.birds)
-            + '\n• Size: ' + this.length + '×' + this.width + '×' + this.height + ' m'
-            + '\n• Floors/Lines: ' + this.floors + '/' + this.lines
-            + '\n• Nests: ' + this.fmt(this.totalNests)
-            + '\nName: ' + this.name
-            + '\nPhone: ' + this.phone);
+        var ar = this.locale === 'ar';
+        var lines = ar
+          ? [
+              'السلام عليكم، تقدير سعة عنبر:',
+              '• الطيور: ' + this.fmt(this.birds),
+              '• الأبعاد: ' + this.length + '×' + this.width + '×' + this.height + ' م',
+              '• الطول الفعال: ' + this.effectiveLength + ' م',
+              '• الأدوار/الخطوط: ' + this.floors + '/' + this.lines,
+              '• الأعشاش: ' + this.fmt(this.totalNests) + ' (للخط: ' + this.fmt(this.nestsPerLine) + ')',
+              '• طير/عش: ' + this.birdsPerNest,
+              '• مراوح خلفية: ' + this.rearFans,
+              '• تبريد: ' + this.coolingPadMeters + ' م',
+              '• مداخل هواء: ' + this.inlets,
+              '• أعشاش طبقات: ' + this.fmt(this.layerNestsTotal),
+              this.requestId ? ('• رقم الطلب: #' + this.requestId) : '',
+              'الاسم: ' + this.name,
+              'الهاتف: ' + this.phone,
+            ]
+          : [
+              'Hello, barn capacity estimate:',
+              '• Birds: ' + this.fmt(this.birds),
+              '• Size: ' + this.length + '×' + this.width + '×' + this.height + ' m',
+              '• Effective length: ' + this.effectiveLength + ' m',
+              '• Floors/Lines: ' + this.floors + '/' + this.lines,
+              '• Nests: ' + this.fmt(this.totalNests) + ' (per line: ' + this.fmt(this.nestsPerLine) + ')',
+              '• Birds/nest: ' + this.birdsPerNest,
+              '• Rear fans: ' + this.rearFans,
+              '• Cooling: ' + this.coolingPadMeters + ' m',
+              '• Inlets: ' + this.inlets,
+              '• Layer nests: ' + this.fmt(this.layerNestsTotal),
+              this.requestId ? ('• Request #: ' + this.requestId) : '',
+              'Name: ' + this.name,
+              'Phone: ' + this.phone,
+            ];
+        var msg = lines.filter(Boolean).join('\n');
         return 'https://wa.me/' + this.waNumber + '?text=' + encodeURIComponent(msg);
       },
 
@@ -181,45 +223,75 @@
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
         }
+        if (!this.saveUrl) {
+          this.errors = {
+            form: this.locale === 'ar' ? 'مسار الحفظ غير متاح.' : 'Save endpoint missing.',
+          };
+          return;
+        }
+
         this.saving = true;
         this.errors = {};
         try {
-          var result = await this.$wire.syncAndPersist({
-            length: this.length,
-            width: this.width,
-            height: this.height,
-            floors: this.floors,
-            lines: this.lines,
-            name: this.name,
-            phone: this.phone,
+          var res = await fetch(this.saveUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRF-TOKEN': this.csrf || csrfToken(cfg),
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              length: this.length,
+              width: this.width,
+              height: this.height,
+              floors: this.floors,
+              lines: this.lines,
+              name: this.name,
+              phone: this.phone,
+            }),
           });
-          this.requestId = (result && result.requestId != null) ? result.requestId : null;
-          this.savedMsg = (result && result.message) || (this.locale === 'ar'
+
+          var data = {};
+          try { data = await res.json(); } catch (_) { data = {}; }
+
+          if (res.status === 419) {
+            global.location.reload();
+            return;
+          }
+
+          if (!res.ok) {
+            if (data.errors) {
+              var mapped = {};
+              Object.keys(data.errors).forEach(function (k) {
+                mapped[k] = Array.isArray(data.errors[k]) ? data.errors[k][0] : data.errors[k];
+              });
+              this.errors = Object.assign({}, mapped, {
+                form: mapped.name || mapped.phone || data.message || undefined,
+              });
+            } else {
+              this.errors = {
+                form: this.locale === 'ar'
+                  ? 'تعذّر الحفظ. حاول مرة أخرى.'
+                  : 'Could not save. Please try again.',
+              };
+            }
+            return;
+          }
+
+          this.applyBreakdown(data.breakdown);
+          this.requestId = data.requestId != null ? data.requestId : null;
+          this.savedMsg = data.message || (this.locale === 'ar'
             ? 'تم حفظ التقدير بنجاح'
             : 'Estimate saved successfully');
           this.openEstimate();
         } catch (e) {
-          var msg = String((e && e.message) || e || '');
-          if (msg.toLowerCase().includes('expired')) {
-            global.location.reload();
-            return;
-          }
-          var bag = (e && e.errors) || (e && e.detail && e.detail.errors);
-          if (bag) {
-            var mapped = {};
-            Object.keys(bag).forEach(function (k) {
-              mapped[k.replace(/^data\./, '')] = Array.isArray(bag[k]) ? bag[k][0] : bag[k];
-            });
-            this.errors = Object.assign({}, this.errors, mapped, {
-              form: mapped.name || mapped.phone || mapped.form,
-            });
-          } else {
-            this.errors = {
-              form: this.locale === 'ar'
-                ? 'تعذّر الحفظ. حاول مرة أخرى.'
-                : 'Could not save. Please try again.',
-            };
-          }
+          this.errors = {
+            form: this.locale === 'ar'
+              ? 'تعذّر الحفظ. حاول مرة أخرى.'
+              : 'Could not save. Please try again.',
+          };
         } finally {
           this.saving = false;
         }

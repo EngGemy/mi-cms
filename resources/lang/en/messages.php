@@ -218,6 +218,7 @@ return [
     'calc_estimate_whatsapp'=> 'Send estimate on WhatsApp',
     'calc_estimate_again'   => 'Edit calculation',
     'calc_saved'            => 'Estimate saved. Our sales team will reach out shortly.',
+    'calc_request_ref'      => 'Request #',
 
     // Blog
     'blog_eyebrow'           => 'Blog',

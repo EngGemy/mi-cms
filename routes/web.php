@@ -55,6 +55,10 @@ Route::group([
     // Contact form
     Route::post('contact', [ContactController::class, 'store'])->name('contact.store');
 
+    // Capacity calculator estimate (Alpine → JSON, no Livewire)
+    Route::post('calculator/estimate', [\App\Http\Controllers\CalculatorEstimateController::class, 'store'])
+        ->name('calculator.estimate');
+
     // Newsletter
     Route::post('newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
 });

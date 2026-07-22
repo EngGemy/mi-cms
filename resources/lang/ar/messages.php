@@ -218,6 +218,7 @@ return [
     'calc_estimate_whatsapp'=> 'إرسال التقدير عبر واتساب',
     'calc_estimate_again'   => 'تعديل الحساب',
     'calc_saved'            => 'تم حفظ التقدير بنجاح. سيتواصل معك فريق المبيعات.',
+    'calc_request_ref'      => 'رقم الطلب',
 
     // Blog
     'blog_eyebrow'        => 'المدوّنة',
