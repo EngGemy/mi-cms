@@ -13,6 +13,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <script src="{{ asset('js/mi-calc.js') }}?v={{ @filemtime(public_path('js/mi-calc.js')) ?: time() }}"></script>
     {{ $head ?? '' }}
 </head>
 <body>
