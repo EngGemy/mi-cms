@@ -366,10 +366,12 @@
           this.lines = 4;
         }
         this.step = 2;
+        this.openModal();
       },
 
       backToType: function () {
         this.step = 1;
+        this.closeModal();
       },
 
       openModal: function () {
@@ -388,10 +390,19 @@
         };
         this.$nextTick(function () {
           window.dispatchEvent(new CustomEvent('mi-calc-hydrate', { detail: detail }));
+          try {
+            if (global.lucide && typeof global.lucide.createIcons === 'function') {
+              global.lucide.createIcons();
+            }
+          } catch (_) {}
         });
       },
 
       closeModal: function () {
+        var estimate = document.querySelector('.cap-workspace-modal .calc-modal');
+        if (estimate && global.getComputedStyle(estimate).display !== 'none') {
+          return;
+        }
         this.modalOpen = false;
         document.body.classList.remove('calc-modal-open');
         if (global.lenis) global.lenis.start();

@@ -4,7 +4,7 @@
 @endphp
 {{-- Pure Alpine calculator — no Livewire. Factory: public/js/mi-calc.js --}}
 <div
-  class="calc-shell"
+  class="calc-shell{{ !empty($immersive) ? ' calc-shell--immersive' : '' }}"
   x-data="miPoultryCalcInline(@js($cfg))"
   @keydown.escape.window="if (saved) closeEstimate()"
 >
