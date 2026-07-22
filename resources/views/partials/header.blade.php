@@ -4,14 +4,18 @@
 @endphp
 <header>
   <div class="header-inner">
-    <a href="{{ route('home', $locale) }}" class="header-brand">
+    <a href="{{ route('home', $locale) }}" class="header-brand" data-header-brand>
       @php
         $logoPath = $generalSettings?->logo_path ?? null;
         $logoSrc = $logoPath
             ? \Illuminate\Support\Facades\Storage::disk('public')->url($logoPath)
             : asset('images/logo.jpg');
       @endphp
-      <div class="header-brand-logo"><img src="{{ $logoSrc }}" alt="{{ $generalSettings?->site_name ?? 'MI' }}"/></div>
+      <div class="header-brand-logo">
+        <span class="header-brand-glow" aria-hidden="true"></span>
+        <img src="{{ $logoSrc }}" alt="{{ $generalSettings?->site_name ?? 'MI' }}"/>
+        <span class="header-brand-sheen" aria-hidden="true"></span>
+      </div>
       <span class="header-brand-text">{{ $locale === 'ar' ? 'إم آي' : ($generalSettings?->site_name ?? 'MI') }}</span>
     </a>
 

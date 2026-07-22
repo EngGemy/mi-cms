@@ -1,4 +1,4 @@
-/* MI Poultry — design tokens + components.
+/* MI Poultry ? design tokens + components.
  * Loaded via Vite. Tailwind utilities are processed by @tailwindcss/vite plugin.
  */
 
@@ -85,20 +85,68 @@
     position:relative;
     z-index:2;
   }
+  .loader-vignette{
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 42%, rgba(200,16,46,.12), transparent 62%),
+      radial-gradient(ellipse 100% 80% at 50% 100%, rgba(26,22,17,.08), transparent 55%);
+  }
 
-  /* Logo wrap with concentric rings */
+  /* Logo wrap with cinematic glow / rings / orbit */
   .loader-logo-wrap{
     position:relative;
-    width:100px; height:100px;
+    width:128px; height:128px;
     display:grid; place-items:center;
+    perspective: 900px;
+  }
+  .loader-logo-glow{
+    position:absolute;
+    inset: -18%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,16,46,.45) 0%, rgba(200,16,46,.12) 42%, transparent 70%);
+    filter: blur(8px);
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .loader-logo-flare{
+    position:absolute;
+    inset: 18%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(200,16,46,.35) 35%, transparent 70%);
+    mix-blend-mode: screen;
+    opacity: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .loader-logo-orbit{
+    position:absolute;
+    inset: -6%;
+    border-radius: 50%;
+    border: 1px dashed rgba(200,16,46,.28);
+    opacity: 0;
+    z-index: 1;
+    animation: loaderOrbitSpin 12s linear infinite;
+  }
+  .loader-logo-orbit--2{
+    inset: -16%;
+    border-style: solid;
+    border-color: rgba(26,22,17,.08);
+    animation-duration: 18s;
+    animation-direction: reverse;
+  }
+  @keyframes loaderOrbitSpin {
+    to { transform: rotate(360deg); }
   }
   .loader-logo{
-    width:72px; height:72px;
-    border-radius: 18px;
+    width:84px; height:84px;
+    border-radius: 20px;
     overflow:hidden;
-    position:relative; z-index:2;
+    position:relative; z-index:3;
     background:#fff;
+    transform-style: preserve-3d;
     box-shadow:
+      0 18px 40px -10px rgba(200,16,46,.35),
       0 12px 32px -6px rgba(26,22,17,.18),
       0 0 0 1px rgba(26,22,17,.06);
   }
@@ -106,18 +154,28 @@
     width:100%; height:100%;
     object-fit:contain;
     padding: 8px;
+    display:block;
+  }
+  .loader-logo-sheen{
+    position:absolute; inset:0; z-index:2; pointer-events:none;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.7) 48%, transparent 62%);
+    mix-blend-mode: overlay;
   }
   .loader-logo-ring{
     position:absolute; inset:0; z-index:1;
     border-radius: 50%;
-    border: 1px solid rgba(200,16,46,.12);
-    animation: loaderRing 2.4s ease-out infinite;
+    border: 1px solid rgba(200,16,46,.18);
+    animation: loaderRing 2.6s ease-out infinite;
+    animation-delay: var(--ring-delay, 0s);
     opacity:0;
   }
+  .loader-logo-ring--accent{
+    border-color: rgba(200,16,46,.35);
+  }
   @keyframes loaderRing {
-    0%   { transform: scale(.6); opacity:0; }
-    30%  { opacity:.6; }
-    100% { transform: scale(1.4); opacity:0; }
+    0%   { transform: scale(.55); opacity:0; }
+    25%  { opacity:.55; }
+    100% { transform: scale(1.55); opacity:0; }
   }
 
   /* Brand text with word-level stagger */
@@ -131,6 +189,21 @@
     color: var(--ink-900);
     letter-spacing: -.02em;
     overflow:hidden;
+    perspective: 600px;
+  }
+  .loader-brand-ar{
+    display:inline-flex;
+    font-family: "Cairo", var(--font-display), sans-serif;
+    font-style: normal;
+    font-weight: 800;
+    font-size: clamp(26px, 4vw, 34px);
+    letter-spacing: 0;
+    color: var(--ink-900);
+  }
+  .loader-brand-char{
+    display:inline-block;
+    transform-origin: center bottom;
+    will-change: transform, opacity;
   }
   .loader-brand-word{
     display:inline-block;
@@ -201,7 +274,7 @@
   .display-1 {
     font-family:'Cairo',sans-serif;
     font-weight:900;
-    font-size: clamp(40px, 6.5vw, 88px);   /* was 132px max — much smaller */
+    font-size: clamp(40px, 6.5vw, 88px);   /* was 132px max ? much smaller */
     line-height: .96;
     letter-spacing: -0.035em;
   }
@@ -309,7 +382,7 @@
     box-shadow: 0 2px 24px -4px rgba(26,22,17,.12),
                 0 0 0 1px rgba(26,22,17,.06);
   }
-  /* Header entrance — slides down from above after loader */
+  /* Header entrance ? slides down from above after loader */
   header{
     animation: headerEnter .7s var(--ease-expo) both;
     animation-delay: .1s;
@@ -338,6 +411,7 @@
     flex-shrink:0;
   }
   .header-brand-logo{
+    position: relative;
     width:40px; height:40px;
     border-radius: 14px 4px 14px 4px;
     overflow:hidden;
@@ -345,11 +419,34 @@
     transform: rotate(-3deg);
     transition: transform .4s var(--ease-bounce), box-shadow .3s ease;
   }
+  .header-brand-glow{
+    position: absolute;
+    inset: -35%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,16,46,.4) 0%, transparent 68%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .header-brand-logo img{
+    position: relative;
+    z-index: 1;
+    width:100%; height:100%; object-fit:cover;
+  }
+  .header-brand-sheen{
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(120deg, transparent 28%, rgba(255,255,255,.55) 50%, transparent 72%);
+    opacity: 0;
+    mix-blend-mode: overlay;
+  }
   .header-brand:hover .header-brand-logo{
     transform: rotate(0deg) scale(1.08);
     box-shadow: 0 8px 24px -4px rgba(200,16,46,.45);
   }
-  .header-brand-logo img{ width:100%; height:100%; object-fit:cover; }
+  .header-brand:hover .header-brand-glow{ opacity: 0.55; }
   .header-brand-text{
     font-weight:800; font-size:17px; letter-spacing:-.02em;
     color: var(--ink-900);
@@ -460,7 +557,7 @@
   }
 
   /* ===================================================================
-     HERO — cinematic full-bleed
+     HERO ? cinematic full-bleed
      =================================================================== */
   .hero{
     position: relative;
@@ -780,37 +877,14 @@
     color: var(--ink-900);
   }
 
-  /* ============ LOGO ANIMATIONS (subtle pulse + shine sweep) ============ */
-  .header-brand-logo{
-    position: relative;
-    animation: logoBreathe 5s ease-in-out infinite;
+  /* ============ LOGO ANIMATIONS (cinematic ? reduced motion) ============ */
+  @media (prefers-reduced-motion: reduce){
+    .loader-logo-orbit,
+    .loader-logo-ring{ animation: none !important; }
+    .header-brand-logo,
+    .header-brand-glow,
+    .header-brand-sheen{ animation: none !important; }
   }
-  @keyframes logoBreathe {
-    0%, 100% { transform: rotate(-3deg) scale(1); }
-    50%      { transform: rotate(-3deg) scale(1.04); }
-  }
-  .header-brand-logo::after{
-    content:""; position:absolute; inset:0; z-index:2;
-    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.45) 50%, transparent 70%);
-    transform: translateX(-120%);
-    animation: logoShine 7s ease-in-out infinite;
-    pointer-events:none;
-    mix-blend-mode: overlay;
-  }
-  @keyframes logoShine {
-    0%, 70% { transform: translateX(-120%); }
-    85%     { transform: translateX(120%); }
-    100%    { transform: translateX(120%); }
-  }
-  .header-brand:hover .header-brand-logo{
-    animation: logoBreathe 5s ease-in-out infinite, logoHover .6s var(--ease-bounce) forwards;
-  }
-  @keyframes logoHover {
-    0%   { transform: rotate(-3deg) scale(1); }
-    50%  { transform: rotate(2deg) scale(1.12); }
-    100% { transform: rotate(0deg) scale(1.06); }
-  }
-  /* loader logo gets its own enhanced animation already defined */
 
   /* ============ TEAM / SALES & SUPPORT CARDS ============ */
   .team-grid{
@@ -1178,7 +1252,7 @@
     overflow: hidden;
     margin-inline: 0;
     padding-bottom: 8px;
-    /* neutralize parent grid when Swiper is active — prevents empty height gaps */
+    /* neutralize parent grid when Swiper is active ? prevents empty height gaps */
     grid-template-columns: none !important;
     gap: 0 !important;
   }
@@ -1864,7 +1938,7 @@
   .gw-modal-success-icon svg{ width: 28px; height: 28px; }
   body.gw-modal-open{ overflow: hidden; }
 
-  /* Fixed edge rail (physical right — matches reference) */
+  /* Fixed edge rail (physical right ? matches reference) */
   .mi-rail{
     position: fixed;
     top: 50%;
@@ -1944,7 +2018,7 @@
     .mi-rail-btn{ transition: none; }
   }
 
-  /* WhatsApp float — always visible site-wide */
+  /* WhatsApp float ? always visible site-wide */
   .wa-float{
     position: fixed;
     z-index: 90;
@@ -2038,7 +2112,7 @@
   [data-reveal], [data-stagger] > *, [data-parallax]{ will-change: transform, opacity; }
   [data-reveal="clip"], [data-reveal="title"]{ will-change: clip-path, opacity; }
 
-  /* CHAR REVEAL — for hero headline */
+  /* CHAR REVEAL ? for hero headline */
   .char-reveal{ overflow:hidden; display:inline-block; }
   .char-reveal .char-line{
     display:inline-block; transform: translateY(110%);
@@ -2676,7 +2750,7 @@
   }
 
   /* --- Mobile-first calculator UX --- */
-  /* —— Modern calculator shell (Alpine, no Livewire) —— */
+  /* ?? Modern calculator shell (Alpine, no Livewire) ?? */
   .calc-section{
     padding: clamp(56px, 8vw, 96px) 0;
     background:
@@ -3069,7 +3143,7 @@
     color: var(--mi-red);
     font-size: 18px;
   }
-  .calc-details[open] .calc-details-summary::after{ content: "−"; }
+  .calc-details[open] .calc-details-summary::after{ content: "?"; }
   .calc-details > :not(summary){
     padding: 0 16px 16px;
   }
@@ -3498,7 +3572,7 @@
 
 /* ===================================================================
    ARABIC TYPOGRAPHY OVERRIDES
-   Targets [lang="ar"] / [dir="rtl"] only — English unchanged.
+   Targets [lang="ar"] / [dir="rtl"] only ? English unchanged.
    Rule: no negative letter-spacing on Arabic; wider line-height
    to prevent ascender/descender collisions.
    =================================================================== */
@@ -3518,13 +3592,13 @@
   letter-spacing: 0;
 }
 
-/* Serif-italic used for loader brand / layer labels (Latin only — no Arabic override needed,
+/* Serif-italic used for loader brand / layer labels (Latin only ? no Arabic override needed,
    but neutralise negative tracking if it appears in Arabic context) */
 [lang="ar"] .serif-italic, [dir="rtl"] .serif-italic {
   letter-spacing: 0;
 }
 
-/* Loader brand — italic Latin in Arabic page: safe to zero */
+/* Loader brand ? italic Latin in Arabic page: safe to zero */
 [lang="ar"] .loader-brand, [dir="rtl"] .loader-brand {
   letter-spacing: 0;
 }
@@ -3539,7 +3613,7 @@
   letter-spacing: 0;
 }
 
-/* Hero rotating word — widen container so Arabic diacritics aren't clipped */
+/* Hero rotating word ? widen container so Arabic diacritics aren't clipped */
 [lang="ar"] .rotating-word, [dir="rtl"] .rotating-word {
   line-height: 1.3;
   min-height: 1.3em;
@@ -3549,13 +3623,13 @@
   padding-block: .06em;
 }
 
-/* Char-reveal headline — give lines lines room to breathe */
+/* Char-reveal headline ? give lines lines room to breathe */
 [lang="ar"] .char-reveal .char-line, [dir="rtl"] .char-reveal .char-line {
   line-height: 1.28;
   padding-block: .04em;
 }
 
-/* Hero stat numbers — keep tabular Latin numerals but zero adjacent Arabic text tracking */
+/* Hero stat numbers ? keep tabular Latin numerals but zero adjacent Arabic text tracking */
 [lang="ar"] .hero-stat-num, [dir="rtl"] .hero-stat-num {
   letter-spacing: 0;
 }
@@ -3591,12 +3665,12 @@
   letter-spacing: 0;
 }
 
-/* General h1–h3 safety net for any inline Arabic headings */
+/* General h1?h3 safety net for any inline Arabic headings */
 [lang="ar"] h1, [dir="rtl"] h1 { line-height: 1.28; letter-spacing: 0; }
 [lang="ar"] h2, [dir="rtl"] h2 { line-height: 1.35; letter-spacing: 0; }
 [lang="ar"] h3, [dir="rtl"] h3 { line-height: 1.45; letter-spacing: 0; }
 
-/* Grand total number in calculator — Latin digits, but zero tracking for cleanliness */
+/* Grand total number in calculator ? Latin digits, but zero tracking for cleanliness */
 [lang="ar"] .calc-grand-num, [dir="rtl"] .calc-grand-num {
   letter-spacing: 0;
 }
@@ -4552,7 +4626,7 @@
   .proj-breadcrumb-list li[aria-current]{ color:var(--ink-900); }
 
   /* ===================================================================
-     PROJECTS SECTION — Featured + Uniform Grid
+     PROJECTS SECTION ? Featured + Uniform Grid
      =================================================================== */
   .projects-grid-clean{
     display: grid;
@@ -4725,7 +4799,7 @@
   .project-tile-clean:hover .project-tile-clean-arrow{ color: var(--mi-red); }
 
   /* ===================================================================
-     PROJECT PHASES — Timeline / Execution Items (with media)
+     PROJECT PHASES ? Timeline / Execution Items (with media)
      =================================================================== */
   .proj-phases{ background: var(--paper); border-top: 1px solid rgba(26,22,17,.07); border-bottom: 1px solid rgba(26,22,17,.07); }
   .proj-phases-inner{ max-width: 1440px; margin: 0 auto; padding: 0 32px; }
@@ -4811,7 +4885,7 @@
 }
 
 /* ===================================================================
-   SITE RESTRUCTURE � listing, pagination, process, home CTA
+   SITE RESTRUCTURE ? listing, pagination, process, home CTA
    =================================================================== */
 .home-cta{
   background: var(--ink-900);
@@ -5099,4 +5173,46 @@
 @media (prefers-reduced-motion: reduce){
   .marquee-track{ animation: none !important; }
   .process-stage{ opacity: 1 !important; transform: none !important; }
+}
+
+/* Process page polish */
+.text-mi-red{ color: var(--mi-red); }
+.page-hero-center{ text-align: center; max-width: 42rem; margin-inline: auto; }
+.page-hero--process .page-hero-center{ margin-inline: auto; }
+.process-page-title{
+  font-family: var(--font-thuluth), "Aref Ruqaa", serif;
+  font-weight: 700;
+  font-size: clamp(26px, 3.6vw, 40px);
+  line-height: 1.45;
+}
+.process-how-title{
+  text-align: center;
+  font-family: var(--font-thuluth), "Aref Ruqaa", serif;
+  font-weight: 700;
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.5;
+  max-width: 28ch;
+  margin-inline: auto;
+}
+.process-how-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 768px){
+  .process-how-grid{ grid-template-columns: repeat(3, 1fr); gap: 16px; }
+}
+.process-stages-carousel{
+  padding-bottom: 28px;
+}
+.process-stages-carousel .process-stage{
+  height: 100%;
+  margin: 0;
+}
+.process-stages-carousel.is-carousel .process-stage{
+  display: flex;
+  flex-direction: column;
+}
+.process-stages-carousel .process-stage-media{
+  aspect-ratio: 16/11;
 }
