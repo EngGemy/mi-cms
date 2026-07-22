@@ -1,12 +1,12 @@
 @php
   $cfg = $alpineConfig;
 @endphp
-{{-- Alpine.data('miPoultryCalc') is registered once via @script below (not Vite / not public/js). --}}
+{{-- Calculator factory: uniquely named window global only (not the Alpine component registry). --}}
 <div>
   <div
     class="calc-card--ux"
-    x-data="miPoultryCalc(@js($cfg))"
-    x-cloak
+    data-calc-cfg='@json($cfg)'
+    x-data="miPoultryCalcInline(@js($cfg))"
     @keydown.escape.window="if (saved) closeEstimate()"
   >
     {{-- Form always stays — estimate opens as modal overlay --}}
@@ -299,7 +299,7 @@
 
 @script
 <script>
-    Alpine.data('miPoultryCalc', (cfg = {}) => ({
+    window.miPoultryCalcInline = (cfg = {}) => ({
         length: Number(cfg.length) || 71,
         width: Number(cfg.width) || 12,
         height: Number(cfg.height) || 3.5,
@@ -497,7 +497,32 @@
                 this.saving = false;
             }
         },
-    }));
+    });
+
+    // Remount if Alpine initialized before this Livewire script defined the global.
+    const remount = () => {
+        if (!window.Alpine || typeof window.miPoultryCalcInline !== 'function') return;
+        document.querySelectorAll('.calc-card--ux[data-calc-cfg]').forEach((el) => {
+            let ok = false;
+            try {
+                const d = Alpine.$data(el);
+                ok = !!(d && typeof d.saveEstimate === 'function');
+            } catch (_) {}
+            if (ok) return;
+            let cfg = {};
+            try { cfg = JSON.parse(el.getAttribute('data-calc-cfg') || '{}'); } catch (_) {}
+            try { Alpine.destroyTree?.(el); } catch (_) {}
+            el.removeAttribute('x-data');
+            const data = Alpine.reactive(window.miPoultryCalcInline(cfg));
+            Alpine.addScopeToNode(el, data);
+            Alpine.initTree(el);
+            data.init?.();
+        });
+    };
+    remount();
+    queueMicrotask(remount);
+    setTimeout(remount, 50);
+    setTimeout(remount, 200);
 </script>
 @endscript
 </div>
