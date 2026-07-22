@@ -18,8 +18,12 @@ window.ScrollTrigger = ScrollTrigger;
 let projectsSwiper = null;
 
 // Initialize Lucide icons
-document.addEventListener('DOMContentLoaded', () => {
+function refreshLucideIcons() {
   createIcons({ icons });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  refreshLucideIcons();
   initLoader();
   initLenis();
   initHeader();
@@ -44,6 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initChairmanTypewriter();
   initSideRailShare();
   ScrollTrigger.refresh();
+});
+
+document.addEventListener('livewire:init', () => {
+  Livewire.hook('morph.updated', () => {
+    refreshLucideIcons();
+  });
 });
 
 let lenis;
