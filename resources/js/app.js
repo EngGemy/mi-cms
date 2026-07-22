@@ -272,19 +272,13 @@ function runHeaderBrandEntrance() {
     }, 0.28)
     .fromTo(sheen, { xPercent: -130, opacity: 0 }, { xPercent: 130, opacity: 1, duration: 0.9, ease: 'power2.inOut' }, 0.45)
     .to(sheen, { opacity: 0, duration: 0.2 }, 1.2)
-    .to(glow, { opacity: 0.35, duration: 0.6 }, 1.0);
-
-  // Soft cinematic idle
-  if (img) {
-    gsap.to(mark, {
-      y: -2,
-      duration: 2.4,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-      delay: 1.2,
+    .to(glow, { opacity: 0.35, duration: 0.6 }, 1.0)
+    .add(() => {
+      // Hand off to continuous CSS logo animation
+      if (mark) gsap.set(mark, { clearProps: 'transform,filter' });
+      if (sheen) gsap.set(sheen, { clearProps: 'transform,opacity' });
+      if (glow) gsap.set(glow, { clearProps: 'transform,opacity' });
     });
-  }
 }
 
 function initLenis() {

@@ -31,13 +31,13 @@
       </div>
 
       <div class="cap-promo-types" data-stagger>
-        <button type="button" class="cap-promo-type cap-promo-type--layer" @click="pickType('layer')">
+        <button type="button" class="cap-promo-type cap-promo-type--broiler" @click="pickType('broiler')">
           <span class="cap-promo-type-index">01</span>
           <span class="cap-promo-type-glow" aria-hidden="true"></span>
-          <span class="cap-promo-type-icon" aria-hidden="true"><i data-lucide="egg"></i></span>
+          <span class="cap-promo-type-icon" aria-hidden="true"><i data-lucide="drumstick"></i></span>
           <span class="cap-promo-type-body">
-            <span class="cap-promo-type-label">{{ __('messages.cap_promo_type_layer') }}</span>
-            <span class="cap-promo-type-hint">{{ __('messages.cap_promo_type_layer_hint') }}</span>
+            <span class="cap-promo-type-label">{{ __('messages.cap_promo_type_broiler') }}</span>
+            <span class="cap-promo-type-hint">{{ __('messages.cap_promo_type_broiler_hint') }}</span>
           </span>
           <span class="cap-promo-type-cta">
             {{ __('messages.cap_promo_start') }}
@@ -45,13 +45,13 @@
           </span>
         </button>
 
-        <button type="button" class="cap-promo-type cap-promo-type--broiler" @click="pickType('broiler')">
+        <button type="button" class="cap-promo-type cap-promo-type--layer" @click="pickType('layer')">
           <span class="cap-promo-type-index">02</span>
           <span class="cap-promo-type-glow" aria-hidden="true"></span>
-          <span class="cap-promo-type-icon" aria-hidden="true"><i data-lucide="drumstick"></i></span>
+          <span class="cap-promo-type-icon" aria-hidden="true"><i data-lucide="egg"></i></span>
           <span class="cap-promo-type-body">
-            <span class="cap-promo-type-label">{{ __('messages.cap_promo_type_broiler') }}</span>
-            <span class="cap-promo-type-hint">{{ __('messages.cap_promo_type_broiler_hint') }}</span>
+            <span class="cap-promo-type-label">{{ __('messages.cap_promo_type_layer') }}</span>
+            <span class="cap-promo-type-hint">{{ __('messages.cap_promo_type_layer_hint') }}</span>
           </span>
           <span class="cap-promo-type-cta">
             {{ __('messages.cap_promo_start') }}

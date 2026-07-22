@@ -107,9 +107,11 @@ class CalculatorService implements CalculatorServiceInterface
         $cfgFallback = config('poultry_pricing', []);
 
         $birdWeightKg = 2.1; // average bird weight 2100 g
-        $serviceLength = (float) ($input['service_length'] ?? $p['service_length'] ?? $cfgFallback['default_service_length'] ?? 10);
-        if ($serviceLength != 8.0 && $serviceLength != 10.0) {
-            $serviceLength = 10.0;
+        $barnType = (string) ($input['barn_type'] ?? 'layer');
+        $allowedService = $barnType === 'broiler' ? [9, 10] : [8, 9];
+        $serviceLength = (int) round((float) ($input['service_length'] ?? $allowedService[0]));
+        if (! in_array($serviceLength, $allowedService, true)) {
+            $serviceLength = $allowedService[0];
         }
         $rawEffective = max(0, $L - $serviceLength);
         // Always even — round UP (e.g. 71 → 72)

@@ -247,7 +247,7 @@ return [
     'calc_capacity_title'   => 'Approximate Capacity',
     'calc_capacity_approx'  => 'Note: capacity is approximate, not final.',
     'calc_service_length'   => 'Service area deduction',
-    'calc_service_hint'     => 'Subtract 8 or 10 m from length; result is always even (round up).',
+    'calc_service_hint'     => 'Layers: 8 or 9 m · Broilers: 9 or 10 m — result is always even (round up).',
     'calc_bird_weight'      => 'Average bird weight',
     'calc_fan_spec'         => 'Fan specification',
     'calc_effective_length' => 'Effective Length',

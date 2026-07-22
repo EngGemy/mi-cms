@@ -248,7 +248,7 @@ return [
     'calc_capacity_title'   => 'السعة التقريبية',
     'calc_capacity_approx'  => 'ملاحظة: السعة تقريبية وليست نهائية.',
     'calc_service_length'   => 'خصم منطقة الخدمات',
-    'calc_service_hint'     => 'يُطرح 8 أو 10 م من الطول، والناتج زوجي دائماً (تقريب لأعلى).',
+    'calc_service_hint'     => 'البياض: 8 أو 9 م · التسمين: 9 أو 10 م — والناتج زوجي دائماً (تقريب لأعلى).',
     'calc_bird_weight'      => 'متوسط وزن الطائر',
     'calc_fan_spec'         => 'مواصفات الشفاطات',
     'calc_effective_length' => 'الطول الفعّال',

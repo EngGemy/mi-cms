@@ -25,8 +25,8 @@
       height: Number(cfg.height) || 3.5,
       floors: Number(cfg.floors) || 3,
       lines: Number(cfg.lines) || 4,
-      serviceLength: Number(cfg.serviceLength) || 10,
-      serviceLengthOptions: (cfg.serviceLengthOptions || [8, 10]).map(Number),
+      serviceLength: Number(cfg.serviceLength) || 8,
+      serviceLengthOptions: (cfg.serviceLengthOptions || [8, 9]).map(Number),
       birdWeightKg: 2.1,
       birdWeightGrams: 2100,
       fanCapacityKg: Number(cfg.fanCapacityKg) || 5000,
@@ -67,6 +67,7 @@
 
       init: function () {
         var self = this;
+        this.syncServiceOptions();
         window.addEventListener('mi-calc-hydrate', function (e) {
           var d = (e && e.detail) || {};
           if (d.length != null) self.length = Number(d.length);
@@ -74,12 +75,27 @@
           if (d.height != null) self.height = Number(d.height);
           if (d.floors != null) self.floors = Number(d.floors);
           if (d.lines != null) self.lines = Number(d.lines);
-          if (d.serviceLength != null) self.serviceLength = Number(d.serviceLength);
           if (d.barnType) self.barnType = d.barnType;
+          self.syncServiceOptions();
+          if (d.serviceLength != null) {
+            var svc = Number(d.serviceLength);
+            if (self.serviceLengthOptions.indexOf(svc) !== -1) self.serviceLength = svc;
+          }
           self.birdWeightKg = 2.1;
           self.recompute();
         });
         this.recompute();
+      },
+
+      syncServiceOptions: function () {
+        // Layer: 8|9 m — Broiler: 9|10 m
+        if (this.barnType === 'broiler') {
+          this.serviceLengthOptions = [9, 10];
+          if (this.serviceLength !== 9 && this.serviceLength !== 10) this.serviceLength = 9;
+        } else {
+          this.serviceLengthOptions = [8, 9];
+          if (this.serviceLength !== 8 && this.serviceLength !== 9) this.serviceLength = 8;
+        }
       },
 
       closeEstimate: function () {
@@ -160,13 +176,16 @@
 
       recompute: function () {
         this.birdWeightKg = 2.1;
+        this.syncServiceOptions();
         var L = Number(this.length) || 0;
         var floors = Number(this.floors) || 1;
         var lines = Number(this.lines) || 1;
-        var service = Number(this.serviceLength) || 10;
-        if (service !== 8 && service !== 10) service = 10;
+        var service = Number(this.serviceLength);
+        if (this.serviceLengthOptions.indexOf(service) === -1) {
+          service = this.serviceLengthOptions[0];
+        }
         this.serviceLength = service;
-        // Effective length = input − service (8 or 10 m), always even (round UP: 71 → 72)
+        // Effective length = input − service, always even (round UP: 71 → 72)
         var rawEffective = Math.max(0, L - service);
         this.effectiveLength = ceilEven(rawEffective);
         this.birdsPerNest = this.resolveBirdsPerNest();
@@ -186,7 +205,11 @@
       },
 
       setServiceLength: function (v) {
-        this.serviceLength = Number(v) === 8 ? 8 : 10;
+        var n = Number(v);
+        if (this.serviceLengthOptions.indexOf(n) === -1) {
+          n = this.serviceLengthOptions[0];
+        }
+        this.serviceLength = n;
         this.recompute();
       },
 
@@ -345,7 +368,7 @@
       height: Number(cfg.height) || 3.5,
       floors: Number(cfg.floors) || 3,
       lines: Number(cfg.lines) || 4,
-      serviceLength: Number(cfg.serviceLength) === 8 ? 8 : 10,
+      serviceLength: 9,
       floorsOptions: (cfg.floorsOptions || [1, 2, 3, 4, 5]).map(Number),
       linesOptions: (cfg.linesOptions || [3, 4, 5, 6]).map(Number),
       minLength: Number(cfg.minLength) || 71,
@@ -361,9 +384,11 @@
         if (type === 'layer') {
           this.floors = 4;
           this.lines = 4;
+          this.serviceLength = 8;
         } else {
           this.floors = 3;
           this.lines = 4;
+          this.serviceLength = 9;
         }
         this.step = 2;
         this.openModal();
