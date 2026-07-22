@@ -39,10 +39,14 @@
       <div class="lg:col-span-2 footer-col">
         <div class="label-mono mb-4" style="color:var(--ink-500)">{{ __('messages.site_map') }}</div>
         <ul class="space-y-3" style="font-size:14px">
-          <li><a href="#products" class="footer-link">{{ __('messages.nav_products') }}</a></li>
-          <li><a href="#features" class="footer-link">{{ __('messages.nav_features') }}</a></li>
-          <li><a href="#how" class="footer-link">{{ __('messages.nav_how') }}</a></li>
+          <li><a href="{{ route('products.index', $locale) }}" class="footer-link">{{ __('messages.nav_products') }}</a></li>
+          <li><a href="{{ route('home', $locale) }}#features" class="footer-link">{{ __('messages.nav_features') }}</a></li>
+          <li><a href="{{ route('projects.index', $locale) }}" class="footer-link">{{ __('messages.nav_projects') }}</a></li>
+          <li><a href="{{ route('home', $locale) }}#calculator" class="footer-link">{{ __('messages.nav_calculator') }}</a></li>
+          <li><a href="{{ route('process.index', $locale) }}" class="footer-link">{{ __('messages.nav_how') }}</a></li>
+          <li><a href="{{ route('about', $locale) }}" class="footer-link">{{ __('messages.nav_about') }}</a></li>
           <li><a href="{{ route('blog.index', $locale) }}" class="footer-link">{{ __('messages.nav_blog') }}</a></li>
+          <li><a href="{{ route('home', $locale) }}#contact" class="footer-link">{{ __('messages.nav_contact') }}</a></li>
         </ul>
       </div>
 

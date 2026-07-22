@@ -16,6 +16,7 @@
         <span class="calc-live-num" x-text="fmt(birds)"></span>
         <span class="calc-live-unit">{{ __('messages.birds_unit') }}</span>
       </div>
+      <p class="calc-live-approx">{{ __('messages.calc_capacity_approx') }}</p>
       <p class="calc-live-formula" x-text="formulaLabel"></p>
 
       <div class="calc-live-stats">
@@ -202,6 +203,7 @@
     <div>
       <div class="calc-sticky-label">{{ __('messages.calc_capacity_title') }}</div>
       <div class="calc-sticky-value"><span x-text="fmt(birds)"></span> {{ __('messages.birds_unit') }}</div>
+      <div class="calc-sticky-approx">{{ __('messages.calc_capacity_approx') }}</div>
     </div>
     <button type="button" class="btn btn-primary calc-sticky-btn" @click="saveEstimate()" :disabled="saving">
       {{ __('messages.calc_persist_short') }}

@@ -2814,6 +2814,13 @@
     font-weight: 700;
     color: #F07178;
   }
+  .calc-live-approx{
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: #F8C8CB;
+  }
   .calc-live-formula{
     margin: 0;
     font-size: 12px;
@@ -3237,6 +3244,13 @@
       font-size: 18px;
       line-height: 1.2;
       font-variant-numeric: tabular-nums;
+    }
+    .calc-sticky-approx{
+      margin-top: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,.55);
+      line-height: 1.35;
     }
     .calc-sticky-btn{
       flex-shrink: 0;
