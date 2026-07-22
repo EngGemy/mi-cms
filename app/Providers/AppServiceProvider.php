@@ -46,7 +46,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Paginator::useTailwind();
+        Paginator::defaultView('vendor.pagination.mi');
+        Paginator::defaultSimpleView('vendor.pagination.mi');
 
         Route::bind('product',  fn ($v) => Product::where('slug', $v)->firstOrFail());
         Route::bind('post',     fn ($v) => BlogPost::where('slug', $v)->firstOrFail());

@@ -44,7 +44,7 @@
     </div>
 
     <div class="text-center mt-12" data-reveal data-reveal-delay="0.2">
-      <a href="#contact" class="btn btn-dark btn-lg" data-magnetic>
+      <a href="{{ route('products.index', app()->getLocale()) }}" class="btn btn-dark btn-lg" data-magnetic>
         {{ __('messages.products_cta') }} <i data-lucide="arrow-left" class="w-4 h-4"></i>
       </a>
     </div>

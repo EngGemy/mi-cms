@@ -1,17 +1,9 @@
-<x-layouts.public>
-@include('sections.hero',              ['slides' => $heroSlides])
+<x-layouts.public :seo="$seo ?? []">
+@include('sections.hero', ['slides' => $heroSlides])
 @include('sections.calc-gateway')
-@include('sections.products',          ['products' => $featuredProducts])
-@include('sections.features',          ['features' => $features])
-@include('sections.video-showcase')
-@include('sections.production-stages', ['stages' => $productionStages])
-@include('sections.how-it-works')
-@include('sections.projects',          ['projects' => $projects])
-@include('sections.about')
-@include('sections.chairman',          ['quote' => $chairmanQuote])
-@include('sections.faq',               ['faqs' => $faqs])
-@include('sections.team',              ['members' => $teamMembers])
+@include('sections.products', ['products' => $featuredProducts])
+@include('sections.features', ['features' => $features])
+@include('sections.projects', ['projects' => $projects])
 @include('sections.calculator')
-@include('sections.testimonials',      ['testimonials' => $testimonials])
-@include('sections.contact')
+@include('sections.home-cta')
 </x-layouts.public>

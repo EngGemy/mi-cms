@@ -10,6 +10,9 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProcessController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\TestimonialsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +40,11 @@ Route::group([
 
     // About
     Route::get('about', AboutController::class)->name('about');
+
+    // Process / FAQ / Testimonials
+    Route::get('process', ProcessController::class)->name('process.index');
+    Route::get('faq', FaqController::class)->name('faq.index');
+    Route::get('testimonials', TestimonialsController::class)->name('testimonials.index');
 
     // Products
     Route::get('products', [ProductController::class, 'index'])->name('products.index');

@@ -233,113 +233,115 @@
         </svg>
       </button>
 
-      <div class="calc-estimate-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12.5l2 2 4-4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
-        <span x-text="savedMsg"></span>
-      </div>
+      <div class="calc-modal-scroll">
+        <div class="calc-estimate-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12.5l2 2 4-4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+          <span x-text="savedMsg"></span>
+        </div>
 
-      <div class="calc-estimate-kicker" id="calcEstimateTitle">{{ __('messages.calc_estimate_title') }}</div>
-      <div class="calc-estimate-main">
-        <span class="calc-estimate-num" x-text="fmt(birds)"></span>
-        <span class="calc-estimate-unit">{{ __('messages.birds_unit') }}</span>
-      </div>
-      <p class="calc-estimate-ref" x-show="requestId">
-        {{ __('messages.calc_request_ref') }}
-        <strong x-text="'#' + requestId"></strong>
-      </p>
+        <div class="calc-estimate-kicker" id="calcEstimateTitle">{{ __('messages.calc_estimate_title') }}</div>
+        <div class="calc-estimate-main">
+          <span class="calc-estimate-num" x-text="fmt(birds)"></span>
+          <span class="calc-estimate-unit">{{ __('messages.birds_unit') }}</span>
+        </div>
+        <p class="calc-estimate-ref" x-show="requestId">
+          {{ __('messages.calc_request_ref') }}
+          <strong x-text="'#' + requestId"></strong>
+        </p>
 
-      <div class="calc-estimate-section">
-        <div class="calc-estimate-section-title">{{ __('messages.calc_dimensions') }}</div>
-        <div class="calc-estimate-grid">
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_length') }}</span>
-            <strong x-text="length + ' م'"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_width') }}</span>
-            <strong x-text="width + ' م'"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_height') }}</span>
-            <strong x-text="height + ' م'"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_effective_length') }}</span>
-            <strong x-text="effectiveLength + ' م'"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_floors') }}</span>
-            <strong x-text="floors"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_lines') }}</span>
-            <strong x-text="lines"></strong>
+        <div class="calc-estimate-section">
+          <div class="calc-estimate-section-title">{{ __('messages.calc_dimensions') }}</div>
+          <div class="calc-estimate-grid">
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_length') }}</span>
+              <strong x-text="length + ' م'"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_width') }}</span>
+              <strong x-text="width + ' م'"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_height') }}</span>
+              <strong x-text="height + ' م'"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_effective_length') }}</span>
+              <strong x-text="effectiveLength + ' م'"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_floors') }}</span>
+              <strong x-text="floors"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_lines') }}</span>
+              <strong x-text="lines"></strong>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="calc-estimate-section">
-        <div class="calc-estimate-section-title">{{ __('messages.calc_capacity') }}</div>
-        <div class="calc-estimate-grid">
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_total_nests') }}</span>
-            <strong x-text="fmt(totalNests)"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_nests_per_line') }}</span>
-            <strong x-text="fmt(nestsPerLine)"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_birds_per_nest') }}</span>
-            <strong x-text="birdsPerNest"></strong>
-          </div>
-          <div class="calc-estimate-item calc-estimate-item--accent">
-            <span>{{ __('messages.calc_capacity_title') }}</span>
-            <strong x-text="fmt(birds) + ' ' + (locale === 'ar' ? 'طائر' : 'birds')"></strong>
+        <div class="calc-estimate-section">
+          <div class="calc-estimate-section-title">{{ __('messages.calc_capacity') }}</div>
+          <div class="calc-estimate-grid">
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_total_nests') }}</span>
+              <strong x-text="fmt(totalNests)"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_nests_per_line') }}</span>
+              <strong x-text="fmt(nestsPerLine)"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_birds_per_nest') }}</span>
+              <strong x-text="birdsPerNest"></strong>
+            </div>
+            <div class="calc-estimate-item calc-estimate-item--accent">
+              <span>{{ __('messages.calc_capacity_title') }}</span>
+              <strong x-text="fmt(birds) + ' ' + (locale === 'ar' ? 'طائر' : 'birds')"></strong>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="calc-estimate-section">
-        <div class="calc-estimate-section-title">{{ __('messages.calc_tech_outputs') }}</div>
-        <div class="calc-estimate-grid">
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_rear_fans') }}</span>
-            <strong x-text="rearFans"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_cooling') }}</span>
-            <strong x-text="coolingPadMeters + ' م'"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_inlets') }}</span>
-            <strong x-text="inlets"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.calc_layer_nests') }}</span>
-            <strong x-text="fmt(layerNestsTotal)"></strong>
+        <div class="calc-estimate-section">
+          <div class="calc-estimate-section-title">{{ __('messages.calc_tech_outputs') }}</div>
+          <div class="calc-estimate-grid">
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_rear_fans') }}</span>
+              <strong x-text="rearFans"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_cooling') }}</span>
+              <strong x-text="coolingPadMeters + ' م'"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_inlets') }}</span>
+              <strong x-text="inlets"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.calc_layer_nests') }}</span>
+              <strong x-text="fmt(layerNestsTotal)"></strong>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="calc-estimate-section">
-        <div class="calc-estimate-section-title">{{ __('messages.calc_contact_title') }}</div>
-        <div class="calc-estimate-grid calc-estimate-grid--2">
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.field_name') }}</span>
-            <strong x-text="name"></strong>
-          </div>
-          <div class="calc-estimate-item">
-            <span>{{ __('messages.field_phone') }}</span>
-            <strong dir="ltr" x-text="phone"></strong>
+        <div class="calc-estimate-section">
+          <div class="calc-estimate-section-title">{{ __('messages.calc_contact_title') }}</div>
+          <div class="calc-estimate-grid calc-estimate-grid--2">
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.field_name') }}</span>
+              <strong x-text="name"></strong>
+            </div>
+            <div class="calc-estimate-item">
+              <span>{{ __('messages.field_phone') }}</span>
+              <strong dir="ltr" x-text="phone"></strong>
+            </div>
           </div>
         </div>
+
+        <p class="calc-estimate-formula" x-text="formulaLabel"></p>
+        <p class="calc-estimate-note">{{ __('messages.calc_estimate_note') }}</p>
       </div>
 
-      <p class="calc-estimate-formula" x-text="formulaLabel"></p>
-      <p class="calc-estimate-note">{{ __('messages.calc_estimate_note') }}</p>
-
-      <div class="calc-estimate-actions">
+      <div class="calc-modal-footer">
         <a class="btn btn-primary calc-estimate-wa"
            :href="waLink"
            target="_blank"

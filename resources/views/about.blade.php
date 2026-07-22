@@ -1,4 +1,5 @@
 <x-layouts.public :seo="$seo">
+@include('partials.breadcrumbs', ['items' => $breadcrumbs ?? []])
 
 @php
   /** @var \App\Settings\AboutSettings $about */
@@ -251,6 +252,11 @@
     </div>
   </div>
 </section>
+
+@include('sections.chairman', ['quote' => $chairmanQuote ?? null])
+@if(($teamMembers ?? collect())->isNotEmpty())
+  @include('sections.team', ['members' => $teamMembers])
+@endif
 
 {{-- ================================================================
      FINAL CTA

@@ -1,5 +1,6 @@
 @php
   $locale = app()->getLocale();
+  $routeIs = fn (string $name) => request()->routeIs($name);
 @endphp
 <header>
   <div class="header-inner">
@@ -15,12 +16,13 @@
     </a>
 
     <nav class="header-nav">
-      <a href="#products">{{ __('messages.nav_products') }}</a>
-      <a href="#features">{{ __('messages.nav_features') }}</a>
-      <a href="#how">{{ __('messages.nav_how') }}</a>
-      <a href="#calculator">{{ __('messages.nav_calculator') }}</a>
-      <a href="{{ route('blog.index', $locale) }}">{{ __('messages.nav_blog') }}</a>
-      <a href="{{ route('about', $locale) }}">{{ __('messages.nav_about') }}</a>
+      <a href="{{ route('products.index', $locale) }}" class="{{ $routeIs('products.*') ? 'active' : '' }}">{{ __('messages.nav_products') }}</a>
+      <a href="{{ route('projects.index', $locale) }}" class="{{ $routeIs('projects.*') ? 'active' : '' }}">{{ __('messages.nav_projects') }}</a>
+      <a href="{{ route('process.index', $locale) }}" class="{{ $routeIs('process.*') ? 'active' : '' }}">{{ __('messages.nav_how') }}</a>
+      <a href="{{ route('home', $locale) }}#calculator" class="{{ request()->routeIs('home') && request()->getRequestUri() ? '' : '' }}">{{ __('messages.nav_calculator') }}</a>
+      <a href="{{ route('about', $locale) }}" class="{{ $routeIs('about') ? 'active' : '' }}">{{ __('messages.nav_about') }}</a>
+      <a href="{{ route('blog.index', $locale) }}" class="{{ $routeIs('blog.*') ? 'active' : '' }}">{{ __('messages.nav_blog') }}</a>
+      <a href="{{ route('home', $locale) }}#contact">{{ __('messages.nav_contact') }}</a>
     </nav>
 
     <div class="header-actions">
@@ -29,7 +31,7 @@
         <i data-lucide="globe" class="w-4 h-4"></i>
         {{ $locale === 'ar' ? 'EN' : 'ع' }}
       </a>
-      <a href="#contact" class="btn btn-dark btn-sm header-desktop-only">
+      <a href="{{ route('home', $locale) }}#contact" class="btn btn-dark btn-sm header-desktop-only">
         {{ __('messages.cta_consultation') }}
       </a>
       <button type="button" class="header-mobile-btn" id="mobBtn"

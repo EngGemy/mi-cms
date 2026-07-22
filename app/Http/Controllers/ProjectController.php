@@ -10,20 +10,35 @@ class ProjectController extends Controller
 {
     public function index(Request $request, SeoServiceInterface $seo)
     {
-        $seo->setTitle(__('messages.projects_index_title'));
+        $seo->setTitle(__('messages.projects_index_title'))
+            ->setDescription(__('messages.projects_seo_desc'));
 
         $category = $request->query('category');
+        $q = trim((string) $request->query('q', ''));
+        $locale = app()->getLocale();
 
         $query = Project::active()->with('media');
         if ($category && array_key_exists($category, Project::CATEGORIES)) {
             $query->ofCategory($category);
         }
+        if ($q !== '') {
+            $query->where(function ($inner) use ($q, $locale) {
+                $inner->where("title->{$locale}", 'like', "%{$q}%")
+                    ->orWhere('title->ar', 'like', "%{$q}%")
+                    ->orWhere('title->en', 'like', "%{$q}%");
+            });
+        }
 
         return view('projects.index', [
-            'projects'   => $query->get(),
+            'projects' => $query->paginate(9)->withQueryString(),
             'categories' => Project::CATEGORIES,
             'active_cat' => $category,
-            'seo'        => $seo->toArray(),
+            'searchQuery' => $q,
+            'seo' => $seo->toArray(),
+            'breadcrumbs' => [
+                ['name' => __('messages.nav_home'), 'url' => route('home', $locale)],
+                ['name' => __('messages.nav_projects'), 'url' => route('projects.index', $locale)],
+            ],
         ]);
     }
 

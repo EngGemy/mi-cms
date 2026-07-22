@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initCertHoverPreview();
   initChairmanTypewriter();
   initSideRailShare();
+  initProcessTimeline();
+  initListingNav();
   ScrollTrigger.refresh();
 });
 
@@ -907,23 +909,107 @@ function initHeader() {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Active nav link tracking via IntersectionObserver
-  const navLinks = [...header.querySelectorAll('.header-nav a[href^="#"]')];
-  if (navLinks.length) {
-    const sectionIds = navLinks.map(a => a.getAttribute('href').slice(1));
-    const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+  // Hash-section active tracking (homepage only)
+  const navLinks = [...header.querySelectorAll('.header-nav a[href*="#"]')].filter((a) => {
+    const href = a.getAttribute('href') || '';
+    return href.includes('#') && !a.classList.contains('active');
+  });
+  const hashLinks = navLinks.filter((a) => {
+    try {
+      const u = new URL(a.href, window.location.origin);
+      return u.pathname === window.location.pathname || u.pathname.endsWith('/' + (document.documentElement.lang || 'ar'));
+    } catch (_) {
+      return false;
+    }
+  });
 
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          navLinks.forEach(a => a.classList.remove('active'));
-          const link = navLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+  if (hashLinks.length) {
+    const sections = hashLinks
+      .map((a) => {
+        const hash = (a.getAttribute('href') || '').split('#')[1];
+        return hash ? document.getElementById(hash) : null;
+      })
+      .filter(Boolean);
+
+    if (sections.length) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          hashLinks.forEach((a) => a.classList.remove('active'));
+          const link = hashLinks.find((a) => (a.getAttribute('href') || '').endsWith('#' + entry.target.id));
           link?.classList.add('active');
-        }
-      });
-    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+        });
+      }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
 
-    sections.forEach(s => io.observe(s));
+      sections.forEach((s) => io.observe(s));
+    }
+  }
+}
+
+function initProcessTimeline() {
+  const root = document.querySelector('[data-process-timeline]');
+  if (!root) return;
+  const stages = [...root.querySelectorAll('[data-process-stage]')];
+  if (!stages.length) return;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+  if (reduced) {
+    stages.forEach((s) => s.classList.add('is-active'));
+    return;
+  }
+
+  stages.forEach((stage, i) => {
+    gsap.fromTo(stage, { opacity: 0.45, y: isMobile ? 24 : 40 }, {
+      opacity: 1,
+      y: 0,
+      duration: 0.55,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: stage,
+        start: 'top 80%',
+        toggleClass: { targets: stage, className: 'is-active' },
+        once: true,
+      },
+      delay: isMobile ? i * 0.04 : 0,
+    });
+  });
+}
+
+function initListingNav() {
+  const scrollToGrid = () => {
+    const grid = document.querySelector('[data-listing-grid]');
+    if (!grid) return;
+    const top = grid.getBoundingClientRect().top + window.scrollY - 88;
+    if (window.lenis) window.lenis.scrollTo(top, { duration: 0.7 });
+    else window.scrollTo({ top, behavior: 'smooth' });
+  };
+
+  const animateGridIn = () => {
+    const items = document.querySelectorAll('.listing-grid-anim > *');
+    if (!items.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.fromTo(items, { opacity: 0, y: 16 }, {
+      opacity: 1,
+      y: 0,
+      duration: 0.35,
+      stagger: 0.06,
+      ease: 'power2.out',
+      clearProps: 'opacity,transform',
+    });
+  };
+
+  document.addEventListener('livewire:navigated', () => {
+    refreshLucideIcons();
+    scrollToGrid();
+    requestAnimationFrame(animateGridIn);
+  });
+
+  if (new URLSearchParams(window.location.search).has('page')) {
+    requestAnimationFrame(() => {
+      scrollToGrid();
+      animateGridIn();
+    });
   }
 }
 

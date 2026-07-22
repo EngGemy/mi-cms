@@ -1,5 +1,6 @@
 @php
   $locale = app()->getLocale();
+  $routeIs = fn (string $name) => request()->routeIs($name);
 @endphp
 <div class="mobile-drawer" id="mobDrawer" role="dialog" aria-modal="true" aria-hidden="true" aria-label="{{ __('messages.nav_menu') }}">
   <div class="mobile-drawer-panel">
@@ -14,13 +15,13 @@
     </div>
 
     <nav class="mobile-drawer-nav">
-      <a href="#products" data-mob-link><span class="num">01</span><span class="label">{{ __('messages.nav_products') }}</span></a>
-      <a href="#features" data-mob-link><span class="num">02</span><span class="label">{{ __('messages.nav_features') }}</span></a>
-      <a href="#how" data-mob-link><span class="num">03</span><span class="label">{{ __('messages.nav_how') }}</span></a>
-      <a href="#calculator" data-mob-link><span class="num">04</span><span class="label">{{ __('messages.nav_calculator') }}</span></a>
-      <a href="{{ route('blog.index', $locale) }}" data-mob-link><span class="num">05</span><span class="label">{{ __('messages.nav_blog') }}</span></a>
-      <a href="{{ route('about', $locale) }}" data-mob-link><span class="num">06</span><span class="label">{{ __('messages.nav_about') }}</span></a>
-      <a href="#contact" data-mob-link><span class="num">07</span><span class="label">{{ __('messages.nav_contact') }}</span></a>
+      <a href="{{ route('products.index', $locale) }}" data-mob-link class="{{ $routeIs('products.*') ? 'active' : '' }}"><span class="num">01</span><span class="label">{{ __('messages.nav_products') }}</span></a>
+      <a href="{{ route('projects.index', $locale) }}" data-mob-link class="{{ $routeIs('projects.*') ? 'active' : '' }}"><span class="num">02</span><span class="label">{{ __('messages.nav_projects') }}</span></a>
+      <a href="{{ route('process.index', $locale) }}" data-mob-link class="{{ $routeIs('process.*') ? 'active' : '' }}"><span class="num">03</span><span class="label">{{ __('messages.nav_how') }}</span></a>
+      <a href="{{ route('home', $locale) }}#calculator" data-mob-link><span class="num">04</span><span class="label">{{ __('messages.nav_calculator') }}</span></a>
+      <a href="{{ route('about', $locale) }}" data-mob-link class="{{ $routeIs('about') ? 'active' : '' }}"><span class="num">05</span><span class="label">{{ __('messages.nav_about') }}</span></a>
+      <a href="{{ route('blog.index', $locale) }}" data-mob-link class="{{ $routeIs('blog.*') ? 'active' : '' }}"><span class="num">06</span><span class="label">{{ __('messages.nav_blog') }}</span></a>
+      <a href="{{ route('home', $locale) }}#contact" data-mob-link><span class="num">07</span><span class="label">{{ __('messages.nav_contact') }}</span></a>
     </nav>
 
     <div class="mobile-drawer-footer">
