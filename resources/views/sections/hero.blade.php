@@ -2,46 +2,79 @@
   /** @var \Illuminate\Support\Collection|\App\Models\HeroSlide[] $slides */
   $slides = $slides ?? collect();
   $videoSlide = $slides->first(fn ($s) => $s->hasVideo());
-  $fallbackImage = $videoSlide?->getPosterUrl('hero')
+  $videoUrl = $videoSlide?->getVideoUrl();
+  // Poster: dedicated poster → local image → null (never a broken external URL)
+  $posterUrl = null;
+  if ($videoSlide) {
+      if ($videoSlide->getFirstMedia('poster')) {
+          $posterUrl = $videoSlide->getPosterUrl('hero');
+      } elseif ($videoSlide->getFirstMedia('image')) {
+          $posterUrl = $videoSlide->getImageUrl('hero');
+      }
+  }
+  $fallbackImage = $posterUrl
+      ?? $slides->first(fn ($s) => $s->getFirstMedia('image'))?->getImageUrl('hero')
       ?? $slides->first()?->getImageUrl('hero')
       ?? 'https://images.unsplash.com/photo-1569466593977-94ee7ed02ec9?w=1920&q=85&auto=format&fit=crop';
-  $fallbackMobile = $videoSlide?->getPosterUrl('mobile')
-      ?? $slides->first()?->getImageUrl('mobile')
+  $fallbackMobile = null;
+  if ($videoSlide?->getFirstMedia('poster')) {
+      $fallbackMobile = $videoSlide->getPosterUrl('mobile');
+  } elseif ($videoSlide?->getFirstMedia('image')) {
+      $fallbackMobile = $videoSlide->getImageUrl('mobile');
+  }
+  $fallbackMobile = $fallbackMobile
+      ?? $slides->first(fn ($s) => $s->getFirstMedia('image'))?->getImageUrl('mobile')
       ?? $fallbackImage;
 @endphp
-<section class="hero hero--cinematic" id="home" data-hero-cinematic>
+<section class="hero hero--cinematic {{ $videoUrl ? 'hero--has-video' : 'hero--no-video' }}" id="home" data-hero-cinematic>
   <div class="hero-media" aria-hidden="true">
-    @if($videoSlide)
+    @if($videoUrl)
       <video
         class="hero-video"
         data-hero-video
+        autoplay
         muted
         loop
         playsinline
-        preload="metadata"
-        poster="{{ $videoSlide->getPosterUrl('hero') }}"
+        webkit-playsinline
+        preload="auto"
+        @if($posterUrl) poster="{{ $posterUrl }}" @endif
       >
-        <source src="{{ $videoSlide->getVideoUrl() }}" type="{{ str_ends_with(strtolower((string) $videoSlide->getVideoUrl()), '.webm') ? 'video/webm' : 'video/mp4' }}">
+        <source src="{{ $videoUrl }}" type="{{ str_ends_with(strtolower($videoUrl), '.webm') ? 'video/webm' : 'video/mp4' }}">
       </video>
-    @endif
 
-    <div class="hero-image-stack {{ $videoSlide ? 'hero-image-stack--fallback' : '' }}" data-hero-images>
-      @forelse($slides as $i => $slide)
-        @php
-          $desk = $slide->getImageUrl('hero') ?: $slide->getPosterUrl('hero') ?: $fallbackImage;
-          $mob  = $slide->getImageUrl('mobile') ?: $slide->getPosterUrl('mobile') ?: $desk;
-        @endphp
-        <picture class="hero-image-layer @if($loop->first) is-active @endif" data-img="{{ $i }}">
-          <source media="(max-width: 767px)" srcset="{{ $mob }}">
-          <img src="{{ $desk }}" alt="" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async">
-        </picture>
-      @empty
+      {{-- Single underlay (poster/original image) — shown only until video plays or if it fails --}}
+      <div class="hero-image-stack hero-image-stack--underlay" data-hero-images>
         <picture class="hero-image-layer is-active" data-img="0">
           <source media="(max-width: 767px)" srcset="{{ $fallbackMobile }}">
-          <img src="{{ $fallbackImage }}" alt="" loading="eager" decoding="async">
+          <img src="{{ $posterUrl ?: $fallbackImage }}" alt="" loading="eager" decoding="async" fetchpriority="high">
         </picture>
-      @endforelse
-    </div>
+      </div>
+    @else
+      <div class="hero-image-stack" data-hero-images>
+        @forelse($slides as $i => $slide)
+          @php
+            $desk = $slide->getFirstMedia('image')
+                ? $slide->getImageUrl('hero')
+                : ($slide->getFirstMedia('poster') ? $slide->getPosterUrl('hero') : null);
+            $desk = $desk ?: (filter_var((string) $slide->image_url, FILTER_VALIDATE_URL) ? $slide->image_url : null);
+            $desk = $desk ?: $fallbackImage;
+            $mob = $slide->getFirstMedia('image')
+                ? ($slide->getImageUrl('mobile') ?: $desk)
+                : $desk;
+          @endphp
+          <picture class="hero-image-layer @if($loop->first) is-active @endif" data-img="{{ $i }}">
+            <source media="(max-width: 767px)" srcset="{{ $mob }}">
+            <img src="{{ $desk }}" alt="" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async">
+          </picture>
+        @empty
+          <picture class="hero-image-layer is-active" data-img="0">
+            <source media="(max-width: 767px)" srcset="{{ $fallbackMobile }}">
+            <img src="{{ $fallbackImage }}" alt="" loading="eager" decoding="async">
+          </picture>
+        @endforelse
+      </div>
+    @endif
 
     <div class="hero-scrim"></div>
     <div class="hero-grain"></div>

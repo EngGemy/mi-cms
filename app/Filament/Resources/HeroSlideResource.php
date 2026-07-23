@@ -58,7 +58,7 @@ class HeroSlideResource extends Resource
                     ->collection('poster')
                     ->image()
                     ->imageEditor()
-                    ->helperText('1920×1080 JPG/WebP — تظهر قبل تشغيل الفيديو وعلى الموبايل عند تقليل الحركة.')
+                    ->helperText('مهم: ارفع صورة 1920×1080 JPG/WebP — تظهر قبل تشغيل الفيديو وعند فشل التشغيل. بدونها ستظهر صورة الـ Fallback.')
                     ->columnSpanFull(),
             ]),
 
@@ -68,13 +68,13 @@ class HeroSlideResource extends Resource
                     ->collection('image')
                     ->image()
                     ->imageEditor()
-                    ->helperText('تُستخدم إذا لم يُرفع فيديو، أو كطبقة في التبديل بين الشرائح.'),
+                    ->helperText('تُستخدم إذا لم يُرفع فيديو/Poster، أو كاحتياطي عند فشل الفيديو.'),
 
                 Forms\Components\TextInput::make('image_url')
                     ->label('أو رابط صورة خارجي')
                     ->url()
                     ->maxLength(500)
-                    ->helperText('Unsplash أو CDN — يُستخدم إذا لم تُرفع صورة'),
+                    ->helperText('يجب أن يكون رابط كامل يبدأ بـ https:// — اتركه فارغًا إن رفعت صورة محلية.'),
             ])->columns(2),
 
             Forms\Components\Section::make('الترتيب والحالة')->schema([

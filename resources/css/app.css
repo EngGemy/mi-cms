@@ -612,12 +612,23 @@
     object-fit: cover;
     object-position: center;
     z-index: 2;
+    background: var(--ink-900);
   }
   .hero-image-stack{ z-index: 1; }
-  .hero-image-stack--fallback{ z-index: 1; }
+  .hero-image-stack--underlay{ z-index: 1; }
+  /* While cinematic video is active, keep image underlay hidden */
+  .hero--has-video:not(.hero--video-failed):not(.hero--reduced) .hero-image-stack--underlay{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .hero--has-video:not(.hero--video-playing):not(.hero--video-failed):not(.hero--reduced) .hero-image-stack--underlay{
+    opacity: 1;
+    visibility: visible;
+  }
   .hero--no-video .hero-image-stack,
   .hero--reduced .hero-image-stack,
-  .hero--video-failed .hero-image-stack{ z-index: 3; }
+  .hero--video-failed .hero-image-stack{ z-index: 3; opacity: 1; visibility: visible; }
   .hero--reduced .hero-video,
   .hero--video-failed .hero-video{ display: none !important; }
 
@@ -638,7 +649,10 @@
     display: block;
   }
   .hero-image-layer.is-active{ opacity: 1; }
-  .hero--cinematic:not(.hero--reduced) .hero-image-layer.is-active img{
+  /* Ken Burns only when there is no video playing */
+  .hero--cinematic:not(.hero--has-video):not(.hero--reduced) .hero-image-layer.is-active img,
+  .hero--cinematic.hero--video-failed .hero-image-layer.is-active img,
+  .hero--cinematic.hero--reduced .hero-image-layer.is-active img{
     animation: heroKen 14s ease-in-out infinite alternate;
   }
   @keyframes heroKen{

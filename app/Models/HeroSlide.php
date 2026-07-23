@@ -76,12 +76,23 @@ class HeroSlide extends Model implements HasMedia
                 : $media->getUrl();
         }
 
-        return $this->image_url;
+        $external = trim((string) $this->image_url);
+        if ($external !== '' && filter_var($external, FILTER_VALIDATE_URL)) {
+            return $external;
+        }
+
+        return null;
     }
 
     public function getVideoUrl(): ?string
     {
-        return $this->getFirstMediaUrl('video') ?: null;
+        $media = $this->getFirstMedia('video');
+        if (! $media) {
+            return null;
+        }
+
+        // Absolute URL so the <video> source never breaks behind a wrong APP_URL path.
+        return $media->getFullUrl();
     }
 
     public function getPosterUrl(string $conversion = 'hero'): ?string
@@ -93,7 +104,11 @@ class HeroSlide extends Model implements HasMedia
                 : $media->getUrl();
         }
 
-        // Fall back to the slide image, then external URL
+        // Prefer local uploaded image over external URL
+        if ($this->getFirstMedia('image')) {
+            return $this->getImageUrl($conversion);
+        }
+
         return $this->getImageUrl($conversion);
     }
 

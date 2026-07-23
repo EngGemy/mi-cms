@@ -332,31 +332,84 @@ function initHeroCinematic() {
 
   if (!video) {
     root.classList.add('hero--no-video');
-  } else if (reduced) {
+    root.classList.remove('hero--has-video');
+    return;
+  }
+
+  if (reduced) {
     root.classList.add('hero--reduced');
+    root.classList.remove('hero--has-video');
     video.removeAttribute('autoplay');
     try { video.pause(); } catch (_) {}
-  } else {
-    const tryPlay = () => {
-      const p = video.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => root.classList.add('hero--video-failed'));
-      }
-    };
-    video.addEventListener('error', () => root.classList.add('hero--video-failed'), { once: true });
-    if (video.readyState >= 2) tryPlay();
-    else video.addEventListener('loadeddata', tryPlay, { once: true });
-
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) tryPlay();
-        else {
-          try { video.pause(); } catch (_) {}
-        }
-      });
-    }, { threshold: 0.15 });
-    io.observe(root);
+    return;
   }
+
+  let failed = false;
+  const markPlaying = () => {
+    if (failed) return;
+    root.classList.add('hero--video-playing');
+    root.classList.remove('hero--video-failed');
+  };
+  const markFailed = () => {
+    failed = true;
+    root.classList.add('hero--video-failed');
+    root.classList.remove('hero--video-playing', 'hero--has-video');
+  };
+
+  video.muted = true;
+  video.defaultMuted = true;
+  video.setAttribute('muted', '');
+  video.playsInline = true;
+
+  const tryPlay = () => {
+    if (failed) return;
+    const p = video.play();
+    if (p && typeof p.then === 'function') {
+      p.then(markPlaying).catch(() => {
+        // Retry once after a short delay (iOS / slow decode)
+        setTimeout(() => {
+          const retry = video.play();
+          if (retry && typeof retry.then === 'function') {
+            retry.then(markPlaying).catch(markFailed);
+          } else {
+            markPlaying();
+          }
+        }, 250);
+      });
+    } else {
+      markPlaying();
+    }
+  };
+
+  video.addEventListener('playing', markPlaying);
+  video.addEventListener('error', markFailed, { once: true });
+  const source = video.querySelector('source');
+  if (source) source.addEventListener('error', markFailed, { once: true });
+
+  if (video.readyState >= 2) tryPlay();
+  else {
+    video.addEventListener('loadeddata', tryPlay, { once: true });
+    video.addEventListener('canplay', tryPlay, { once: true });
+  }
+
+  // Unlock autoplay after first user gesture if needed
+  const unlock = () => {
+    if (!failed && video.paused) tryPlay();
+    window.removeEventListener('pointerdown', unlock);
+    window.removeEventListener('touchstart', unlock);
+  };
+  window.addEventListener('pointerdown', unlock, { once: true, passive: true });
+  window.addEventListener('touchstart', unlock, { once: true, passive: true });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) tryPlay();
+      else {
+        try { video.pause(); } catch (_) {}
+      }
+    });
+  }, { threshold: 0.12 });
+  io.observe(root);
 }
 
 function initRotator() {
