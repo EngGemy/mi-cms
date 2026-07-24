@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initSideRailShare();
   initProcessTimeline();
   initListingNav();
+  initServicesCinema();
+  initServiceCalcLinks();
   ScrollTrigger.refresh();
 });
 
@@ -1751,3 +1753,142 @@ function initChairmanTypewriter() {
 
   io.observe(el);
 }
+
+function initServicesCinema() {
+  const root = document.querySelector('[data-svc-cinema]');
+  if (!root) return;
+
+  const videos = [...root.querySelectorAll('[data-svc-video]')];
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const tryPlayVideos = () => {
+    if (reduced) return;
+    videos.forEach((video) => {
+      video.muted = true;
+      video.playsInline = true;
+      const cell = video.closest('[data-svc-cell]');
+      const play = () => {
+        const p = video.play();
+        if (p && typeof p.then === 'function') {
+          p.then(() => cell?.classList.add('is-live')).catch(() => {});
+        } else {
+          cell?.classList.add('is-live');
+        }
+      };
+      if (video.readyState >= 2) play();
+      else video.addEventListener('loadeddata', play, { once: true });
+    });
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        tryPlayVideos();
+        videos.forEach((v) => { try { if (!reduced) v.play(); } catch (_) {} });
+      } else {
+        videos.forEach((v) => { try { v.pause(); } catch (_) {} });
+      }
+    });
+  }, { threshold: 0.2 });
+  io.observe(root);
+
+  const gates = [...root.querySelectorAll('[data-svc-gate]')];
+  const panels = [...root.querySelectorAll('[data-svc-panel]')];
+
+  const closePanels = () => {
+    panels.forEach((panel) => {
+      panel.classList.remove('is-open');
+      panel.setAttribute('hidden', '');
+    });
+    gates.forEach((g) => g.setAttribute('aria-selected', 'false'));
+    document.body.style.overflow = '';
+  };
+
+  const openPanel = (key) => {
+    closePanels();
+    const panel = root.querySelector('[data-svc-panel="' + key + '"]');
+    const gate = root.querySelector('[data-svc-gate="' + key + '"]');
+    if (!panel || !gate) return;
+    panel.removeAttribute('hidden');
+    gate.setAttribute('aria-selected', 'true');
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => panel.classList.add('is-open'));
+  };
+
+  gates.forEach((gate) => {
+    gate.addEventListener('click', () => openPanel(gate.getAttribute('data-svc-gate')));
+  });
+
+  root.querySelectorAll('[data-svc-close]').forEach((btn) => {
+    btn.addEventListener('click', closePanels);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePanels();
+  });
+
+  if (window.gsap && window.ScrollTrigger) {
+    const reveal = root.querySelectorAll('[data-svc-reveal]');
+    gsap.set(reveal, { y: 36, opacity: 0 });
+    ScrollTrigger.create({
+      trigger: root,
+      start: 'top 72%',
+      once: true,
+      onEnter: () => {
+        gsap.to(reveal, {
+          y: 0,
+          opacity: 1,
+          duration: 0.85,
+          ease: 'power3.out',
+          stagger: 0.1,
+        });
+      },
+    });
+  }
+}
+
+function initServiceCalcLinks() {
+  document.querySelectorAll('[data-svc-calc]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const type = link.getAttribute('data-svc-calc');
+      if (!type) return;
+      const target = document.querySelector('#start');
+      if (!target) {
+        try { sessionStorage.setItem('mi:barn-type', type); } catch (_) {}
+        return; // allow navigation to homepage#start
+      }
+
+      e.preventDefault();
+      const data = target._x_dataStack && target._x_dataStack[0];
+      if (data && typeof data.pickType === 'function') {
+        data.pickType(type);
+      } else {
+        try { sessionStorage.setItem('mi:barn-type', type); } catch (_) {}
+        window.location.hash = 'start';
+        window.dispatchEvent(new CustomEvent('mi:pick-barn', { detail: { type } }));
+      }
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  window.addEventListener('mi:pick-barn', (e) => {
+    const type = e.detail?.type;
+    const target = document.querySelector('#start');
+    const data = target?._x_dataStack?.[0];
+    if (type && data && typeof data.pickType === 'function') {
+      data.pickType(type);
+    }
+  });
+
+  // Resume barn type after landing from a service page
+  try {
+    const pending = sessionStorage.getItem('mi:barn-type');
+    if (pending && document.querySelector('#start')) {
+      sessionStorage.removeItem('mi:barn-type');
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('mi:pick-barn', { detail: { type: pending } }));
+      }, 600);
+    }
+  } catch (_) {}
+}
+

@@ -1,7 +1,7 @@
 @php
   $locale = app()->getLocale();
   $routeIs = fn (string $name) => request()->routeIs($name);
-  $systemsOpen = $routeIs('products.*') || request()->url() === route('home', $locale).'#features';
+  $systemsOpen = $routeIs('products.*') || $routeIs('services.*') || request()->url() === route('home', $locale).'#features';
   $servicesOpen = $routeIs('process.*') || $routeIs('faq.*') || $routeIs('testimonials.*');
 @endphp
 <header>
@@ -26,7 +26,7 @@
       <a href="{{ route('about', $locale) }}" class="{{ $routeIs('about') ? 'active' : '' }}">{{ __('messages.nav_about') }}</a>
 
       <div class="nav-drop" data-nav-drop>
-        <button type="button" class="nav-drop-trigger {{ $routeIs('products.*') ? 'active' : '' }}"
+        <button type="button" class="nav-drop-trigger {{ ($routeIs('products.*') || $routeIs('services.*')) ? 'active' : '' }}"
                 aria-expanded="false" aria-haspopup="true" data-nav-drop-btn>
           {{ __('messages.nav_systems') }}
           <svg class="nav-drop-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -35,6 +35,9 @@
         </button>
         <div class="nav-drop-panel" data-nav-drop-panel hidden>
           <a href="{{ route('products.index', $locale) }}">{{ __('messages.nav_all_systems') }}</a>
+          <a href="{{ route('services.show', [$locale, 'broiler']) }}">{{ __('messages.nav_svc_broiler') }}</a>
+          <a href="{{ route('services.show', [$locale, 'layer']) }}">{{ __('messages.nav_svc_layer') }}</a>
+          <a href="{{ route('services.show', [$locale, 'construction']) }}">{{ __('messages.nav_svc_build') }}</a>
           <a href="{{ route('home', $locale) }}#features">{{ __('messages.nav_features') }}</a>
           <a href="{{ route('home', $locale) }}#start">{{ __('messages.nav_calculator') }}</a>
         </div>

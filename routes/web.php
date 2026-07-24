@@ -13,6 +13,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProcessController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\TestimonialsController;
+use App\Http\Controllers\ServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,11 @@ Route::group([
     Route::get('process', ProcessController::class)->name('process.index');
     Route::get('faq', FaqController::class)->name('faq.index');
     Route::get('testimonials', TestimonialsController::class)->name('testimonials.index');
+
+    // Systems / service pillars
+    Route::get('services/{slug}', [ServiceController::class, 'show'])
+        ->whereIn('slug', ['broiler', 'layer', 'construction'])
+        ->name('services.show');
 
     // Products
     Route::get('products', [ProductController::class, 'index'])->name('products.index');

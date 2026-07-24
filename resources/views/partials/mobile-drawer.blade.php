@@ -26,6 +26,9 @@
         </button>
         <div class="mobile-drawer-sub" data-mob-group-panel hidden>
           <a href="{{ route('products.index', $locale) }}" data-mob-link class="{{ $routeIs('products.*') ? 'active' : '' }}">{{ __('messages.nav_all_systems') }}</a>
+          <a href="{{ route('services.show', [$locale, 'broiler']) }}" data-mob-link>{{ __('messages.nav_svc_broiler') }}</a>
+          <a href="{{ route('services.show', [$locale, 'layer']) }}" data-mob-link>{{ __('messages.nav_svc_layer') }}</a>
+          <a href="{{ route('services.show', [$locale, 'construction']) }}" data-mob-link>{{ __('messages.nav_svc_build') }}</a>
           <a href="{{ route('home', $locale) }}#features" data-mob-link>{{ __('messages.nav_features') }}</a>
           <a href="{{ route('home', $locale) }}#start" data-mob-link>{{ __('messages.nav_calculator') }}</a>
         </div>
