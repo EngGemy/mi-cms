@@ -1,6 +1,5 @@
 <x-layouts.public :seo="$seo ?? []">
 @include('sections.hero', ['slides' => $heroSlides])
-@include('sections.services-cinema', ['slides' => $heroSlides])
 @include('sections.calc-gateway')
 @include('sections.products', ['products' => $featuredProducts])
 @include('sections.features', ['features' => $features])

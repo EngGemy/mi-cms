@@ -152,10 +152,16 @@ function runHeroEntrance() {
     0.45
   );
 
-  tl.fromTo('[data-hero-fade]',
+  tl.fromTo('[data-hero-fade]:not(.hero-gates)',
     { opacity: 0, y: 28, filter: 'blur(6px)' },
     { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, stagger: 0.1 },
     0.25
+  );
+
+  tl.fromTo('.hero-gates .hero-gate',
+    { opacity: 0, y: 36, scale: 0.96 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.85, stagger: 0.1, ease: 'power3.out' },
+    0.55
   );
 
   tl.fromTo('.hero--cinematic .hero-stats > div',

@@ -1,9 +1,12 @@
 @php
   /** @var \Illuminate\Support\Collection|\App\Models\HeroSlide[] $slides */
   $slides = $slides ?? collect();
+  $locale = app()->getLocale();
+  $pillars = config('poultry_services.pillars', []);
+  $pillarCopy = __('messages.svc_pillars');
+
   $videoSlide = $slides->first(fn ($s) => $s->hasVideo());
   $videoUrl = $videoSlide?->getVideoUrl();
-  // Poster: dedicated poster → local image → null (never a broken external URL)
   $posterUrl = null;
   if ($videoSlide) {
       if ($videoSlide->getFirstMedia('poster')) {
@@ -26,7 +29,7 @@
       ?? $slides->first(fn ($s) => $s->getFirstMedia('image'))?->getImageUrl('mobile')
       ?? $fallbackImage;
 @endphp
-<section class="hero hero--cinematic {{ $videoUrl ? 'hero--has-video' : 'hero--no-video' }}" id="home" data-hero-cinematic>
+<section class="hero hero--cinematic hero--with-gates {{ $videoUrl ? 'hero--has-video' : 'hero--no-video' }}" id="home" data-hero-cinematic>
   <div class="hero-media" aria-hidden="true">
     @if($videoUrl)
       <video
@@ -43,7 +46,6 @@
         <source src="{{ $videoUrl }}" type="{{ str_ends_with(strtolower(parse_url($videoUrl, PHP_URL_PATH) ?: $videoUrl), '.webm') ? 'video/webm' : 'video/mp4' }}">
       </video>
 
-      {{-- Single underlay (poster/original image) — shown only until video plays or if it fails --}}
       <div class="hero-image-stack hero-image-stack--underlay" data-hero-images>
         <picture class="hero-image-layer is-active" data-img="0">
           <source media="(max-width: 767px)" srcset="{{ $fallbackMobile }}">
@@ -100,33 +102,38 @@
 
       <p class="hero-lead" data-hero-fade>{{ __('messages.hero_paragraph') }}</p>
 
-      <div class="hero-actions" data-hero-fade>
-        <a href="#start" class="btn btn-primary btn-lg hero-cta" data-magnetic>
-          {{ __('messages.hero_cta_primary') }}
-          <i data-lucide="arrow-left" class="w-4 h-4"></i>
-        </a>
-        <a href="#products" class="btn hero-cta-ghost" data-magnetic>
-          {{ __('messages.gateway_cta_products') }}
-        </a>
+      {{-- Three business units — primary CTAs inside the hero --}}
+      <div class="hero-gates" id="services" data-hero-fade aria-label="{{ __('messages.svc_cinema_title') }}">
+        @foreach($pillars as $key => $meta)
+          @php $item = $pillarCopy[$key] ?? []; @endphp
+          <a
+            href="{{ route('services.show', [$locale, $key]) }}"
+            class="hero-gate"
+            style="--gate-i: {{ $loop->index }}"
+            data-magnetic
+          >
+            <span class="hero-gate-top">
+              <span class="hero-gate-num">{{ $item['num'] ?? $loop->iteration }}</span>
+              <span class="hero-gate-kicker">{{ $item['kicker'] ?? '' }}</span>
+            </span>
+            <span class="hero-gate-title">{{ $item['title'] ?? $key }}</span>
+            <span class="hero-gate-tag">{{ $item['tagline'] ?? '' }}</span>
+            <span class="hero-gate-cta">
+              {{ __('messages.svc_cinema_explore') }}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </a>
+        @endforeach
       </div>
 
-      <div class="hero-stats" data-hero-fade>
-        <div>
-          <div class="hero-stat-num">+<span data-counter data-target="500">0</span></div>
-          <div class="hero-stat-label">{{ __('messages.stat_houses') }}</div>
-        </div>
-        <div>
-          <div class="hero-stat-num"><span data-counter data-target="12">0</span>M+</div>
-          <div class="hero-stat-label">{{ __('messages.stat_birds') }}</div>
-        </div>
-        <div>
-          <div class="hero-stat-num"><span data-counter data-target="15">0</span>+</div>
-          <div class="hero-stat-label">{{ __('messages.stat_years') }}</div>
-        </div>
-        <div>
-          <div class="hero-stat-num">8</div>
-          <div class="hero-stat-label">{{ __('messages.stat_countries') }}</div>
-        </div>
+      <div class="hero-actions hero-actions--secondary" data-hero-fade>
+        <a href="#start" class="btn btn-primary hero-cta" data-magnetic>
+          {{ __('messages.nav_calculator') }}
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </a>
+        <a href="#contact" class="btn hero-cta-ghost" data-magnetic>
+          {{ __('messages.request_quote') }}
+        </a>
       </div>
     </div>
 
