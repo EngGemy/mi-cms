@@ -35,6 +35,8 @@ return [
     'svc_cinema_quote'   => 'Request a quote',
     'svc_cinema_close'   => 'Close',
     'svc_cinema_related' => 'Related systems',
+    'svc_related_services' => 'Related services',
+    'svc_related_blurb' => 'Explore the other MI paths that pair with this project.',
     'svc_cinema_specs'   => 'Battery specifications',
     'svc_cinema_includes'=> 'Package includes',
     'svc_back'           => 'Back to services',

@@ -41,7 +41,8 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            // Host-relative so wrong APP_URL (localhost vs domain) never breaks media.
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],

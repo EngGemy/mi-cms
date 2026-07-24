@@ -35,6 +35,8 @@ return [
     'svc_cinema_quote'   => 'اطلب عرض سعر',
     'svc_cinema_close'   => 'إغلاق',
     'svc_cinema_related' => 'أنظمة مرتبطة',
+    'svc_related_services' => 'خدمات ذات صلة',
+    'svc_related_blurb' => 'استكشف باقي مسارات إم آي المرتبطة بنفس مشروعك.',
     'svc_cinema_specs'   => 'مواصفات البطارية',
     'svc_cinema_includes'=> 'ما تشمله الحزمة',
     'svc_back'           => 'العودة للخدمات',

@@ -13,11 +13,10 @@
     <script src="{{ asset('js/mi-calc.js') }}?v={{ @filemtime(public_path('js/mi-calc.js')) ?: time() }}"></script>
     {{ $head ?? '' }}
 </head>
-<body>
-    @include('partials.loader')
+<body class="is-loaded">
     @include('partials.header')
     @include('partials.mobile-drawer')
-    <main>{{ $slot }}</main>
+    <main id="app-main">{{ $slot }}</main>
     @include('partials.footer')
     @include('partials.side-rail')
     @include('partials.whatsapp')

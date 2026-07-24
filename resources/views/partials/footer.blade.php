@@ -10,9 +10,9 @@
       <div class="lg:col-span-5 footer-col">
         <a href="{{ route('home', $locale) }}" class="header-brand mb-5 inline-flex footer-brand">
           @php
-            $logoSrc = !empty($generalSettings?->logo_path)
-                ? \Illuminate\Support\Facades\Storage::disk('public')->url($generalSettings->logo_path)
-                : asset('images/logo.jpg');
+          $logoSrc = !empty($generalSettings?->logo_path)
+              ? '/storage/'.ltrim($generalSettings->logo_path, '/')
+              : asset('images/logo.jpg');
           @endphp
           <div class="header-brand-logo"><img src="{{ $logoSrc }}" alt="{{ $generalSettings?->site_name ?? 'MI' }}"/></div>
           <div>

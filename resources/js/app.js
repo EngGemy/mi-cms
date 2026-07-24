@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initListingNav();
   initServicesCinema();
   initServiceCalcLinks();
+  initSpaTransitions();
   ScrollTrigger.refresh();
 });
 
@@ -64,176 +65,15 @@ document.addEventListener('livewire:init', () => {
 let lenis;
 
 function initLoader() {
-  const el = document.getElementById('loader');
-  if (!el) return;
-
-  const pct = document.getElementById('loaderPct');
-  const barFill = document.getElementById('loaderBarFill');
-  const wrap = el.querySelector('[data-loader-logo-wrap]');
-  const logo = el.querySelector('.loader-logo');
-  const glow = el.querySelector('.loader-logo-glow');
-  const flare = el.querySelector('.loader-logo-flare');
-  const sheen = el.querySelector('.loader-logo-sheen');
-  const rings = el.querySelectorAll('.loader-logo-ring');
-  const orbits = el.querySelectorAll('.loader-logo-orbit');
-  const chars = el.querySelectorAll('.loader-brand-char');
-  const words = el.querySelectorAll('.loader-brand-word, .loader-brand-dot');
-  const metaLabel = el.querySelector('.loader-meta-label');
-  const vignette = el.querySelector('.loader-vignette');
-  const barWrap = el.querySelector('.loader-bar-wrap');
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MIN_DURATION = reduced ? 600 : 2800;
-
-  if (reduced) {
-    gsap.set([logo, ...words, ...chars, pct, metaLabel, barFill, glow, flare, rings, orbits], { clearProps: 'all', opacity: 1 });
-    if (barFill) barFill.style.width = '100%';
-    if (pct) pct.textContent = '100%';
-    Promise.all([
-      new Promise((r) => window.addEventListener('load', r, { once: true })),
-      new Promise((r) => setTimeout(r, MIN_DURATION)),
-    ]).then(() => {
-      el.remove();
-      document.body.classList.add('is-loaded');
-      runHeroEntrance();
-      runHeaderBrandEntrance();
-      ScrollTrigger.refresh();
-    });
-    return;
-  }
-
-  // Cinematic intro
-  const entryTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-  entryTl
-    .set(el, { opacity: 1 })
-    .set(vignette, { opacity: 0 })
-    .set(glow, { opacity: 0, scale: 0.4 })
-    .set(flare, { opacity: 0, scale: 0.2 })
-    .set(logo, {
-      opacity: 0,
-      scale: 0.35,
-      rotateY: -48,
-      rotateX: 18,
-      z: -120,
-      filter: 'blur(14px) brightness(1.4)',
-      transformPerspective: 900,
-    })
-    .set(sheen, { xPercent: -140, opacity: 0 })
-    .set([...rings, ...orbits], { opacity: 0, scale: 0.55 })
-    .set(chars, { opacity: 0, y: 28, rotateX: -40 })
-    .set(words, { opacity: 0, y: 20 })
-    .set([pct, metaLabel], { opacity: 0, y: 12 })
-    .set(barFill, { width: '0%', opacity: 0 })
-    .set(barWrap, { opacity: 0 })
-
-    // Atmosphere
-    .to(vignette, { opacity: 1, duration: 0.7 }, 0)
-    .to(glow, { opacity: 0.9, scale: 1.15, duration: 1.1, ease: 'expo.out' }, 0.15)
-
-    // Logo rises from depth
-    .to(logo, {
-      opacity: 1,
-      scale: 1.08,
-      rotateY: 8,
-      rotateX: -4,
-      z: 0,
-      filter: 'blur(0px) brightness(1.15)',
-      duration: 1.15,
-      ease: 'expo.out',
-    }, 0.28)
-    .to(logo, {
-      scale: 1,
-      rotateY: 0,
-      rotateX: 0,
-      filter: 'blur(0px) brightness(1)',
-      duration: 0.55,
-      ease: 'power2.out',
-    }, 1.15)
-
-    // Flare burst + sheen sweep
-    .to(flare, { opacity: 0.85, scale: 1.6, duration: 0.35, ease: 'power2.out' }, 0.95)
-    .to(flare, { opacity: 0, scale: 2.2, duration: 0.55, ease: 'power2.in' }, 1.25)
-    .to(sheen, { opacity: 1, duration: 0.05 }, 1.05)
-    .to(sheen, { xPercent: 140, duration: 0.85, ease: 'power2.inOut' }, 1.08)
-    .to(sheen, { opacity: 0, duration: 0.2 }, 1.7)
-
-    // Rings + orbits
-    .to(rings, { opacity: 1, scale: 1, duration: 0.7, stagger: 0.12, ease: 'expo.out' }, 0.85)
-    .to(orbits, { opacity: 0.7, scale: 1, duration: 1, stagger: 0.18, ease: 'expo.out' }, 0.9)
-
-    // Brand typography (word-level Arabic so letters stay joined)
-    .to(chars, {
-      opacity: 1,
-      y: 0,
-      rotateX: 0,
-      duration: 0.75,
-      stagger: 0.14,
-      ease: 'back.out(1.4)',
-    }, 1.15)
-    .to(words, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1 }, 1.4)
-
-    // Progress UI
-    .to(barWrap, { opacity: 1, duration: 0.35 }, 1.45)
-    .to(barFill, { opacity: 1, duration: 0.25 }, 1.5)
-    .to([metaLabel, pct], { opacity: 1, y: 0, duration: 0.45, stagger: 0.05 }, 1.55);
-
-  // Idle float while loading
-  const idleTl = gsap.timeline({ repeat: -1, yoyo: true, delay: 2 });
-  idleTl
-    .to(logo, { y: -5, duration: 1.6, ease: 'sine.inOut' }, 0)
-    .to(glow, { scale: 1.22, opacity: 0.75, duration: 1.6, ease: 'sine.inOut' }, 0);
-
-  // Progress
-  const progressObj = { value: 0 };
-  gsap.to(progressObj, {
-    value: 100,
-    duration: MIN_DURATION / 1000,
-    ease: 'power2.inOut',
-    onUpdate: () => {
-      if (pct) pct.textContent = Math.round(progressObj.value) + '%';
-      if (barFill) barFill.style.width = progressObj.value + '%';
-    },
-  });
-
-  Promise.all([
-    new Promise((r) => window.addEventListener('load', r, { once: true })),
-    new Promise((r) => setTimeout(r, MIN_DURATION)),
-    document.fonts?.ready ?? Promise.resolve(),
-  ]).then(() => {
-    idleTl.kill();
-
-    const exitTl = gsap.timeline({
-      defaults: { ease: 'power3.inOut' },
-      onComplete: () => {
-        el.remove();
-        runHeroEntrance();
-        runHeaderBrandEntrance();
-        ScrollTrigger.refresh();
-      },
-    });
-
-    exitTl
-      .to(flare, { opacity: 0.7, scale: 1.3, duration: 0.25 }, 0)
-      .to(logo, {
-        scale: 1.35,
-        rotateY: 12,
-        filter: 'blur(8px) brightness(1.6)',
-        opacity: 0,
-        duration: 0.65,
-        ease: 'expo.in',
-      }, 0.05)
-      .to(glow, { scale: 2.4, opacity: 0, duration: 0.6 }, 0.05)
-      .to([...chars, ...words, metaLabel, pct], {
-        y: -18,
-        opacity: 0,
-        duration: 0.4,
-        stagger: 0.02,
-      }, 0.08)
-      .to([barWrap, ...rings, ...orbits], { opacity: 0, duration: 0.35 }, 0.12)
-      .to(vignette, { opacity: 0, duration: 0.45 }, 0.2)
-      .to(el, { opacity: 0, duration: 0.55 }, 0.35)
-      .add(() => document.body.classList.add('is-loaded'), 0.3);
-  });
+  // Loader removed — mark ready immediately and run soft entrances.
+  document.body.classList.add('is-loaded');
+  const boot = () => {
+    runHeroEntrance();
+    runHeaderBrandEntrance();
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+  };
+  if (document.readyState === 'complete') boot();
+  else window.addEventListener('load', boot, { once: true });
 }
 
 function runHeaderBrandEntrance() {
@@ -1186,7 +1026,7 @@ function initProjectsSection() {
 }
 
 function initHeader() {
-  const header = document.querySelector('header');
+  const header = document.querySelector('.site-header') || document.querySelector('header');
   if (!header) return;
 
   const cinematic = document.querySelector('[data-hero-cinematic]');
@@ -1792,41 +1632,6 @@ function initServicesCinema() {
   }, { threshold: 0.2 });
   io.observe(root);
 
-  const gates = [...root.querySelectorAll('[data-svc-gate]')];
-  const panels = [...root.querySelectorAll('[data-svc-panel]')];
-
-  const closePanels = () => {
-    panels.forEach((panel) => {
-      panel.classList.remove('is-open');
-      panel.setAttribute('hidden', '');
-    });
-    gates.forEach((g) => g.setAttribute('aria-selected', 'false'));
-    document.body.style.overflow = '';
-  };
-
-  const openPanel = (key) => {
-    closePanels();
-    const panel = root.querySelector('[data-svc-panel="' + key + '"]');
-    const gate = root.querySelector('[data-svc-gate="' + key + '"]');
-    if (!panel || !gate) return;
-    panel.removeAttribute('hidden');
-    gate.setAttribute('aria-selected', 'true');
-    document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => panel.classList.add('is-open'));
-  };
-
-  gates.forEach((gate) => {
-    gate.addEventListener('click', () => openPanel(gate.getAttribute('data-svc-gate')));
-  });
-
-  root.querySelectorAll('[data-svc-close]').forEach((btn) => {
-    btn.addEventListener('click', closePanels);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closePanels();
-  });
-
   if (window.gsap && window.ScrollTrigger) {
     const reveal = root.querySelectorAll('[data-svc-reveal]');
     gsap.set(reveal, { y: 36, opacity: 0 });
@@ -1892,3 +1697,28 @@ function initServiceCalcLinks() {
   } catch (_) {}
 }
 
+function initSpaTransitions() {
+  // Prefer native cross-document View Transitions (CSS @view-transition).
+  // Fallback: soft fade-out before hard navigation.
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return;
+  if (CSS.supports && CSS.supports('view-transition-name', 'none')) return;
+
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    if (a.target && a.target !== '_self') return;
+    if (a.hasAttribute('download')) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    let url;
+    try { url = new URL(a.href, window.location.origin); } catch (_) { return; }
+    if (url.origin !== window.location.origin) return;
+    if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+
+    e.preventDefault();
+    const main = document.getElementById('app-main') || document.querySelector('main');
+    if (main) main.classList.add('is-page-leaving');
+    setTimeout(() => { window.location.href = url.href; }, 200);
+  });
+}

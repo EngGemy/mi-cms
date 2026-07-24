@@ -24,7 +24,7 @@
 <meta name="theme-color" content="#C8102E">
 
 @if(!empty($generalSettings?->favicon_path))
-<link rel="icon" href="{{ asset('storage/' . $generalSettings->favicon_path) }}">
+<link rel="icon" href="{{ '/storage/'.ltrim($generalSettings->favicon_path, '/') }}">
 @endif
 
 @if(!empty($seoSettings?->google_tag_manager_id))

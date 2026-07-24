@@ -16,13 +16,12 @@
     <script src="{{ asset('js/mi-calc.js') }}?v={{ @filemtime(public_path('js/mi-calc.js')) ?: time() }}"></script>
     {{ $head ?? '' }}
 </head>
-<body>
+<body class="is-loaded">
 
-@include('partials.loader')
 @include('partials.header')
 @include('partials.mobile-drawer')
 
-<main>
+<main id="app-main">
     {{ $slot ?? '' }}
     @yield('content')
 </main>

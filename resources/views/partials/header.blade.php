@@ -4,13 +4,13 @@
   $systemsOpen = $routeIs('products.*') || $routeIs('services.*') || request()->url() === route('home', $locale).'#features';
   $servicesOpen = $routeIs('process.*') || $routeIs('faq.*') || $routeIs('testimonials.*');
 @endphp
-<header>
+<header class="site-header">
   <div class="header-inner">
     <a href="{{ route('home', $locale) }}" class="header-brand" data-header-brand>
       @php
         $logoPath = $generalSettings?->logo_path ?? null;
         $logoSrc = $logoPath
-            ? \Illuminate\Support\Facades\Storage::disk('public')->url($logoPath)
+            ? '/storage/'.ltrim($logoPath, '/')
             : asset('images/logo.jpg');
       @endphp
       <div class="header-brand-logo">
