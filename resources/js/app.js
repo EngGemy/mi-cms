@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initListingNav();
   initServicesCinema();
   initServiceCalcLinks();
+  initServiceCatalog();
   initSpaTransitions();
   ScrollTrigger.refresh();
 });
@@ -1695,6 +1696,64 @@ function initServiceCalcLinks() {
       }, 600);
     }
   } catch (_) {}
+}
+
+function initServiceCatalog() {
+  const root = document.querySelector('[data-svc-catalog]');
+  if (!root) return;
+
+  const main = root.querySelector('[data-svc-gallery-main]');
+  const thumbs = [...root.querySelectorAll('[data-svc-thumb]')];
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener('click', () => {
+      const src = thumb.getAttribute('data-src');
+      if (!src || !main) return;
+      main.src = src;
+      thumbs.forEach((t) => t.classList.toggle('is-active', t === thumb));
+    });
+  });
+
+  const tabs = [...root.querySelectorAll('[data-svc-tab]')];
+  if (!tabs.length) return;
+
+  const sections = tabs
+    .map((tab) => {
+      const href = tab.getAttribute('href') || '';
+      const id = href.startsWith('#') ? href.slice(1) : '';
+      return id ? document.getElementById(id) : null;
+    })
+    .filter(Boolean);
+
+  const setActive = (id) => {
+    tabs.forEach((tab) => {
+      const href = tab.getAttribute('href') || '';
+      tab.classList.toggle('is-active', href === '#' + id && !tab.classList.contains('is-cta'));
+    });
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', (e) => {
+      const href = tab.getAttribute('href') || '';
+      if (!href.startsWith('#')) return;
+      const el = document.querySelector(href);
+      if (!el) return;
+      e.preventDefault();
+      const offset = 140;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+      setActive(href.slice(1));
+    });
+  });
+
+  if ('IntersectionObserver' in window && sections.length) {
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((en) => en.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible?.target?.id) setActive(visible.target.id);
+    }, { rootMargin: '-30% 0px -55% 0px', threshold: [0.1, 0.25, 0.5] });
+    sections.forEach((s) => io.observe(s));
+  }
 }
 
 function initSpaTransitions() {
