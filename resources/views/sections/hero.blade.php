@@ -5,78 +5,73 @@
   $pillars = config('poultry_services.pillars', []);
   $pillarCopy = __('messages.svc_pillars');
 
-  $videoSlide = $slides->first(fn ($s) => $s->hasVideo());
-  $videoUrl = $videoSlide?->getVideoUrl();
-  $posterUrl = null;
-  if ($videoSlide) {
-      if ($videoSlide->getFirstMedia('poster')) {
-          $posterUrl = $videoSlide->getPosterUrl('hero');
-      } elseif ($videoSlide->getFirstMedia('image')) {
-          $posterUrl = $videoSlide->getImageUrl('hero');
-      }
-  }
-  $fallbackImage = $posterUrl
-      ?? $slides->first(fn ($s) => $s->getFirstMedia('image'))?->getImageUrl('hero')
-      ?? $slides->first()?->getImageUrl('hero')
-      ?? 'https://images.unsplash.com/photo-1569466593977-94ee7ed02ec9?w=1920&q=85&auto=format&fit=crop';
-  $fallbackMobile = null;
-  if ($videoSlide?->getFirstMedia('poster')) {
-      $fallbackMobile = $videoSlide->getPosterUrl('mobile');
-  } elseif ($videoSlide?->getFirstMedia('image')) {
-      $fallbackMobile = $videoSlide->getImageUrl('mobile');
-  }
-  $fallbackMobile = $fallbackMobile
-      ?? $slides->first(fn ($s) => $s->getFirstMedia('image'))?->getImageUrl('mobile')
-      ?? $fallbackImage;
+  $fallbackImage = 'https://images.unsplash.com/photo-1569466593977-94ee7ed02ec9?w=1920&q=85&auto=format&fit=crop';
+  $hasAnyVideo = $slides->contains(fn ($s) => $s->hasVideo());
+  $slideCount = max(1, $slides->count());
 @endphp
-<section class="hero hero--cinematic hero--with-gates hero--ux {{ $videoUrl ? 'hero--has-video' : 'hero--no-video' }}" id="home" data-hero-cinematic>
+<section
+  class="hero hero--cinematic hero--with-gates hero--ux {{ $hasAnyVideo ? 'hero--has-video' : 'hero--no-video' }}"
+  id="home"
+  data-hero-cinematic
+  data-hero-interval="3800"
+>
   <div class="hero-media" aria-hidden="true">
-    @if($videoUrl)
-      <video
-        class="hero-video"
-        data-hero-video
-        autoplay
-        muted
-        loop
-        playsinline
-        webkit-playsinline
-        preload="auto"
-        @if($posterUrl) poster="{{ $posterUrl }}" @endif
-      >
-        <source src="{{ $videoUrl }}" type="{{ str_ends_with(strtolower(parse_url($videoUrl, PHP_URL_PATH) ?: $videoUrl), '.webm') ? 'video/webm' : 'video/mp4' }}">
-      </video>
-
-      <div class="hero-image-stack hero-image-stack--underlay" data-hero-images>
-        <picture class="hero-image-layer is-active" data-img="0">
-          <source media="(max-width: 767px)" srcset="{{ $fallbackMobile }}">
-          <img src="{{ $posterUrl ?: $fallbackImage }}" alt="" loading="eager" decoding="async" fetchpriority="high">
-        </picture>
-      </div>
-    @else
-      <div class="hero-image-stack" data-hero-images>
-        @forelse($slides as $i => $slide)
-          @php
-            $desk = $slide->getFirstMedia('image')
-                ? $slide->getImageUrl('hero')
-                : ($slide->getFirstMedia('poster') ? $slide->getPosterUrl('hero') : null);
-            $desk = $desk ?: (filter_var((string) $slide->image_url, FILTER_VALIDATE_URL) ? $slide->image_url : null);
-            $desk = $desk ?: $fallbackImage;
-            $mob = $slide->getFirstMedia('image')
-                ? ($slide->getImageUrl('mobile') ?: $desk)
-                : $desk;
-          @endphp
-          <picture class="hero-image-layer @if($loop->first) is-active @endif" data-img="{{ $i }}">
+    <div class="hero-media-stack" data-hero-media>
+      @forelse($slides as $i => $slide)
+        @php
+          $videoUrl = $slide->hasVideo() ? $slide->getVideoUrl() : null;
+          $posterUrl = null;
+          if ($slide->getFirstMedia('poster')) {
+              $posterUrl = $slide->getPosterUrl('hero');
+          } elseif ($slide->getFirstMedia('image')) {
+              $posterUrl = $slide->getImageUrl('hero');
+          }
+          $desk = $posterUrl
+              ?? $slide->getImageUrl('hero')
+              ?? (filter_var((string) $slide->image_url, FILTER_VALIDATE_URL) ? $slide->image_url : null)
+              ?? $fallbackImage;
+          $mob = $slide->getFirstMedia('image')
+              ? ($slide->getImageUrl('mobile') ?: $desk)
+              : ($slide->getFirstMedia('poster') ? ($slide->getPosterUrl('mobile') ?: $desk) : $desk);
+        @endphp
+        <div
+          class="hero-media-layer @if($loop->first) is-active @endif"
+          data-hero-layer="{{ $i }}"
+          data-hero-has-video="{{ $videoUrl ? '1' : '0' }}"
+        >
+          @if($videoUrl)
+            <video
+              class="hero-video"
+              data-hero-video
+              muted
+              loop
+              playsinline
+              webkit-playsinline
+              preload="{{ $loop->first ? 'auto' : 'metadata' }}"
+              @if($posterUrl) poster="{{ $posterUrl }}" @endif
+            >
+              <source src="{{ $videoUrl }}" type="{{ str_ends_with(strtolower(parse_url($videoUrl, PHP_URL_PATH) ?: $videoUrl), '.webm') ? 'video/webm' : 'video/mp4' }}">
+            </video>
+          @endif
+          <picture class="hero-media-still {{ $videoUrl ? 'hero-media-still--under' : '' }}">
             <source media="(max-width: 767px)" srcset="{{ $mob }}">
-            <img src="{{ $desk }}" alt="" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async">
+            <img
+              src="{{ $desk }}"
+              alt=""
+              loading="{{ $loop->first ? 'eager' : 'lazy' }}"
+              decoding="async"
+              @if($loop->first) fetchpriority="high" @endif
+            >
           </picture>
-        @empty
-          <picture class="hero-image-layer is-active" data-img="0">
-            <source media="(max-width: 767px)" srcset="{{ $fallbackMobile }}">
-            <img src="{{ $fallbackImage }}" alt="" loading="eager" decoding="async">
+        </div>
+      @empty
+        <div class="hero-media-layer is-active" data-hero-layer="0" data-hero-has-video="0">
+          <picture class="hero-media-still">
+            <img src="{{ $fallbackImage }}" alt="" loading="eager" decoding="async" fetchpriority="high">
           </picture>
-        @endforelse
-      </div>
-    @endif
+        </div>
+      @endforelse
+    </div>
 
     <div class="hero-scrim hero-scrim--ux"></div>
     <div class="hero-grain"></div>
@@ -90,6 +85,16 @@
       <h1 class="hero-title" data-hero-headline>
         <span class="char-reveal"><span class="char-line">{{ __('messages.hero_main_line') }}</span></span>
       </h1>
+
+      <div class="hero-title hero-title--rotate" data-hero-headline>
+        <div class="rotating-word" id="rotWord" aria-live="polite">
+          @forelse($slides as $slide)
+            <span class="rw-item @if($loop->first)is-active @endif">{{ $slide->label }}</span>
+          @empty
+            <span class="rw-item is-active">{{ __('messages.hero_default_label') }}</span>
+          @endforelse
+        </div>
+      </div>
 
       <p class="hero-lead" data-hero-fade>{{ __('messages.hero_paragraph') }}</p>
 
@@ -136,6 +141,14 @@
           {{ __('messages.request_quote') }}
         </a>
       </div>
+
+      @if($slideCount > 1)
+        <div class="hero-progress" data-hero-fade aria-hidden="true">
+          @for($d = 0; $d < $slideCount; $d++)
+            <span class="hero-progress-dot @if($d === 0) is-active @endif" data-hero-dot="{{ $d }}"></span>
+          @endfor
+        </div>
+      @endif
     </div>
   </div>
 </section>

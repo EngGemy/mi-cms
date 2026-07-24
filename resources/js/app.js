@@ -186,74 +186,77 @@ function initHeroCinematic() {
 
   document.body.classList.add('has-cinematic-hero');
 
-  const video = root.querySelector('[data-hero-video]');
+  const layers = [...root.querySelectorAll('[data-hero-layer]')];
+  const videos = [...root.querySelectorAll('[data-hero-video]')];
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (!video) {
+  if (!videos.length) {
     root.classList.add('hero--no-video');
     root.classList.remove('hero--has-video');
     return;
   }
 
+  root.classList.add('hero--has-video');
+  root.classList.remove('hero--no-video');
+
   if (reduced) {
     root.classList.add('hero--reduced');
     root.classList.remove('hero--has-video');
-    video.removeAttribute('autoplay');
-    try { video.pause(); } catch (_) {}
+    videos.forEach((v) => {
+      v.removeAttribute('autoplay');
+      try { v.pause(); } catch (_) {}
+    });
     return;
   }
 
-  let failed = false;
-  const markPlaying = () => {
-    if (failed) return;
-    root.classList.add('hero--video-playing');
-    root.classList.remove('hero--video-failed');
-  };
-  const markFailed = () => {
-    failed = true;
-    root.classList.add('hero--video-failed');
-    root.classList.remove('hero--video-playing', 'hero--has-video');
-  };
-
-  video.muted = true;
-  video.defaultMuted = true;
-  video.setAttribute('muted', '');
-  video.playsInline = true;
-
-  const tryPlay = () => {
-    if (failed) return;
+  const playVideo = (video) => {
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute('muted', '');
+    video.playsInline = true;
     const p = video.play();
     if (p && typeof p.then === 'function') {
-      p.then(markPlaying).catch(() => {
-        // Retry once after a short delay (iOS / slow decode)
-        setTimeout(() => {
-          const retry = video.play();
-          if (retry && typeof retry.then === 'function') {
-            retry.then(markPlaying).catch(markFailed);
-          } else {
-            markPlaying();
-          }
-        }, 250);
-      });
+      p.then(() => root.classList.add('hero--video-playing'))
+        .catch(() => {
+          setTimeout(() => {
+            const retry = video.play();
+            if (retry && typeof retry.then === 'function') {
+              retry.then(() => root.classList.add('hero--video-playing')).catch(() => {});
+            }
+          }, 250);
+        });
     } else {
-      markPlaying();
+      root.classList.add('hero--video-playing');
     }
   };
 
-  video.addEventListener('playing', markPlaying);
-  video.addEventListener('error', markFailed, { once: true });
-  const source = video.querySelector('source');
-  if (source) source.addEventListener('error', markFailed, { once: true });
+  const activateLayer = (index) => {
+    layers.forEach((layer, i) => {
+      const on = i === index;
+      layer.classList.toggle('is-active', on);
+      const video = layer.querySelector('[data-hero-video]');
+      if (!video) return;
+      if (on) playVideo(video);
+      else {
+        try { video.pause(); } catch (_) {}
+      }
+    });
+    root.querySelectorAll('[data-hero-dot]').forEach((dot, i) => {
+      dot.classList.toggle('is-active', i === index);
+    });
+  };
 
-  if (video.readyState >= 2) tryPlay();
-  else {
-    video.addEventListener('loadeddata', tryPlay, { once: true });
-    video.addEventListener('canplay', tryPlay, { once: true });
-  }
+  // Expose for rotator
+  root._heroActivateLayer = activateLayer;
 
-  // Unlock autoplay after first user gesture if needed
+  // Start first active layer
+  const startIdx = Math.max(0, layers.findIndex((l) => l.classList.contains('is-active')));
+  activateLayer(startIdx < 0 ? 0 : startIdx);
+
   const unlock = () => {
-    if (!failed && video.paused) tryPlay();
+    const active = root.querySelector('.hero-media-layer.is-active [data-hero-video]');
+    if (active && active.paused) playVideo(active);
     window.removeEventListener('pointerdown', unlock);
     window.removeEventListener('touchstart', unlock);
   };
@@ -262,9 +265,11 @@ function initHeroCinematic() {
 
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) tryPlay();
-      else {
-        try { video.pause(); } catch (_) {}
+      const active = root.querySelector('.hero-media-layer.is-active [data-hero-video]');
+      if (entry.isIntersecting) {
+        if (active) playVideo(active);
+      } else {
+        videos.forEach((v) => { try { v.pause(); } catch (_) {} });
       }
     });
   }, { threshold: 0.12 });
@@ -278,19 +283,60 @@ function initRotator() {
   if (items.length < 2) return;
 
   const hero = document.querySelector('[data-hero-cinematic]');
-  const hasVideo = !!(hero && hero.querySelector('[data-hero-video]') && !hero.classList.contains('hero--reduced') && !hero.classList.contains('hero--video-failed'));
-  const imgLayers = hasVideo ? [] : [...document.querySelectorAll('[data-hero-images] .hero-image-layer')];
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return;
+
+  const layers = hero
+    ? [...hero.querySelectorAll('[data-hero-layer]')]
+    : [...document.querySelectorAll('[data-hero-images] .hero-image-layer')];
+  const interval = parseInt(hero?.getAttribute('data-hero-interval') || '3800', 10) || 3800;
 
   let idx = 0;
-  setInterval(() => {
+  let timer = null;
+
+  const go = (nextIdx) => {
     const cur = items[idx];
-    idx = (idx + 1) % items.length;
+    idx = ((nextIdx % items.length) + items.length) % items.length;
     const next = items[idx];
-    cur.classList.add('is-exit'); cur.classList.remove('is-active');
-    requestAnimationFrame(() => next.classList.add('is-active'));
-    setTimeout(() => cur.classList.remove('is-exit'), 700);
-    imgLayers.forEach((l, i) => l.classList.toggle('is-active', i === idx));
-  }, 3200);
+
+    cur?.classList.add('is-exit');
+    cur?.classList.remove('is-active');
+    requestAnimationFrame(() => next?.classList.add('is-active'));
+    setTimeout(() => cur?.classList.remove('is-exit'), 700);
+
+    if (typeof hero?._heroActivateLayer === 'function') {
+      hero._heroActivateLayer(idx);
+    } else {
+      layers.forEach((l, i) => l.classList.toggle('is-active', i === idx));
+      hero?.querySelectorAll('[data-hero-dot]')?.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === idx);
+      });
+    }
+  };
+
+  const tick = () => go(idx + 1);
+
+  const start = () => {
+    stop();
+    timer = window.setInterval(tick, interval);
+  };
+  const stop = () => {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  };
+
+  start();
+
+  if (hero) {
+    hero.addEventListener('mouseenter', stop);
+    hero.addEventListener('mouseleave', start);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
+    });
+  }
 }
 
 /* ------------------------------------------------------------------
