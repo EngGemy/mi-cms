@@ -40,7 +40,7 @@
         preload="auto"
         @if($posterUrl) poster="{{ $posterUrl }}" @endif
       >
-        <source src="{{ $videoUrl }}" type="{{ str_ends_with(strtolower($videoUrl), '.webm') ? 'video/webm' : 'video/mp4' }}">
+        <source src="{{ $videoUrl }}" type="{{ str_ends_with(strtolower(parse_url($videoUrl, PHP_URL_PATH) ?: $videoUrl), '.webm') ? 'video/webm' : 'video/mp4' }}">
       </video>
 
       {{-- Single underlay (poster/original image) — shown only until video plays or if it fails --}}

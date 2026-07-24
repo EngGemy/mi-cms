@@ -50,7 +50,28 @@ class HeroSlideResource extends Resource
                     ->collection('video')
                     ->acceptedFileTypes(['video/mp4', 'video/webm'])
                     ->maxSize(20480)
+                    ->downloadable()
+                    ->openable()
                     ->helperText('مطلوب للهيرو السينمائي: 1920×1080 MP4 H.264، حلقة ≤15 ثانية، ≤8MB مفضّل (حد أقصى 20MB)، بدون صوت.')
+                    ->columnSpanFull(),
+
+                Forms\Components\Placeholder::make('video_preview')
+                    ->label('معاينة الفيديو على الموقع')
+                    ->content(function (?HeroSlide $record) {
+                        if (! $record?->hasVideo()) {
+                            return new \Illuminate\Support\HtmlString(
+                                '<p style="margin:0;font-size:13px;color:#8a7f74;">ارفع فيديو ثم احفظ الصفحة لتظهر المعاينة هنا.</p>'
+                            );
+                        }
+                        $url = e($record->getVideoUrl());
+
+                        return new \Illuminate\Support\HtmlString(
+                            '<div style="border:1px solid rgba(26,22,17,.1);border-radius:14px;overflow:hidden;background:#111;">'
+                            .'<video src="'.$url.'" controls muted playsinline preload="metadata" style="display:block;width:100%;max-height:280px;background:#000;"></video>'
+                            .'<div style="padding:10px 14px;font-size:12px;color:#6b635b;background:#faf7f2;">إن اشتغلت المعاينة هنا ولم تظهر في الرئيسية: تأكد أن <code>APP_URL</code> يطابق الدومين، ونفّذ <code>php artisan storage:link</code>.</div>'
+                            .'</div>'
+                        );
+                    })
                     ->columnSpanFull(),
 
                 SpatieMediaLibraryFileUpload::make('poster')

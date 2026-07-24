@@ -8,17 +8,20 @@ return [
 
     // Brand / Nav
     'brand'          => 'MI',
-    'nav_products'   => 'المنتجات',
-    'nav_projects'   => 'المشاريع',
+    'nav_products'   => 'الأنظمة',
+    'nav_projects'   => 'مشروعاتنا',
     'nav_features'   => 'المميزات',
     'nav_how'        => 'كيف نعمل',
     'nav_about'      => 'من نحن',
-    'nav_blog'       => 'المدوّنة',
+    'nav_blog'       => 'مركز المعرفة',
     'nav_calculator' => 'حاسبة السعة',
-    'nav_contact'    => 'تواصل',
+    'nav_contact'    => 'تواصل معنا',
     'nav_faq'        => 'الأسئلة الشائعة',
     'nav_testimonials' => 'آراء العملاء',
     'nav_home'       => 'الرئيسية',
+    'nav_systems'    => 'الأنظمة والحلول',
+    'nav_services'   => 'خدماتنا',
+    'nav_all_systems'=> 'كل الأنظمة',
     'contact_us'     => 'تواصل معنا',
     'nav_menu'       => 'القائمة',
     'close_menu'     => 'إغلاق',
@@ -299,7 +302,7 @@ return [
     'newsletter_placeholder'=> 'بريدك الإلكتروني',
     'subscribe'             => 'اشتراك',
     'rights'                => 'جميع الحقوق محفوظة',
-    'cta_consultation'      => 'استشارة مجانية',
+    'cta_consultation'      => 'اطلب عرض سعر',
 
     // Flash / system messages
     'comment_submitted' => 'تم استلام تعليقك بنجاح. سيظهر بعد المراجعة.',

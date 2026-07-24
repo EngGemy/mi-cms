@@ -15,23 +15,52 @@
     </div>
 
     <nav class="mobile-drawer-nav">
-      <a href="{{ route('home', $locale) }}#start" data-mob-link><span class="num">01</span><span class="label">{{ __('messages.nav_calculator') }}</span></a>
-      <a href="{{ route('products.index', $locale) }}" data-mob-link class="{{ $routeIs('products.*') ? 'active' : '' }}"><span class="num">02</span><span class="label">{{ __('messages.nav_products') }}</span></a>
-      <a href="{{ route('home', $locale) }}#features" data-mob-link><span class="num">03</span><span class="label">{{ __('messages.nav_features') }}</span></a>
+      <a href="{{ route('home', $locale) }}" data-mob-link class="{{ $routeIs('home') ? 'active' : '' }}"><span class="num">01</span><span class="label">{{ __('messages.nav_home') }}</span></a>
+      <a href="{{ route('about', $locale) }}" data-mob-link class="{{ $routeIs('about') ? 'active' : '' }}"><span class="num">02</span><span class="label">{{ __('messages.nav_about') }}</span></a>
+
+      <div class="mobile-drawer-group" data-mob-group>
+        <button type="button" class="mobile-drawer-group-btn" data-mob-group-btn aria-expanded="false">
+          <span class="num">03</span>
+          <span class="label">{{ __('messages.nav_systems') }}</span>
+          <svg class="mobile-drawer-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-drawer-sub" data-mob-group-panel hidden>
+          <a href="{{ route('products.index', $locale) }}" data-mob-link class="{{ $routeIs('products.*') ? 'active' : '' }}">{{ __('messages.nav_all_systems') }}</a>
+          <a href="{{ route('home', $locale) }}#features" data-mob-link>{{ __('messages.nav_features') }}</a>
+          <a href="{{ route('home', $locale) }}#start" data-mob-link>{{ __('messages.nav_calculator') }}</a>
+        </div>
+      </div>
+
       <a href="{{ route('projects.index', $locale) }}" data-mob-link class="{{ $routeIs('projects.*') ? 'active' : '' }}"><span class="num">04</span><span class="label">{{ __('messages.nav_projects') }}</span></a>
-      <a href="{{ route('process.index', $locale) }}" data-mob-link class="{{ $routeIs('process.*') ? 'active' : '' }}"><span class="num">05</span><span class="label">{{ __('messages.nav_how') }}</span></a>
-      <a href="{{ route('about', $locale) }}" data-mob-link class="{{ $routeIs('about') ? 'active' : '' }}"><span class="num">06</span><span class="label">{{ __('messages.nav_about') }}</span></a>
-      <a href="{{ route('blog.index', $locale) }}" data-mob-link class="{{ $routeIs('blog.*') ? 'active' : '' }}"><span class="num">07</span><span class="label">{{ __('messages.nav_blog') }}</span></a>
-      <a href="{{ route('home', $locale) }}#contact" data-mob-link><span class="num">08</span><span class="label">{{ __('messages.nav_contact') }}</span></a>
+
+      <div class="mobile-drawer-group" data-mob-group>
+        <button type="button" class="mobile-drawer-group-btn" data-mob-group-btn aria-expanded="false">
+          <span class="num">05</span>
+          <span class="label">{{ __('messages.nav_services') }}</span>
+          <svg class="mobile-drawer-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mobile-drawer-sub" data-mob-group-panel hidden>
+          <a href="{{ route('process.index', $locale) }}" data-mob-link class="{{ $routeIs('process.*') ? 'active' : '' }}">{{ __('messages.nav_how') }}</a>
+          <a href="{{ route('home', $locale) }}#start" data-mob-link>{{ __('messages.nav_calculator') }}</a>
+          <a href="{{ route('faq.index', $locale) }}" data-mob-link class="{{ $routeIs('faq.*') ? 'active' : '' }}">{{ __('messages.nav_faq') }}</a>
+          <a href="{{ route('testimonials.index', $locale) }}" data-mob-link class="{{ $routeIs('testimonials.*') ? 'active' : '' }}">{{ __('messages.nav_testimonials') }}</a>
+        </div>
+      </div>
+
+      <a href="{{ route('blog.index', $locale) }}" data-mob-link class="{{ $routeIs('blog.*') ? 'active' : '' }}"><span class="num">06</span><span class="label">{{ __('messages.nav_blog') }}</span></a>
+      <a href="{{ route('home', $locale) }}#contact" data-mob-link><span class="num">07</span><span class="label">{{ __('messages.nav_contact') }}</span></a>
     </nav>
 
     <div class="mobile-drawer-footer">
+      <a href="{{ route('home', $locale) }}#contact" class="btn btn-primary w-full" data-mob-link style="justify-content:center">
+        {{ __('messages.request_quote') }}
+      </a>
       <a href="{{ route('locale.switch', $locale === 'ar' ? 'en' : 'ar') }}" class="mobile-drawer-lang" data-mob-link>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" stroke="currentColor" stroke-width="1.7"/></svg>
         {{ $locale === 'ar' ? 'English' : 'العربية' }}
       </a>
       <div class="mobile-drawer-actions">
-        <a href="tel:{{ config('mi.phone_primary') }}" class="btn btn-primary flex-1">
+        <a href="tel:{{ config('mi.phone_primary') }}" class="btn btn-ghost flex-1">
           <i data-lucide="phone" class="w-4 h-4"></i> {{ __('messages.call_us') }}
         </a>
         <a href="https://wa.me/{{ config('mi.whatsapp') }}" class="btn btn-ghost flex-1 mobile-drawer-wa"

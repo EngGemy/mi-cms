@@ -472,18 +472,28 @@
   .header-brand:hover .header-brand-text{ color: var(--mi-red); }
 
   /* Nav */
-  .header-nav{ display:flex; align-items:center; gap:4px; }
-  .header-nav a{
-    font-weight:500; font-size:13.5px;
+  .header-nav{ display:flex; align-items:center; gap:2px; }
+  .header-nav > a,
+  .header-nav .nav-drop-trigger{
+    font-weight:500; font-size:13px;
     color: var(--ink-700);
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: 99px;
     position: relative;
     transition: color .22s ease, background .22s ease;
     letter-spacing: -.01em;
     white-space: nowrap;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
   }
-  .header-nav a::after{
+  .header-nav > a::after,
+  .header-nav .nav-drop-trigger::after{
     content:"";
     position:absolute; bottom:4px; left:50%; right:50%;
     height: 2px;
@@ -491,39 +501,136 @@
     border-radius: 2px;
     transition: left .3s var(--ease), right .3s var(--ease);
   }
-  .header-nav a:hover{
+  .header-nav > a:hover,
+  .header-nav .nav-drop-trigger:hover,
+  .header-nav .nav-drop.is-open .nav-drop-trigger{
     color: var(--mi-red);
     background: rgba(200,16,46,.05);
   }
-  .header-nav a:hover::after{
-    left: 14px; right: 14px;
+  .header-nav > a:hover::after,
+  .header-nav .nav-drop-trigger:hover::after,
+  .header-nav > a.active::after,
+  .header-nav .nav-drop-trigger.active::after,
+  .header-nav .nav-drop.is-open .nav-drop-trigger::after{
+    left: 12px; right: 12px;
   }
-  .header-nav a.active{
+  .header-nav > a.active,
+  .header-nav .nav-drop-trigger.active{
     color: var(--mi-red);
     background: rgba(200,16,46,.07);
   }
-  .header-nav a.active::after{
-    left: 14px; right: 14px;
+  .nav-drop-chevron{
+    transition: transform .25s ease;
+    opacity: .7;
   }
+  .nav-drop.is-open .nav-drop-chevron{ transform: rotate(180deg); }
+
+  .nav-drop{ position: relative; }
+  .nav-drop-panel{
+    position: absolute;
+    top: calc(100% + 8px);
+    inset-inline-start: 0;
+    min-width: 220px;
+    padding: 8px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid rgba(26,22,17,.08);
+    box-shadow: 0 20px 50px -24px rgba(26,22,17,.4);
+    z-index: 80;
+    display: grid;
+    gap: 2px;
+  }
+  .nav-drop-panel[hidden]{ display: none !important; }
+  .nav-drop-panel a{
+    display: block;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-800);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-drop-panel a:hover{
+    background: rgba(200,16,46,.06);
+    color: var(--mi-red);
+  }
+  .nav-drop-panel a::after{ display: none !important; }
 
   /* Nav stagger entrance */
-  .header-nav a{
+  .header-nav > a,
+  .header-nav .nav-drop{
     opacity:0;
     animation: navItemIn .5s var(--ease-expo) both;
   }
-  body:not(.is-loaded) .header-nav a { animation: none; opacity:1; }
-  .header-nav a:nth-child(1){ animation-delay:.18s }
-  .header-nav a:nth-child(2){ animation-delay:.22s }
-  .header-nav a:nth-child(3){ animation-delay:.26s }
-  .header-nav a:nth-child(4){ animation-delay:.30s }
-  .header-nav a:nth-child(5){ animation-delay:.34s }
-  .header-nav a:nth-child(6){ animation-delay:.38s }
+  body:not(.is-loaded) .header-nav > a,
+  body:not(.is-loaded) .header-nav .nav-drop { animation: none; opacity:1; }
+  .header-nav > a:nth-child(1), .header-nav .nav-drop:nth-child(1){ animation-delay:.16s }
+  .header-nav > *:nth-child(1){ animation-delay:.16s }
+  .header-nav > *:nth-child(2){ animation-delay:.20s }
+  .header-nav > *:nth-child(3){ animation-delay:.24s }
+  .header-nav > *:nth-child(4){ animation-delay:.28s }
+  .header-nav > *:nth-child(5){ animation-delay:.32s }
+  .header-nav > *:nth-child(6){ animation-delay:.36s }
+  .header-nav > *:nth-child(7){ animation-delay:.40s }
   @keyframes navItemIn{
     from{ opacity:0; transform: translateY(-8px); }
     to  { opacity:1; transform: translateY(0); }
   }
 
+  @media (max-width:1100px){
+    .header-nav > a,
+    .header-nav .nav-drop-trigger{ font-size:12.5px; padding: 8px 10px; }
+  }
   @media (max-width:1024px){ .header-nav{ display:none; } }
+
+  .header-quote-btn{
+    font-weight: 700 !important;
+  }
+
+  /* Mobile drawer accordion groups */
+  .mobile-drawer-group{ border-bottom: 1px solid rgba(255,255,255,.06); }
+  .mobile-drawer-group-btn{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-align: start;
+  }
+  .mobile-drawer-group-btn .num{
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    opacity: .45;
+    letter-spacing: .08em;
+  }
+  .mobile-drawer-group-btn .label{ flex: 1; font-weight: 700; font-size: 18px; }
+  .mobile-drawer-chevron{ transition: transform .25s ease; opacity: .6; }
+  .mobile-drawer-group.is-open .mobile-drawer-chevron{ transform: rotate(180deg); }
+  .mobile-drawer-sub{
+    display: grid;
+    gap: 4px;
+    padding: 0 0 14px 42px;
+  }
+  .mobile-drawer-sub[hidden]{ display: none !important; }
+  .mobile-drawer-sub a{
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255,255,255,.72);
+    text-decoration: none;
+  }
+  .mobile-drawer-sub a:hover,
+  .mobile-drawer-sub a.active{
+    color: #fff;
+    background: rgba(200,16,46,.18);
+  }
 
   .header-actions{
     display: flex;
@@ -856,18 +963,23 @@
   }
   body.has-cinematic-hero header.header--over-hero .header-brand-text,
   body.has-cinematic-hero header.header--over-hero .header-nav a,
+  body.has-cinematic-hero header.header--over-hero .header-nav .nav-drop-trigger,
   body.has-cinematic-hero header.header--over-hero .header-mobile-btn,
   body.has-cinematic-hero header.header--over-hero .lang-btn{
     color: #fff;
     text-shadow: 0 1px 2px rgba(0,0,0,.35);
   }
   body.has-cinematic-hero header.header--over-hero .header-nav a:hover,
-  body.has-cinematic-hero header.header--over-hero .header-nav a.active{
+  body.has-cinematic-hero header.header--over-hero .header-nav a.active,
+  body.has-cinematic-hero header.header--over-hero .header-nav .nav-drop-trigger:hover,
+  body.has-cinematic-hero header.header--over-hero .header-nav .nav-drop-trigger.active,
+  body.has-cinematic-hero header.header--over-hero .header-nav .nav-drop.is-open .nav-drop-trigger{
     color: #fff;
     background: rgba(255,255,255,.16);
     text-shadow: none;
   }
-  body.has-cinematic-hero header.header--over-hero .header-nav a::after{ background: #fff; }
+  body.has-cinematic-hero header.header--over-hero .header-nav a::after,
+  body.has-cinematic-hero header.header--over-hero .header-nav .nav-drop-trigger::after{ background: #fff; }
   body.has-cinematic-hero header.header--over-hero .btn-dark{
     background: rgba(255,255,255,.16);
     color: #fff;
@@ -887,16 +999,21 @@
   }
   body.has-cinematic-hero header.is-scrolled .header-brand-text,
   body.has-cinematic-hero header.is-scrolled .header-nav a,
+  body.has-cinematic-hero header.is-scrolled .header-nav .nav-drop-trigger,
   body.has-cinematic-hero header.is-scrolled .header-mobile-btn,
   body.has-cinematic-hero header.is-scrolled .lang-btn{
     color: var(--ink-700);
   }
   body.has-cinematic-hero header.is-scrolled .header-nav a:hover,
-  body.has-cinematic-hero header.is-scrolled .header-nav a.active{
+  body.has-cinematic-hero header.is-scrolled .header-nav a.active,
+  body.has-cinematic-hero header.is-scrolled .header-nav .nav-drop-trigger:hover,
+  body.has-cinematic-hero header.is-scrolled .header-nav .nav-drop-trigger.active,
+  body.has-cinematic-hero header.is-scrolled .header-nav .nav-drop.is-open .nav-drop-trigger{
     color: var(--mi-red);
     background: rgba(200,16,46,.07);
   }
-  body.has-cinematic-hero header.is-scrolled .header-nav a::after{ background: var(--mi-red); }
+  body.has-cinematic-hero header.is-scrolled .header-nav a::after,
+  body.has-cinematic-hero header.is-scrolled .header-nav .nav-drop-trigger::after{ background: var(--mi-red); }
   body.has-cinematic-hero header.is-scrolled .btn-dark{
     background: var(--ink-900);
     color: #fff;

@@ -1,6 +1,8 @@
 @php
   $locale = app()->getLocale();
   $routeIs = fn (string $name) => request()->routeIs($name);
+  $systemsOpen = $routeIs('products.*') || request()->url() === route('home', $locale).'#features';
+  $servicesOpen = $routeIs('process.*') || $routeIs('faq.*') || $routeIs('testimonials.*');
 @endphp
 <header>
   <div class="header-inner">
@@ -19,13 +21,43 @@
       <span class="header-brand-text">{{ $locale === 'ar' ? 'إم آي' : ($generalSettings?->site_name ?? 'MI') }}</span>
     </a>
 
-    <nav class="header-nav">
-      <a href="{{ route('home', $locale) }}#start">{{ __('messages.nav_calculator') }}</a>
-      <a href="{{ route('products.index', $locale) }}" class="{{ $routeIs('products.*') ? 'active' : '' }}">{{ __('messages.nav_products') }}</a>
-      <a href="{{ route('home', $locale) }}#features">{{ __('messages.nav_features') }}</a>
-      <a href="{{ route('projects.index', $locale) }}" class="{{ $routeIs('projects.*') ? 'active' : '' }}">{{ __('messages.nav_projects') }}</a>
-      <a href="{{ route('process.index', $locale) }}" class="{{ $routeIs('process.*') ? 'active' : '' }}">{{ __('messages.nav_how') }}</a>
+    <nav class="header-nav" aria-label="{{ __('messages.nav_menu') }}">
+      <a href="{{ route('home', $locale) }}" class="{{ $routeIs('home') ? 'active' : '' }}">{{ __('messages.nav_home') }}</a>
       <a href="{{ route('about', $locale) }}" class="{{ $routeIs('about') ? 'active' : '' }}">{{ __('messages.nav_about') }}</a>
+
+      <div class="nav-drop" data-nav-drop>
+        <button type="button" class="nav-drop-trigger {{ $routeIs('products.*') ? 'active' : '' }}"
+                aria-expanded="false" aria-haspopup="true" data-nav-drop-btn>
+          {{ __('messages.nav_systems') }}
+          <svg class="nav-drop-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="nav-drop-panel" data-nav-drop-panel hidden>
+          <a href="{{ route('products.index', $locale) }}">{{ __('messages.nav_all_systems') }}</a>
+          <a href="{{ route('home', $locale) }}#features">{{ __('messages.nav_features') }}</a>
+          <a href="{{ route('home', $locale) }}#start">{{ __('messages.nav_calculator') }}</a>
+        </div>
+      </div>
+
+      <a href="{{ route('projects.index', $locale) }}" class="{{ $routeIs('projects.*') ? 'active' : '' }}">{{ __('messages.nav_projects') }}</a>
+
+      <div class="nav-drop" data-nav-drop>
+        <button type="button" class="nav-drop-trigger {{ $servicesOpen ? 'active' : '' }}"
+                aria-expanded="false" aria-haspopup="true" data-nav-drop-btn>
+          {{ __('messages.nav_services') }}
+          <svg class="nav-drop-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="nav-drop-panel" data-nav-drop-panel hidden>
+          <a href="{{ route('process.index', $locale) }}">{{ __('messages.nav_how') }}</a>
+          <a href="{{ route('home', $locale) }}#start">{{ __('messages.nav_calculator') }}</a>
+          <a href="{{ route('faq.index', $locale) }}">{{ __('messages.nav_faq') }}</a>
+          <a href="{{ route('testimonials.index', $locale) }}">{{ __('messages.nav_testimonials') }}</a>
+        </div>
+      </div>
+
       <a href="{{ route('blog.index', $locale) }}" class="{{ $routeIs('blog.*') ? 'active' : '' }}">{{ __('messages.nav_blog') }}</a>
       <a href="{{ route('home', $locale) }}#contact">{{ __('messages.nav_contact') }}</a>
     </nav>
@@ -36,8 +68,8 @@
         <i data-lucide="globe" class="w-4 h-4"></i>
         {{ $locale === 'ar' ? 'EN' : 'ع' }}
       </a>
-      <a href="{{ route('home', $locale) }}#contact" class="btn btn-dark btn-sm header-desktop-only">
-        {{ __('messages.cta_consultation') }}
+      <a href="{{ route('home', $locale) }}#contact" class="btn btn-dark btn-sm header-desktop-only header-quote-btn">
+        {{ __('messages.request_quote') }}
       </a>
       <button type="button" class="header-mobile-btn" id="mobBtn"
               aria-label="{{ __('messages.nav_menu') }}"

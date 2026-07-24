@@ -91,8 +91,14 @@ class HeroSlide extends Model implements HasMedia
             return null;
         }
 
-        // Absolute URL so the <video> source never breaks behind a wrong APP_URL path.
-        return $media->getFullUrl();
+        // Always serve a host-relative /storage/... URL so a wrong APP_URL
+        // (e.g. http://localhost on production) cannot break the <video> src.
+        $relative = '/storage/'.ltrim($media->getPathRelativeToRoot(), '/');
+
+        // Cache-bust when the file is replaced
+        $version = $media->updated_at?->getTimestamp() ?? $media->id;
+
+        return $relative.'?v='.$version;
     }
 
     public function getPosterUrl(string $conversion = 'hero'): ?string

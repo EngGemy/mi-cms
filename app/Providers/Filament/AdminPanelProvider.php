@@ -45,23 +45,23 @@ class AdminPanelProvider extends PanelProvider
             ->maxContentWidth(MaxWidth::Full)
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->navigationGroups([
-                // Daily work first — inbox
+                // Homepage / landing content first (hero, about, features…)
                 NavigationGroup::make()
-                    ->label('الواردات')
-                    ->icon('heroicon-o-inbox-stack')
+                    ->label('واجهة الموقع')
+                    ->icon('heroicon-o-computer-desktop')
                     ->collapsed(false),
 
-                // Core business catalog
+                // Catalog
                 NavigationGroup::make()
                     ->label('المنتجات والمشاريع')
                     ->icon('heroicon-o-building-storefront')
                     ->collapsed(false),
 
-                // Homepage / landing sections
+                // Leads / inbox
                 NavigationGroup::make()
-                    ->label('واجهة الموقع')
-                    ->icon('heroicon-o-computer-desktop')
-                    ->collapsed(),
+                    ->label('الواردات')
+                    ->icon('heroicon-o-inbox-stack')
+                    ->collapsed(false),
 
                 // Trust signals
                 NavigationGroup::make()
@@ -69,7 +69,7 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-shield-check')
                     ->collapsed(),
 
-                // Editorial content
+                // Knowledge / editorial
                 NavigationGroup::make()
                     ->label('المدونة والصفحات')
                     ->icon('heroicon-o-newspaper')

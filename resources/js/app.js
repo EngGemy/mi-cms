@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMagnetic();
   initFaq();
   initMobileMenu();
+  initNavDropdowns();
   initStagesSlider();
   initProjectsSection();
   // Carousels BEFORE reveals so GSAP does not leave moved nodes at opacity:0
@@ -698,8 +699,73 @@ function initMobileMenu() {
     l.addEventListener('click', () => set(false));
   });
 
+  drawer.querySelectorAll('[data-mob-group]').forEach((group) => {
+    const gBtn = group.querySelector('[data-mob-group-btn]');
+    const panel = group.querySelector('[data-mob-group-panel]');
+    if (!gBtn || !panel) return;
+    gBtn.addEventListener('click', () => {
+      const open = panel.hasAttribute('hidden');
+      panel.toggleAttribute('hidden', !open);
+      gBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      group.classList.toggle('is-open', open);
+    });
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && drawer.classList.contains('is-open')) set(false);
+  });
+}
+
+function initNavDropdowns() {
+  const drops = [...document.querySelectorAll('[data-nav-drop]')];
+  if (!drops.length) return;
+
+  const closeAll = (except = null) => {
+    drops.forEach((drop) => {
+      if (drop === except) return;
+      const btn = drop.querySelector('[data-nav-drop-btn]');
+      const panel = drop.querySelector('[data-nav-drop-panel]');
+      drop.classList.remove('is-open');
+      btn?.setAttribute('aria-expanded', 'false');
+      panel?.setAttribute('hidden', '');
+    });
+  };
+
+  drops.forEach((drop) => {
+    const btn = drop.querySelector('[data-nav-drop-btn]');
+    const panel = drop.querySelector('[data-nav-drop-panel]');
+    if (!btn || !panel) return;
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const open = !drop.classList.contains('is-open');
+      closeAll(drop);
+      drop.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      panel.toggleAttribute('hidden', !open);
+    });
+
+    drop.addEventListener('mouseenter', () => {
+      if (window.matchMedia('(hover: hover)').matches) {
+        closeAll(drop);
+        drop.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+        panel.removeAttribute('hidden');
+      }
+    });
+    drop.addEventListener('mouseleave', () => {
+      if (window.matchMedia('(hover: hover)').matches) {
+        drop.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+        panel.setAttribute('hidden', '');
+      }
+    });
+  });
+
+  document.addEventListener('click', () => closeAll());
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAll();
   });
 }
 
