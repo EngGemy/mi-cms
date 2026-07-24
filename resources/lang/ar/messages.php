@@ -341,10 +341,24 @@ return [
     'hero_cta_primary'   => 'اطلب استشارة مجانية',
     'hero_default_label' => 'أنظمة بطاريات دواجن متكاملة',
     'hero_scroll'        => 'اكتشف المزيد',
-    'stat_years'         => '15+ سنة خبرة',
-    'stat_houses'        => '+1200 عنبر منفَّذ',
-    'stat_birds'         => '+80 مليون طائر',
-    'stat_countries'     => '12 دولة',
+    'stat_years'         => 'سنة خبرة',
+    'stat_houses'        => 'عنبر منفَّذ',
+    'stat_birds'         => 'طائر في منظوماتنا',
+    'stat_countries'     => 'أسواق تصدير',
+
+    // Homepage UX narrative
+    'home_proof_label'     => 'أرقام إم آي',
+    'home_story_eyebrow'   => 'لماذا إم آي',
+    'home_story_title'     => 'مصنع واحد. منظومة كاملة للعنبر.',
+    'home_story_blurb'     => 'نصنع في دمياط بطاريات وأنظمة تشغيل تُركَّب في المزارع التجارية — بجودة تُقاس في الميدان لا في الكتالوج.',
+    'home_story_p1_title'  => 'تصنيع محلي بمعايير عالمية',
+    'home_story_p1_desc'   => 'فولاذ مجلفن، خطوط أتمتة، ومراقبة جودة من الورشة حتى التسليم.',
+    'home_story_p2_title'  => 'هندسة تناسب بيئتك',
+    'home_story_p2_desc'   => 'حلول مُصمَّمة لمناخ المنطقة وكثافة التربية التجارية.',
+    'home_story_p3_title'  => 'دعم من الاستشارة للتشغيل',
+    'home_story_p3_desc'   => 'حساب سعة، تركيب، وتدريب — فريق ميداني يرافق مشروعك.',
+    'home_story_systems'   => 'استعرض الأنظمة',
+    'learn_more'           => 'اعرف المزيد',
 
     // Calculator gateway (under hero)
     'gateway_eyebrow'       => 'START HERE',
@@ -417,7 +431,7 @@ return [
 
     // Projects section (homepage)
     'projects_eyebrow'    => 'مشاريعنا',
-    'projects_title'      => 'أعمالنا في أرقام',
+    'projects_title'      => 'مشاريع تثبت الجودة في الميدان',
     'projects_blurb'      => 'من دمياط إلى الرياض — أكثر من 1200 عنبر منفّذ في 12 دولة.',
     'projects_cta'        => 'استعرض كل المشاريع',
     'view_project'        => 'عرض المشروع',

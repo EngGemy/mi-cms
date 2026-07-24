@@ -29,7 +29,7 @@
       ?? $slides->first(fn ($s) => $s->getFirstMedia('image'))?->getImageUrl('mobile')
       ?? $fallbackImage;
 @endphp
-<section class="hero hero--cinematic hero--with-gates {{ $videoUrl ? 'hero--has-video' : 'hero--no-video' }}" id="home" data-hero-cinematic>
+<section class="hero hero--cinematic hero--with-gates hero--ux {{ $videoUrl ? 'hero--has-video' : 'hero--no-video' }}" id="home" data-hero-cinematic>
   <div class="hero-media" aria-hidden="true">
     @if($videoUrl)
       <video
@@ -78,49 +78,50 @@
       </div>
     @endif
 
-    <div class="hero-scrim"></div>
+    <div class="hero-scrim hero-scrim--ux"></div>
     <div class="hero-grain"></div>
   </div>
 
   <div class="hero-content">
     <div class="hero-content-inner">
+      <p class="hero-brand" data-hero-fade>{{ __('messages.brand') }}</p>
       <p class="hero-kicker" data-hero-fade>{{ __('messages.hero_kicker') }}</p>
 
       <h1 class="hero-title" data-hero-headline>
         <span class="char-reveal"><span class="char-line">{{ __('messages.hero_main_line') }}</span></span>
       </h1>
 
-      <div class="hero-title hero-title--rotate" data-hero-headline>
-        <div class="rotating-word" id="rotWord">
-          @forelse($slides as $slide)
-            <span class="rw-item @if($loop->first)is-active @endif">{{ $slide->label }}</span>
-          @empty
-            <span class="rw-item is-active">{{ __('messages.hero_default_label') }}</span>
-          @endforelse
-        </div>
-      </div>
-
       <p class="hero-lead" data-hero-fade>{{ __('messages.hero_paragraph') }}</p>
 
-      {{-- Three business units — primary CTAs inside the hero --}}
-      <div class="hero-gates" id="services" data-hero-fade aria-label="{{ __('messages.svc_cinema_title') }}">
+      <div class="hero-gates" id="services" aria-label="{{ __('messages.svc_cinema_title') }}">
         @foreach($pillars as $key => $meta)
-          @php $item = $pillarCopy[$key] ?? []; @endphp
+          @php
+            $item = $pillarCopy[$key] ?? [];
+            $gateImg = $meta['catalog']['gallery'][0]
+                ?? $meta['catalog']['poster']
+                ?? $fallbackImage;
+          @endphp
           <a
             href="{{ route('services.show', [$locale, $key]) }}"
-            class="hero-gate"
+            class="hero-gate hero-gate--visual"
             style="--gate-i: {{ $loop->index }}"
             data-magnetic
           >
-            <span class="hero-gate-top">
-              <span class="hero-gate-num">{{ $item['num'] ?? $loop->iteration }}</span>
-              <span class="hero-gate-kicker">{{ $item['kicker'] ?? '' }}</span>
+            <span class="hero-gate-media" aria-hidden="true">
+              <img src="{{ $gateImg }}" alt="" loading="{{ $loop->first ? 'eager' : 'lazy' }}" decoding="async">
             </span>
-            <span class="hero-gate-title">{{ $item['title'] ?? $key }}</span>
-            <span class="hero-gate-tag">{{ $item['tagline'] ?? '' }}</span>
-            <span class="hero-gate-cta">
-              {{ __('messages.svc_cinema_explore') }}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="hero-gate-shade" aria-hidden="true"></span>
+            <span class="hero-gate-body">
+              <span class="hero-gate-top">
+                <span class="hero-gate-num">{{ $item['num'] ?? $loop->iteration }}</span>
+                <span class="hero-gate-kicker">{{ $item['kicker'] ?? '' }}</span>
+              </span>
+              <span class="hero-gate-title">{{ $item['title'] ?? $key }}</span>
+              <span class="hero-gate-tag">{{ $item['tagline'] ?? '' }}</span>
+              <span class="hero-gate-cta">
+                {{ __('messages.svc_cinema_explore') }}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
             </span>
           </a>
         @endforeach
@@ -136,10 +137,5 @@
         </a>
       </div>
     </div>
-
-    <a href="#start" class="hero-scroll" data-hero-fade aria-label="{{ __('messages.hero_scroll') }}">
-      <span class="hero-scroll-line" aria-hidden="true"></span>
-      <span>{{ __('messages.hero_scroll') }}</span>
-    </a>
   </div>
 </section>

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Feature;
 use App\Models\HeroSlide;
 use App\Models\Product;
 use App\Models\Project;
@@ -19,8 +18,7 @@ class HomeController extends Controller
         return view('home', [
             'heroSlides' => HeroSlide::active()->with('media')->get(),
             'featuredProducts' => Product::active()->with('media')->take(3)->get(),
-            'features' => Feature::active()->take(4)->get(),
-            'projects' => Project::active()->with('media')->take(3)->get(),
+            'projects' => Project::active()->with('media')->take(4)->get(),
             'seo' => $seo->toArray(),
         ]);
     }

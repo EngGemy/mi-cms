@@ -339,10 +339,24 @@ return [
     'hero_cta_primary'   => 'Request Free Consultation',
     'hero_default_label' => 'Integrated Poultry Cage Systems',
     'hero_scroll'        => 'Discover more',
-    'stat_years'         => '15+ Years Experience',
-    'stat_houses'        => '+1,200 Houses Delivered',
-    'stat_birds'         => '+80 Million Birds',
-    'stat_countries'     => '12 Countries',
+    'stat_years'         => 'Years of excellence',
+    'stat_houses'        => 'Houses delivered',
+    'stat_birds'         => 'Birds in our systems',
+    'stat_countries'     => 'Export markets',
+
+    // Homepage UX narrative
+    'home_proof_label'     => 'MI at a glance',
+    'home_story_eyebrow'   => 'Why MI',
+    'home_story_title'     => 'One factory. A complete house system.',
+    'home_story_blurb'     => 'We manufacture battery cages and automation in Damietta — quality proven on farms, not just in catalogs.',
+    'home_story_p1_title'  => 'Local build, global standards',
+    'home_story_p1_desc'   => 'Galvanized steel, automation lines, and QC from workshop to handover.',
+    'home_story_p2_title'  => 'Engineered for your climate',
+    'home_story_p2_desc'   => 'Systems tuned for regional conditions and commercial stocking density.',
+    'home_story_p3_title'  => 'Support from consult to run',
+    'home_story_p3_desc'   => 'Capacity calc, install, and training — a field team beside your project.',
+    'home_story_systems'   => 'Browse systems',
+    'learn_more'           => 'Learn more',
 
     // Calculator gateway (under hero)
     'gateway_eyebrow'       => 'START HERE',
@@ -415,7 +429,7 @@ return [
 
     // Projects section (homepage)
     'projects_eyebrow'    => 'Our Projects',
-    'projects_title'      => 'Our Work in Numbers',
+    'projects_title'      => 'Projects proven in the field',
     'projects_blurb'      => 'From Damietta to Riyadh — over 1,200 houses delivered across 12 countries.',
     'projects_cta'        => 'Browse All Projects',
     'view_project'        => 'View Project',

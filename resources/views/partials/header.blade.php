@@ -38,7 +38,7 @@
           <a href="{{ route('services.show', [$locale, 'broiler']) }}">{{ __('messages.nav_svc_broiler') }}</a>
           <a href="{{ route('services.show', [$locale, 'layer']) }}">{{ __('messages.nav_svc_layer') }}</a>
           <a href="{{ route('services.show', [$locale, 'construction']) }}">{{ __('messages.nav_svc_build') }}</a>
-          <a href="{{ route('home', $locale) }}#features">{{ __('messages.nav_features') }}</a>
+          <a href="{{ route('home', $locale) }}#about">{{ __('messages.nav_features') }}</a>
           <a href="{{ route('home', $locale) }}#start">{{ __('messages.nav_calculator') }}</a>
         </div>
       </div>

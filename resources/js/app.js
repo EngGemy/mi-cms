@@ -164,6 +164,15 @@ function runHeroEntrance() {
     0.55
   );
 
+  const brand = document.querySelector('.hero-brand');
+  if (brand) {
+    tl.fromTo(brand,
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
+      0.05
+    );
+  }
+
   tl.fromTo('.hero--cinematic .hero-stats > div',
     { opacity: 0, y: 20 },
     { opacity: 1, y: 0, duration: .7, stagger: 0.08, ease: 'power3.out' },
@@ -569,6 +578,14 @@ function initNavDropdowns() {
   const drops = [...document.querySelectorAll('[data-nav-drop]')];
   if (!drops.length) return;
 
+  let closeTimer = null;
+  const clearClose = () => {
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+  };
+
   const closeAll = (except = null) => {
     drops.forEach((drop) => {
       if (drop === except) return;
@@ -580,6 +597,30 @@ function initNavDropdowns() {
     });
   };
 
+  const openDrop = (drop) => {
+    clearClose();
+    const btn = drop.querySelector('[data-nav-drop-btn]');
+    const panel = drop.querySelector('[data-nav-drop-panel]');
+    if (!btn || !panel) return;
+    closeAll(drop);
+    drop.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+    panel.removeAttribute('hidden');
+  };
+
+  const scheduleClose = (drop) => {
+    clearClose();
+    closeTimer = setTimeout(() => {
+      if (!drop.matches(':hover')) {
+        const btn = drop.querySelector('[data-nav-drop-btn]');
+        const panel = drop.querySelector('[data-nav-drop-panel]');
+        drop.classList.remove('is-open');
+        btn?.setAttribute('aria-expanded', 'false');
+        panel?.setAttribute('hidden', '');
+      }
+    }, 120);
+  };
+
   drops.forEach((drop) => {
     const btn = drop.querySelector('[data-nav-drop-btn]');
     const panel = drop.querySelector('[data-nav-drop-panel]');
@@ -588,6 +629,7 @@ function initNavDropdowns() {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
+      clearClose();
       const open = !drop.classList.contains('is-open');
       closeAll(drop);
       drop.classList.toggle('is-open', open);
@@ -595,26 +637,26 @@ function initNavDropdowns() {
       panel.toggleAttribute('hidden', !open);
     });
 
+    // Keep panel clicks from bubbling to document close
+    panel.addEventListener('click', (e) => e.stopPropagation());
+
     drop.addEventListener('mouseenter', () => {
-      if (window.matchMedia('(hover: hover)').matches) {
-        closeAll(drop);
-        drop.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-        panel.removeAttribute('hidden');
-      }
+      if (window.matchMedia('(hover: hover)').matches) openDrop(drop);
     });
     drop.addEventListener('mouseleave', () => {
-      if (window.matchMedia('(hover: hover)').matches) {
-        drop.classList.remove('is-open');
-        btn.setAttribute('aria-expanded', 'false');
-        panel.setAttribute('hidden', '');
-      }
+      if (window.matchMedia('(hover: hover)').matches) scheduleClose(drop);
     });
   });
 
-  document.addEventListener('click', () => closeAll());
+  document.addEventListener('click', () => {
+    clearClose();
+    closeAll();
+  });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeAll();
+    if (e.key === 'Escape') {
+      clearClose();
+      closeAll();
+    }
   });
 }
 
